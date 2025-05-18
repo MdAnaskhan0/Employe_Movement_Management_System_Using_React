@@ -138,10 +138,21 @@ app.post('/movementdata', (req, res) => {
   );
 });
 
-
-
-
-
+// Get all movement data for a user
+app.get('/movementdata/:userID', (req, res) => {
+  const { userID } = req.params;
+  // console.log(`Fetching data for userID: ${userID}`); // Log the received userID
+  
+  const sql = 'SELECT * FROM movementdata WHERE userID = ?';
+  db.query(sql, [userID], (err, result) => {
+    if (err) {
+      console.error('Database error:', err);
+      return res.status(500).send({ status: 'error', message: 'Error getting movement data' });
+    }
+    console.log('Query result:', result);
+    res.send(result);
+  });
+});
 
 
 
