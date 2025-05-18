@@ -1,14 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
+import { AuthContext } from '../context/AuthContext'; // import AuthContext
 
 export default function Login() {
-  const [value, setValue] = useState({
-    username: '',
-    password: '',
-  });
-
+  const [value, setValue] = useState({ username: '', password: '' });
   const navigate = useNavigate();
+
+  const { login } = useContext(AuthContext); // get login method from context
 
   const handleChange = (e) => {
     const { name, value: inputValue } = e.target;
@@ -21,14 +20,24 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('http://localhost:5137/login', {
-        username: value.username,
-        password: value.password,
-      });
+      const res = await axios.post(
+        'http://localhost:5137/login',
+        {
+          username: value.username,
+          password: value.password,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
 
       if (res.data.status === 'ok') {
-        console.log('Login successful');
-        navigate('/user-information');
+        const userData = { userID: res.data.userID, username: value.username, email: res.data.email };
+        login(userData);  // save user info in context
+        console.log(res.data);
+        navigate(`/user-information/${res.data.userID}`);
       } else {
         alert(res.data.message || 'Invalid credentials');
       }
@@ -72,7 +81,12 @@ export default function Login() {
             Login
           </button>
           <div>
-            <p className='text-sm text-gray-700'>Don't have an account? <Link to="/signup" className='text-blue-600 font-bold hover:underline'>Sign Up</Link></p>
+            <p className="text-sm text-gray-700">
+              Don't have an account?{' '}
+              <Link to="/signup" className="text-blue-600 font-bold hover:underline">
+                Sign Up
+              </Link>
+            </p>
           </div>
         </form>
       </div>

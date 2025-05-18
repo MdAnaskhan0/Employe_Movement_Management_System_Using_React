@@ -35,16 +35,24 @@ export default function SignUp() {
                 password,
             });
 
-            console.log(res.data);
             if (res.data.status === 'ok') {
                 alert('User created successfully');
                 navigate('/');
+            } else {
+                alert(res.data.message || 'Failed to create user');
             }
         } catch (err) {
             console.error('Axios error:', err);
-            alert(err.response?.data?.message || 'Error creating user');
+
+            // Handle specific message for duplicate username
+            if (err.response?.status === 400 && err.response.data?.message === 'Username already exists') {
+                alert('Username already exists. Please choose another one.');
+            } else {
+                alert(err.response?.data?.message || 'Error creating user');
+            }
         }
     };
+
 
 
     return (
@@ -100,7 +108,7 @@ export default function SignUp() {
                             required
                         />
                     </div>
-                    
+
                     <button
                         type="submit"
                         className="w-full bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-200"
