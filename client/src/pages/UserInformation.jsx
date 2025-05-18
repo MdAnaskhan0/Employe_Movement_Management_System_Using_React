@@ -35,7 +35,7 @@ const UserInformation = () => {
 
           {/* User Image */}
           <div className="w-32 h-32 rounded-full bg-gray-200 flex items-center justify-center text-gray-400 text-4xl">
-            👤
+            <img src="https://www.w3schools.com/w3images/avatar1.png" alt="Avatar" className='w-32 h-32 rounded-full' />
           </div>
 
           {/* User Details */}
@@ -43,10 +43,7 @@ const UserInformation = () => {
             <h1 className="text-3xl font-bold text-gray-800">User Information</h1>
             <div className="mt-4 space-y-2">
               <p className="text-base text-gray-600">
-                Username: <span className="font-semibold text-gray-800">{user.username}</span>
-              </p>
-              <p className="text-base text-gray-600">
-                User ID: <span className="font-semibold text-gray-800">{user.userID}</span>
+                User Name: <span className="font-semibold text-gray-800">{user.username}</span>
               </p>
               <p className="text-base text-gray-600">
                 Email: <span className="font-semibold text-gray-800">{user.email}</span>
