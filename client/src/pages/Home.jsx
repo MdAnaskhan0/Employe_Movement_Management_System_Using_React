@@ -18,12 +18,12 @@ const Home = () => {
           </p>
           <div className="mt-6 flex gap-4">
             <Link to="/login">
-              <button className="bg-green-700 hover:bg-red-700 text-white font-semibold py-2 px-6 rounded-full transition duration-300">
+              <button className="border-1 border-gray-200 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-medium py-2.5 px-8 rounded-full shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">
                 Login
               </button>
             </Link>
             <Link to="/signup">
-              <button className="bg-white hover:bg-green-700 text-red-600 border border-red-600 font-semibold py-2 px-6 hover:text-white hover:border-green-700 rounded-full transition duration-300">
+              <button className="bg-white text-green-700 border-1 border-green-600 font-medium py-2.5 px-8 rounded-full shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5 hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">
                 Sign Up
               </button>
             </Link>
