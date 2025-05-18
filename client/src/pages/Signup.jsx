@@ -48,7 +48,7 @@ export default function SignUp() {
 
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gray-100">
+        <div className="flex items-center justify-center min-h-[75vh] md:min-h-[85vh] bg-white-100">
             <div className="w-full max-w-md bg-white p-8 rounded-xl shadow-md">
                 <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">Create an Account</h2>
                 <form onSubmit={handleSubmit} className="space-y-5">
@@ -100,12 +100,16 @@ export default function SignUp() {
                             required
                         />
                     </div>
+                    
                     <button
                         type="submit"
                         className="w-full bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-200"
                     >
                         Sign Up
                     </button>
+                    <div>
+                        <p className='text-sm text-gray-700'>Already have an account? <Link to="/login" className='text-blue-600 font-bold hover:underline'>Login</Link></p>
+                    </div>
                 </form>
             </div>
         </div>

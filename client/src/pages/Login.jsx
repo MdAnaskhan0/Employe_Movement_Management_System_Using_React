@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 
 export default function Login() {
@@ -39,7 +39,7 @@ export default function Login() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex items-center justify-center min-h-[75.5vh] md:min-h-[80vh] bg-white">
       <div className="w-full max-w-md bg-white p-8 rounded-xl shadow-md">
         <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">Login</h2>
         <form onSubmit={handleSubmit} className="space-y-5">
@@ -71,6 +71,9 @@ export default function Login() {
           >
             Login
           </button>
+          <div>
+            <p className='text-sm text-gray-700'>Don't have an account? <Link to="/signup" className='text-blue-600 font-bold hover:underline'>Sign Up</Link></p>
+          </div>
         </form>
       </div>
     </div>
