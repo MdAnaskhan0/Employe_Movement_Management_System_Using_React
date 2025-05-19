@@ -89,19 +89,19 @@ const CreateUser = () => {
                         )}
                     </button>
 
-                    <h1 className="text-xl font-semibold text-gray-800">Create New User</h1>
+                    {/* <h1 className="text-xl font-semibold text-gray-800">Create New User</h1> */}
                 </header>
 
                 {/* Content */}
                 <main className="flex-grow overflow-auto p-6 bg-gray-50">
                     <div className="max-w-4xl mx-auto">
                         <div className="bg-white rounded-lg shadow-md overflow-hidden">
-                            <div className="bg-blue-600 p-4 text-white">
+                            <div className="bg-gray-100 p-4 text-gray-800">
                                 <h1 className="text-2xl font-bold flex items-center">
                                     <FaUserPlus className="mr-2" />
                                     Create New User
                                 </h1>
-                                <p className="text-blue-100">Fill in the details below to register a new user</p>
+                                <p className="text-gray-600">Fill in the details below to register a new user</p>
                             </div>
 
                             <form onSubmit={handleSubmit} className="p-6">
@@ -110,7 +110,7 @@ const CreateUser = () => {
                                     {/* Username Field */}
                                     <div className="space-y-2">
                                         <label htmlFor="username" className="block text-sm font-medium text-gray-700 flex items-center">
-                                            <FaUserTie className="mr-2 text-blue-600" />
+                                            <FaUserTie className="mr-2 text-gray-600" />
                                             Username <span className='text-red-500'>&nbsp;*</span>
                                         </label>
                                         <input
@@ -128,7 +128,7 @@ const CreateUser = () => {
                                     {/* Password Field */}
                                     <div className="space-y-2">
                                         <label htmlFor="password" className="block text-sm font-medium text-gray-700 flex items-center">
-                                            <FaUserTie className="mr-2 text-blue-600" />
+                                            <FaUserTie className="mr-2 text-gray-600" />
                                             Password <span className='text-red-500'>&nbsp;*</span>
                                         </label>
                                         <input
@@ -146,7 +146,7 @@ const CreateUser = () => {
                                     {/* E-ID Field */}
                                     <div className="space-y-2">
                                         <label htmlFor="eid" className="block text-sm font-medium text-gray-700 flex items-center">
-                                            <FaIdCard className="mr-2 text-blue-600" />
+                                            <FaIdCard className="mr-2 text-gray-600" />
                                             Employee ID <span className='text-red-500'>&nbsp;*</span>
                                         </label>
                                         <input
@@ -164,7 +164,7 @@ const CreateUser = () => {
                                     {/* Name Field */}
                                     <div className="space-y-2">
                                         <label htmlFor="name" className="block text-sm font-medium text-gray-700 flex items-center">
-                                            <FaUserTie className="mr-2 text-blue-600" />
+                                            <FaUserTie className="mr-2 text-gray-600" />
                                             Full Name <span className='text-red-500'>&nbsp;*</span>
                                         </label>
                                         <input
@@ -182,7 +182,7 @@ const CreateUser = () => {
                                     {/* Designation Field */}
                                     <div className="space-y-2">
                                         <label htmlFor="designation" className="block text-sm font-medium text-gray-700 flex items-center">
-                                            <FaUserTie className="mr-2 text-blue-600" />
+                                            <FaUserTie className="mr-2 text-gray-600" />
                                             Designation <span className='text-red-500'>&nbsp;*</span>
                                         </label>
                                         <select
@@ -208,7 +208,7 @@ const CreateUser = () => {
                                     {/* Department Field */}
                                     <div className="space-y-2">
                                         <label htmlFor="department" className="block text-sm font-medium text-gray-700 flex items-center">
-                                            <MdDepartureBoard className="mr-2 text-blue-600" />
+                                            <MdDepartureBoard className="mr-2 text-gray-600" />
                                             Department <span className='text-red-500'>&nbsp;*</span>
                                         </label>
                                         <select
@@ -227,7 +227,7 @@ const CreateUser = () => {
                                     {/* Company Field */}
                                     <div className="space-y-2">
                                         <label htmlFor="company" className="block text-sm font-medium text-gray-700 flex items-center">
-                                            <FaBuilding className="mr-2 text-blue-600" />
+                                            <FaBuilding className="mr-2 text-gray-600" />
                                             Company Name <span className='text-red-500'>&nbsp;*</span>
                                         </label>
                                         <select
@@ -255,7 +255,7 @@ const CreateUser = () => {
                                     {/* Phone Field */}
                                     <div className="space-y-2">
                                         <label htmlFor="phone" className="block text-sm font-medium text-gray-700 flex items-center">
-                                            <FaPhone className="mr-2 text-blue-600" />
+                                            <FaPhone className="mr-2 text-gray-600" />
                                             Phone Number <span className='text-red-500'>&nbsp;*</span>
                                         </label>
                                         <input
@@ -273,7 +273,7 @@ const CreateUser = () => {
                                     {/* Email Field */}
                                     <div className="md:col-span-2 space-y-2">
                                         <label htmlFor="email" className="block text-sm font-medium text-gray-700 flex items-center">
-                                            <FaEnvelope className="mr-2 text-blue-600" />
+                                            <FaEnvelope className="mr-2 text-gray-600" />
                                             Email Address <span className='text-red-500'>&nbsp;*</span>
                                         </label>
                                         <input
