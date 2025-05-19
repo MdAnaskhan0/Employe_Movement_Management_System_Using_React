@@ -153,7 +153,7 @@ const AllUser = () => {
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {users.map((user) => (
-                    <tr key={user.userID}>
+                    <tr key={user.userID} onClick={() => navigate(`/dashboard/userprofile/${user.userID}`)}>
                       {/* Username */}
                       <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
                         {editingId === user.userID ? (

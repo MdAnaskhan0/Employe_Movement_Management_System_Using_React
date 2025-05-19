@@ -230,7 +230,7 @@ const CreateUser = () => {
                                             <FaBuilding className="mr-2 text-blue-600" />
                                             Company Name <span className='text-red-500'>&nbsp;*</span>
                                         </label>
-                                        <input
+                                        <select
                                             type="text"
                                             id="company"
                                             name="company"
@@ -239,7 +239,17 @@ const CreateUser = () => {
                                             className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
                                             placeholder="Enter company name"
                                             required
-                                        />
+                                        >
+                                            <option value="">Select Company</option>
+                                            <option value="Fashion Eye Hospital Ltd.">Fashion Eye Hospital Ltd.</option>
+                                            <option value="Ego Vision">Ego Vision</option>
+                                            <option value="Fashion Optics Ltd.">Fashion Optics Ltd.</option>
+                                            <option value="Fashion Optical Ind.">Fashion Optical Ind.</option>
+                                            <option value="CR-39 Lab">CR-39 Lab</option>
+                                            <option value="Contact Lens Lab">Contact Lens Lab</option>
+                                            <option value="Hira Panna Foundation">Hira Panna Foundation</option>
+                                            <option value="Hira Panna Hospital">Hira Panna Hospital</option>
+                                        </select>
                                     </div>
 
                                     {/* Phone Field */}

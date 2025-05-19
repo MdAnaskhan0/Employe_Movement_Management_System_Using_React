@@ -187,21 +187,21 @@ app.post('/movementdata', (req, res) => {
 
 
 
-// Get all movement data for a user
-app.get('/movementdata/:userID', (req, res) => {
-  const { userID } = req.params;
-  // console.log(`Fetching data for userID: ${userID}`); // Log the received userID
+// // Get all movement data for a user
+// app.get('/movementdata/:userID', (req, res) => {
+//   const { userID } = req.params;
+//   // console.log(`Fetching data for userID: ${userID}`); // Log the received userID
 
-  const sql = 'SELECT * FROM movementdata WHERE userID = ?';
-  db.query(sql, [userID], (err, result) => {
-    if (err) {
-      console.error('Database error:', err);
-      return res.status(500).send({ status: 'error', message: 'Error getting movement data' });
-    }
-    console.log('Query result:', result);
-    res.send(result);
-  });
-});
+//   const sql = 'SELECT * FROM movementdata WHERE userID = ?';
+//   db.query(sql, [userID], (err, result) => {
+//     if (err) {
+//       console.error('Database error:', err);
+//       return res.status(500).send({ status: 'error', message: 'Error getting movement data' });
+//     }
+//     console.log('Query result:', result);
+//     res.send(result);
+//   });
+// });
 
 
 // Get all users
@@ -240,10 +240,9 @@ app.put('/users/:id', (req, res) => {
 });
 
 
-// Delete user
+// DELETE /users/:id
 app.delete('/users/:id', (req, res) => {
   const userId = req.params.id;
-
   const sql = 'DELETE FROM users WHERE userID = ?';
 
   db.query(sql, [userId], (err, result) => {
@@ -259,6 +258,48 @@ app.delete('/users/:id', (req, res) => {
     res.send({ status: 'ok', message: 'User deleted successfully' });
   });
 });
+
+
+// // Get a single user by ID
+// app.get('/users/:id', (req, res) => {
+//   const sql = 'SELECT * FROM users WHERE userID = ?';
+//   db.query(sql, [req.params.id], (err, result) => {
+//     if (err) return res.status(500).send({ error: err.message });
+//     if (!result.length) return res.status(404).send({ message: 'User not found' });
+//     res.send({ data: result[0] });
+//   });
+// });
+
+
+// Get all movement data for a user
+app.get('/movementdata/:userID', (req, res) => {
+  const { userID } = req.params;
+  console.log(`Fetching movement data for userID: ${userID}`);
+
+  const sql = 'SELECT * FROM movementdata WHERE userID = ?';
+  db.query(sql, [userID], (err, result) => {
+    if (err) {
+      console.error('Database error:', err);
+      return res.status(500).send({ status: 'error', message: 'Error getting movement data' });
+    }
+    console.log('Movement Query result:', result);
+    res.send({ data: result }); // <-- FIXED: wrap in an object
+  });
+});
+
+// Get a single user by ID
+app.get('/users/:id', (req, res) => {
+  const { id } = req.params;
+  const sql = 'SELECT * FROM users WHERE userID = ?';
+  db.query(sql, [id], (err, result) => {
+    if (err) return res.status(500).send({ error: err.message });
+    if (!result.length) return res.status(404).send({ message: 'User not found' });
+    res.send({ data: result[0] });
+  });
+});
+
+
+
 
 
 app.listen(port, () => {

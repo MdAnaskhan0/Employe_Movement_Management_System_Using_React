@@ -8,6 +8,7 @@ import ProtectedRoute from './components/Private/ProtectedRoute';
 import CreateUser from './pages/CreateUser';
 import MovementReports from './pages/MovementReports';
 import AllUser from './pages/AllUser';
+import UserProfile from './pages/UserProfile';
 
 const App = () => {
   return (
@@ -31,6 +32,7 @@ const App = () => {
           <Route path="/dashboard/createuser" element={<CreateUser />} />
           <Route path="/dashboard/movementreports" element={<MovementReports />} />
           <Route path="/dashboard/alluser" element={<AllUser />} />
+          <Route path="/dashboard/userprofile/:userID" element={<UserProfile />} />
         </Route>
       </Routes>
       <Footer />

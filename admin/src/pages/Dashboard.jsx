@@ -1,11 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaBars, FaTimes } from 'react-icons/fa';
 import Sidebar from '../components/Sidebar/Sidebar';
+import axios from 'axios';
 
 const Dashboard = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [users, setUsers] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
+
 
   const handleLogout = () => {
     localStorage.removeItem('adminLoggedIn');
@@ -13,8 +18,23 @@ const Dashboard = ({ children }) => {
     navigate('/');
   };
 
+  // Fetch users from API
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await axios.get('http://localhost:5137/users');
+        setUsers(response.data.data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchUsers();
+  }, []);
+
   return (
-    <div className="flex h-screen bg-gray-100 overflow-hidden">
+    <div className="flex h-[76vh] bg-gray-100 overflow-hidden">
       <Sidebar sidebarOpen={sidebarOpen} handleLogout={handleLogout} />
       
       {/* Overlay for mobile sidebar */}
@@ -56,9 +76,9 @@ const Dashboard = ({ children }) => {
               </p>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-white p-6 rounded-lg shadow">
+                <div className="bg-white p-6 rounded-lg shadow" onClick={() => navigate('/dashboard/alluser')}>
                   <h3 className="text-lg font-semibold mb-2">Total Users</h3>
-                  <p className="text-3xl font-bold text-blue-600">1,234</p>
+                  <p className="text-3xl font-bold text-blue-600">{users.length}</p>
                 </div>
                 <div className="bg-white p-6 rounded-lg shadow">
                   <h3 className="text-lg font-semibold mb-2">Active Reports</h3>
