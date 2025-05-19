@@ -33,11 +33,46 @@ db.connect((err) => {
 });
 
 
-// Create a new user
-app.post('/users', (req, res) => {
-  const { username, email, password } = req.body;
+// Admin login
+app.post('/adminlogin', (req, res) => {
+  const { username, password } = req.body;
 
-  // First, check if the username already exists
+  const sql = 'SELECT * FROM admin WHERE username = ? AND password = ?';
+  db.query(sql, [username, password], (err, result) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).send({ status: 'error', message: 'Error logging in' });
+    }
+
+    if (result.length > 0) {
+      res.send({
+        status: 'ok',
+        message: 'Login successful',
+        adminID: result[0].adminID, 
+        username: result[0].username,
+      });
+    } else {
+      res.status(401).send({ status: 'error', message: 'Invalid credentials' });
+    }
+  });
+});
+
+
+// Create new User
+app.post('/users', (req, res) => {
+  const {
+    username,
+    password,
+    eid,
+    name,
+    designation,
+    department,
+    company,
+    phone,
+    email
+  } = req.body;
+
+  // Check if username already exists
   const checkSql = 'SELECT * FROM users WHERE username = ?';
   db.query(checkSql, [username], (checkErr, checkResult) => {
     if (checkErr) {
@@ -46,22 +81,38 @@ app.post('/users', (req, res) => {
     }
 
     if (checkResult.length > 0) {
-      // Username already exists
       return res.status(400).send({ status: 'error', message: 'Username already exists' });
     }
 
-    // If not exists, proceed to insert
-    const insertSql = 'INSERT INTO users (username, email, password) VALUES (?, ?, ?)';
-    db.query(insertSql, [username, email, password], (insertErr, insertResult) => {
+    // Insert the new user
+    const insertSql = `
+      INSERT INTO users 
+      (username, password, E_ID, Name, Designation, Department, Company_name, Phone, email)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+
+    const values = [
+      username,
+      password,
+      eid,
+      name,
+      designation,
+      department,
+      company,
+      phone,
+      email
+    ];
+
+    db.query(insertSql, values, (insertErr, insertResult) => {
       if (insertErr) {
         console.error(insertErr);
         return res.status(500).send({ status: 'error', message: 'Error creating user' });
       }
-
       res.send({ status: 'ok', message: 'User created successfully' });
     });
   });
 });
+
 
 
 // Login user
@@ -83,8 +134,7 @@ app.post('/login', (req, res) => {
         status: 'ok',
         message: 'Login successful',
         userID: result[0].userID, 
-        username: result[0].username,
-        email: result[0].email,
+        username: result[0].username
       });
     } else {
       res.status(401).send({ status: 'error', message: 'Invalid credentials' });
@@ -154,28 +204,17 @@ app.get('/movementdata/:userID', (req, res) => {
 });
 
 
-
-// Admin login
-app.post('/adminlogin', (req, res) => {
-  const { username, password } = req.body;
-
-  const sql = 'SELECT * FROM admin WHERE username = ? AND password = ?';
-  db.query(sql, [username, password], (err, result) => {
+// Get all users
+app.get('/users', (req, res) => {
+  const sql = 'SELECT * FROM users';
+  
+  db.query(sql, (err, results) => {
     if (err) {
-      console.error(err);
-      return res.status(500).send({ status: 'error', message: 'Error logging in' });
+      console.error('Error fetching users:', err);
+      return res.status(500).send({ status: 'error', message: 'Database error' });
     }
 
-    if (result.length > 0) {
-      res.send({
-        status: 'ok',
-        message: 'Login successful',
-        adminID: result[0].adminID, 
-        username: result[0].username,
-      });
-    } else {
-      res.status(401).send({ status: 'error', message: 'Invalid credentials' });
-    }
+    res.send({ status: 'ok', data: results });
   });
 });
 

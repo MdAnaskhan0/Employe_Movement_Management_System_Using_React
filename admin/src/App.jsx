@@ -1,23 +1,39 @@
-import React from 'react'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import React from 'react';
+import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom';
 import Home from './pages/Home';
 import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
 import Dashboard from './pages/Dashboard';
+import ProtectedRoute from './components/Private/ProtectedRoute';
+import CreateUser from './pages/CreateUser';
+import MovementReports from './pages/MovementReports';
 
 const App = () => {
   return (
-    <>
-      <BrowserRouter>
-            <Header />
-            <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-            </Routes>
-            <Footer />
-        </BrowserRouter>
-    </>
-  )
-}
+    <BrowserRouter>
+      <Header />
+      <Routes>
+        {/* Public Route */}
+        <Route path="/" element={<Home />} />
 
-export default App
+        {/* Protected Routes */}
+        <Route 
+          path="/" 
+          element={
+            <ProtectedRoute>
+              {/* This will wrap all nested routes */}
+              <Outlet />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="dashboard/createuser" element={<CreateUser />} />
+          <Route path="dasboard/movemntreports" element={<MovementReports />} />
+        </Route>
+      </Routes>
+      <Footer />
+    </BrowserRouter>
+  );
+};
+
+export default App;
