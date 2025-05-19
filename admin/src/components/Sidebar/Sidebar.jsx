@@ -36,14 +36,14 @@ const Sidebar = ({ sidebarOpen, handleLogout }) => {
           Create User
         </Link>
         <Link
-          to="/dashboard/users"
+          to="/dashboard/alluser"
           className="flex items-center py-3 px-4 rounded hover:bg-gray-700 transition text-gray-300 hover:text-white"
         >
           <FaChartBar className="w-5 h-5 mr-3" />
           All Users
         </Link>
         <Link
-          to="/dashboard/movemntreports"
+          to="/dashboard/movementreports"
           className="flex items-center py-3 px-4 rounded hover:bg-gray-700 transition text-gray-300 hover:text-white"
         >
           <FaUserCircle className="w-5 h-5 mr-3" />

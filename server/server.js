@@ -218,6 +218,47 @@ app.get('/users', (req, res) => {
   });
 });
 
+// Update user
+app.put('/users/:id', (req, res) => {
+  const userId = req.params.id;
+  const updatedData = req.body;
+  
+  const sql = 'UPDATE users SET ? WHERE userID = ?';
+  
+  db.query(sql, [updatedData, userId], (err, result) => {
+    if (err) {
+      console.error('Error updating user:', err);
+      return res.status(500).send({ status: 'error', message: 'Database error' });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).send({ status: 'error', message: 'User not found' });
+    }
+
+    res.send({ status: 'ok', message: 'User updated successfully' });
+  });
+});
+
+// Delete user
+app.delete('/users/:id', (req, res) => {
+  const userId = req.params.id;
+  
+  const sql = 'DELETE FROM users WHERE userID = ?';
+  
+  db.query(sql, [userId], (err, result) => {
+    if (err) {
+      console.error('Error deleting user:', err);
+      return res.status(500).send({ status: 'error', message: 'Database error' });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).send({ status: 'error', message: 'User not found' });
+    }
+
+    res.send({ status: 'ok', message: 'User deleted successfully' });
+  });
+});
+
 
 
 
