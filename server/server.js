@@ -48,7 +48,7 @@ app.post('/adminlogin', (req, res) => {
       res.send({
         status: 'ok',
         message: 'Login successful',
-        adminID: result[0].adminID, 
+        adminID: result[0].adminID,
         username: result[0].username,
       });
     } else {
@@ -133,7 +133,7 @@ app.post('/login', (req, res) => {
       res.send({
         status: 'ok',
         message: 'Login successful',
-        userID: result[0].userID, 
+        userID: result[0].userID,
         username: result[0].username
       });
     } else {
@@ -191,7 +191,7 @@ app.post('/movementdata', (req, res) => {
 app.get('/movementdata/:userID', (req, res) => {
   const { userID } = req.params;
   // console.log(`Fetching data for userID: ${userID}`); // Log the received userID
-  
+
   const sql = 'SELECT * FROM movementdata WHERE userID = ?';
   db.query(sql, [userID], (err, result) => {
     if (err) {
@@ -207,7 +207,7 @@ app.get('/movementdata/:userID', (req, res) => {
 // Get all users
 app.get('/users', (req, res) => {
   const sql = 'SELECT * FROM users';
-  
+
   db.query(sql, (err, results) => {
     if (err) {
       console.error('Error fetching users:', err);
@@ -222,9 +222,9 @@ app.get('/users', (req, res) => {
 app.put('/users/:id', (req, res) => {
   const userId = req.params.id;
   const updatedData = req.body;
-  
+
   const sql = 'UPDATE users SET ? WHERE userID = ?';
-  
+
   db.query(sql, [updatedData, userId], (err, result) => {
     if (err) {
       console.error('Error updating user:', err);
@@ -239,12 +239,13 @@ app.put('/users/:id', (req, res) => {
   });
 });
 
+
 // Delete user
 app.delete('/users/:id', (req, res) => {
   const userId = req.params.id;
-  
+
   const sql = 'DELETE FROM users WHERE userID = ?';
-  
+
   db.query(sql, [userId], (err, result) => {
     if (err) {
       console.error('Error deleting user:', err);
@@ -258,8 +259,6 @@ app.delete('/users/:id', (req, res) => {
     res.send({ status: 'ok', message: 'User deleted successfully' });
   });
 });
-
-
 
 
 app.listen(port, () => {

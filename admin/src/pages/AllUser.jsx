@@ -59,24 +59,35 @@ const AllUser = () => {
   };
 
   const handleSave = async (userId) => {
-    try {
-      const response = await axios.put(`/users/${userId}`, editData);
-      
-      // Update local state
-      setUsers(users.map(user => 
-        user.userID === userId ? { ...user, ...editData } : user
-      ));
-      setEditingId(null);
-    } catch (err) {
-      setError(err.message);
-    }
-  };
+  try {
+    const payload = {
+      username: editData.username,
+      email: editData.email,
+      E_ID: editData.e_id,
+      Name: editData.name,
+      Designation: editData.designation,
+      Department: editData.department,
+      Company_name: editData.company_name,
+      Phone: editData.phone
+    };
+
+    const response = await axios.put(`http://localhost:5137/users/${userId}`, payload);
+
+    // Update local state
+    setUsers(users.map(user => 
+      user.userID === userId ? { ...user, ...payload } : user
+    ));
+    setEditingId(null);
+  } catch (err) {
+    setError(err.message);
+  }
+};
 
   const handleDelete = async (userId) => {
     if (!window.confirm('Are you sure you want to delete this user?')) return;
 
     try {
-      await axios.delete(`/users/${userId}`);
+      await axios.delete(`http://localhost:5137/users/${userId}`);
       
       // Update local state
       setUsers(users.filter(user => user.userID !== userId));
@@ -111,203 +122,193 @@ const AllUser = () => {
       )}
 
       {/* Main content */}
-      <div className="flex flex-col flex-1 w-full">
+      <div className="flex flex-col flex-1 w-full overflow-hidden">
         <header className="flex items-center justify-between bg-white shadow p-4">
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
             className="text-gray-800 focus:outline-none md:hidden"
             aria-label="Toggle sidebar"
           >
-            {sidebarOpen ? (
-              <FaTimes className="h-6 w-6" />
-            ) : (
-              <FaBars className="h-6 w-6" />
-            )}
+            {sidebarOpen ? <FaTimes className="h-6 w-6" /> : <FaBars className="h-6 w-6" />}
           </button>
-
-          <h1 className="text-xl font-semibold text-gray-800">All Users</h1>
+          <h1 className="text-xl font-semibold text-gray-800">Information of All Users</h1>
         </header>
 
-        <main className="flex-grow overflow-auto p-6 bg-gray-50">
-          <div className="bg-white rounded-lg shadow overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+        <main className="flex-grow overflow-auto p-4 md:p-6 bg-gray-50">
+          <div className="bg-white rounded-lg shadow overflow-auto">
+            <div className="w-full overflow-x-auto">
+              <table className="w-full table-auto">
+                <thead className="bg-gray-800">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User ID</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Username</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">E-ID</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Designation</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Department</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Company</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider min-w-[120px]">Username</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider min-w-[180px]">Email</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider min-w-[80px]">E-ID</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider min-w-[120px]">Name</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider min-w-[120px]">Designation</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider min-w-[120px]">Department</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider min-w-[120px]">Company</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider min-w-[100px]">Phone</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider min-w-[180px]">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {users.map((user) => (
                     <tr key={user.userID}>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.userID}</td>
-                      
                       {/* Username */}
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
                         {editingId === user.userID ? (
                           <input
                             type="text"
                             name="username"
                             value={editData.username}
                             onChange={handleEditChange}
-                            className="w-full px-2 py-1 border rounded"
+                            className="w-full px-2 py-1 border rounded text-sm"
                           />
                         ) : (
-                          <div className="text-sm text-gray-900">{user.username}</div>
+                          user.username
                         )}
                       </td>
                       
                       {/* Email */}
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
                         {editingId === user.userID ? (
                           <input
                             type="email"
                             name="email"
                             value={editData.email}
                             onChange={handleEditChange}
-                            className="w-full px-2 py-1 border rounded"
+                            className="w-full px-2 py-1 border rounded text-sm"
                           />
                         ) : (
-                          <div className="text-sm text-gray-900">{user.email}</div>
+                          user.email
                         )}
                       </td>
                       
                       {/* E-ID */}
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
                         {editingId === user.userID ? (
                           <input
                             type="text"
                             name="e_id"
                             value={editData.e_id}
                             onChange={handleEditChange}
-                            className="w-full px-2 py-1 border rounded"
+                            className="w-full px-2 py-1 border rounded text-sm"
                           />
                         ) : (
-                          <div className="text-sm text-gray-500">{user.E_ID}</div>
+                          user.E_ID
                         )}
                       </td>
                       
                       {/* Name */}
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
                         {editingId === user.userID ? (
                           <input
                             type="text"
                             name="name"
                             value={editData.name}
                             onChange={handleEditChange}
-                            className="w-full px-2 py-1 border rounded"
+                            className="w-full px-2 py-1 border rounded text-sm"
                           />
                         ) : (
-                          <div className="text-sm text-gray-900">{user.Name}</div>
+                          user.Name
                         )}
                       </td>
                       
                       {/* Designation */}
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
                         {editingId === user.userID ? (
                           <input
                             type="text"
                             name="designation"
                             value={editData.designation}
                             onChange={handleEditChange}
-                            className="w-full px-2 py-1 border rounded"
+                            className="w-full px-2 py-1 border rounded text-sm"
                           />
                         ) : (
-                          <div className="text-sm text-gray-500">{user.Designation}</div>
+                          user.Designation
                         )}
                       </td>
                       
                       {/* Department */}
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
                         {editingId === user.userID ? (
                           <input
                             type="text"
                             name="department"
                             value={editData.department}
                             onChange={handleEditChange}
-                            className="w-full px-2 py-1 border rounded"
+                            className="w-full px-2 py-1 border rounded text-sm"
                           />
                         ) : (
-                          <div className="text-sm text-gray-500">{user.Department}</div>
+                          user.Department
                         )}
                       </td>
                       
                       {/* Company */}
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
                         {editingId === user.userID ? (
                           <input
                             type="text"
                             name="company_name"
                             value={editData.company_name}
                             onChange={handleEditChange}
-                            className="w-full px-2 py-1 border rounded"
+                            className="w-full px-2 py-1 border rounded text-sm"
                           />
                         ) : (
-                          <div className="text-sm text-gray-500">{user.Company_name}</div>
+                          user.Company_name
                         )}
                       </td>
                       
                       {/* Phone */}
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
                         {editingId === user.userID ? (
                           <input
                             type="text"
                             name="phone"
                             value={editData.phone}
                             onChange={handleEditChange}
-                            className="w-full px-2 py-1 border rounded"
+                            className="w-full px-2 py-1 border rounded text-sm"
                           />
                         ) : (
-                          <div className="text-sm text-gray-500">{user.Phone}</div>
+                          user.Phone
                         )}
                       </td>
                       
                       {/* Actions */}
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        {editingId === user.userID ? (
-                          <div className="flex space-x-2">
-                            <button
-                              onClick={() => handleSave(user.userID)}
-                              className="text-green-600 hover:text-green-900"
-                              title="Save"
-                            >
-                              <FaSave />
-                            </button>
-                            <button
-                              onClick={handleCancelEdit}
-                              className="text-red-600 hover:text-red-900"
-                              title="Cancel"
-                            >
-                              <FaTimesCircle />
-                            </button>
-                          </div>
-                        ) : (
-                          <div className="flex space-x-2">
-                            <button
-                              onClick={() => handleEdit(user)}
-                              className="text-blue-600 hover:text-blue-900"
-                              title="Edit"
-                            >
-                              <FaEdit />
-                            </button>
-                            <button
-                              onClick={() => handleDelete(user.userID)}
-                              className="text-red-600 hover:text-red-900"
-                              title="Delete"
-                            >
-                              <FaTrash />
-                            </button>
-                          </div>
-                        )}
+                      <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
+                        <div className="flex space-x-2">
+                          {editingId === user.userID ? (
+                            <>
+                              <button
+                                onClick={() => handleSave(user.userID)}
+                                className="flex items-center justify-center px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition-colors text-xs"
+                              >
+                                <FaSave className="mr-1" /> Save
+                              </button>
+                              <button
+                                onClick={handleCancelEdit}
+                                className="flex items-center justify-center px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors text-xs"
+                              >
+                                <FaTimesCircle className="mr-1" /> Cancel
+                              </button>
+                            </>
+                          ) : (
+                            <>
+                              <button
+                                onClick={() => handleEdit(user)}
+                                className="flex items-center justify-center px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors text-xs"
+                              >
+                                <FaEdit className="mr-1" /> Edit
+                              </button>
+                              <button
+                                onClick={() => handleDelete(user.userID)}
+                                className="flex items-center justify-center px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition-colors text-xs"
+                              >
+                                <FaTrash className="mr-1" /> Delete
+                              </button>
+                            </>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   ))}
