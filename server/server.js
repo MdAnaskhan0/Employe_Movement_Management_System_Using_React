@@ -2,20 +2,26 @@ const express = require('express');
 const mysql = require('mysql');
 const cors = require('cors');
 const path = require('path');
-
+const bcrypt = require('bcrypt');
 
 const app = express();
+const port = 5137;
 
+// Middleware
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(cors());
+app.use(cors({
+  origin: ['http://localhost:5173', 'http://localhost:5174'],
+  credentials: true
+}));
+
 app.use(express.json());
 
-const port = 5137;
+// MySQL connection
 const db = mysql.createConnection({
   host: 'localhost',
-  user: "root",
-  password: "",
-  database: "employee_movement"
+  user: 'root',
+  password: '',
+  database: 'employee_movement'
 });
 
 db.connect((err) => {
@@ -28,19 +34,6 @@ db.connect((err) => {
 
 
 // Create a new user
-// app.post('/users', (req, res)=>{
-
-//   sql = "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
-//   db.query(sql, [req.body.username, req.body.email, req.body.password], (err, result) => {
-//     if (err) {
-//       console.error(err);
-//       res.status(500).send({ status: 'error', message: 'Error creating user' });
-//     } else {
-//       res.send({ status: 'ok', message: 'User created successfully' });
-//     }
-//   });
-// })
-
 app.post('/users', (req, res) => {
   const { username, email, password } = req.body;
 
@@ -117,7 +110,11 @@ app.post('/movementdata', (req, res) => {
     return res.status(400).send({ status: 'error', message: 'Missing required fields' });
   }
 
-  const dateTime = new Date().toISOString().slice(0, 19).replace('T', ' '); // MySQL datetime format
+  // Get local time formatted for MySQL
+  const now = new Date();
+  const offsetMs = now.getTimezoneOffset() * 60 * 1000;
+  const localTime = new Date(now.getTime() - offsetMs);
+  const dateTime = localTime.toISOString().slice(0, 19).replace('T', ' ');
 
   const sql = `
     INSERT INTO movementdata 
@@ -138,6 +135,8 @@ app.post('/movementdata', (req, res) => {
   );
 });
 
+
+
 // Get all movement data for a user
 app.get('/movementdata/:userID', (req, res) => {
   const { userID } = req.params;
@@ -153,6 +152,33 @@ app.get('/movementdata/:userID', (req, res) => {
     res.send(result);
   });
 });
+
+
+
+// Admin login
+app.post('/adminlogin', (req, res) => {
+  const { username, password } = req.body;
+
+  const sql = 'SELECT * FROM admin WHERE username = ? AND password = ?';
+  db.query(sql, [username, password], (err, result) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).send({ status: 'error', message: 'Error logging in' });
+    }
+
+    if (result.length > 0) {
+      res.send({
+        status: 'ok',
+        message: 'Login successful',
+        adminID: result[0].adminID, 
+        username: result[0].username,
+      });
+    } else {
+      res.status(401).send({ status: 'error', message: 'Invalid credentials' });
+    }
+  });
+});
+
 
 
 
