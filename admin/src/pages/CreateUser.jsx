@@ -75,7 +75,7 @@ const CreateUser = () => {
             {/* Main content */}
             <div className="flex flex-col flex-1 w-full">
                 {/* Header */}
-                <header className="flex items-center justify-between bg-white shadow p-4">
+                <header className="flex items-center justify-between bg-gray-50 shadow p-4">
                     {/* Mobile menu button */}
                     <button
                         onClick={() => setSidebarOpen(!sidebarOpen)}

@@ -2,7 +2,6 @@ const express = require('express');
 const mysql = require('mysql');
 const cors = require('cors');
 const path = require('path');
-const bcrypt = require('bcrypt');
 
 const app = express();
 const port = 5137;
@@ -252,7 +251,7 @@ app.get('/movementdata/:userID', (req, res) => {
       console.error('Database error:', err);
       return res.status(500).send({ status: 'error', message: 'Error getting movement data' });
     }
-    res.send({ data: result }); 
+    res.send({ data: result });
   });
 });
 
@@ -268,7 +267,54 @@ app.get('/users/:id', (req, res) => {
 });
 
 
+// Update JSON based on file name and value
+const fs = require('fs');
+const baseDir = path.join(__dirname, 'JsonFile');
 
+app.post('/update-json', (req, res) => {
+  const { fileName, value } = req.body;
+
+  if (!fileName || !value) {
+    return res.status(400).json({ error: 'fileName and value are required' });
+  }
+
+  const filePath = path.join(baseDir, `${fileName}.json`);
+
+  // If file doesn't exist, create it with empty array
+  if (!fs.existsSync(filePath)) {
+    fs.writeFileSync(filePath, '[]');
+  }
+
+  // Read and parse the file
+  fs.readFile(filePath, 'utf-8', (err, data) => {
+    if (err) return res.status(500).json({ error: 'Failed to read file' });
+
+    let json = [];
+
+    try {
+      json = JSON.parse(data);
+      if (!Array.isArray(json)) json = [];
+    } catch (e) {
+      return res.status(500).json({ error: 'Invalid JSON format' });
+    }
+
+    // Check if value already exists (case-insensitive)
+    const alreadyExists = json.some(item =>
+      typeof item === 'string' ? item.toLowerCase() === value.toLowerCase() : item === value
+    );
+
+    if (alreadyExists) {
+      return res.status(409).json({ message: 'Value already exists', data: json });
+    }
+
+    json.push(value);
+
+    fs.writeFile(filePath, JSON.stringify(json, null, 2), err => {
+      if (err) return res.status(500).json({ error: 'Failed to write file' });
+      res.json({ message: 'Successfully updated', data: json });
+    });
+  });
+});
 
 
 app.listen(port, () => {

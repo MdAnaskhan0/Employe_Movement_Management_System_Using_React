@@ -1,10 +1,11 @@
 import { Link } from 'react-router-dom';
-import { 
-  FaHome, 
-  FaUsers, 
-  FaChartBar, 
+import { IoMdAddCircleOutline } from "react-icons/io";
+import {
+  FaHome,
+  FaUsers,
+  FaChartBar,
   FaUserCircle,
-  FaSignOutAlt 
+  FaSignOutAlt
 } from 'react-icons/fa';
 
 const Sidebar = ({ sidebarOpen, handleLogout }) => {
@@ -49,8 +50,11 @@ const Sidebar = ({ sidebarOpen, handleLogout }) => {
           <FaUserCircle className="w-5 h-5 mr-3" />
           Movement Reports
         </Link>
+        <Link to={'/dashboard/jsonupdater'} className="flex items-center py-3 px-4 rounded hover:bg-gray-700 transition text-gray-300 hover:text-white">
+          <IoMdAddCircleOutline className="w-5 h-5 mr-3" />
+          Add Field Data
+        </Link>
         <button
-          onClick={handleLogout}
           className="flex items-center w-full py-3 px-4 rounded hover:bg-gray-700 transition text-gray-300 hover:text-white text-left"
         >
           <FaSignOutAlt className="w-5 h-5 mr-3" />

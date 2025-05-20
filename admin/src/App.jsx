@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom';
+import JsonUpdater from './components/JsonUpdate/JsonUpdater';
 import Home from './pages/Home';
 import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
@@ -33,6 +34,7 @@ const App = () => {
           <Route path="/dashboard/movementreports" element={<MovementReports />} />
           <Route path="/dashboard/alluser" element={<AllUser />} />
           <Route path="/dashboard/userprofile/:userID" element={<UserProfile />} />
+          <Route path="/dashboard/jsonupdater" element={<JsonUpdater />} />
         </Route>
       </Routes>
       <Footer />
