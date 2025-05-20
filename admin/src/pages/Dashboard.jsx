@@ -80,14 +80,14 @@ const Dashboard = ({ children }) => {
                   <h3 className="text-lg font-semibold mb-2">Total Users</h3>
                   <p className="text-3xl font-bold text-blue-600">{users.length}</p>
                 </div>
-                <div className="bg-white p-6 rounded-lg shadow">
-                  <h3 className="text-lg font-semibold mb-2">Active Reports</h3>
-                  <p className="text-3xl font-bold text-green-600">56</p>
+                <div className="bg-white p-6 rounded-lg shadow" onClick={() => navigate('/dashboard/movementreports')}>
+                  <h3 className="text-lg font-semibold mb-2">Total Movement Reports</h3>
+                  <p className="text-3xl font-bold text-green-600">02</p>
                 </div>
-                <div className="bg-white p-6 rounded-lg shadow">
+                {/* <div className="bg-white p-6 rounded-lg shadow">
                   <h3 className="text-lg font-semibold mb-2">Pending Approvals</h3>
                   <p className="text-3xl font-bold text-yellow-600">12</p>
-                </div>
+                </div> */}
               </div>
             </>
           )}

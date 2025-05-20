@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaBars, FaTimes, FaEdit, FaTrash, FaSave, FaTimesCircle } from 'react-icons/fa';
+import { FaBars, FaTimes, FaUser } from 'react-icons/fa';
 import Sidebar from '../components/Sidebar/Sidebar';
 import axios from 'axios';
 
@@ -11,6 +11,7 @@ const AllUser = () => {
   const [editData, setEditData] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchText, setSearchText] = useState('');
   const navigate = useNavigate();
 
   // Fetch users from API
@@ -27,6 +28,21 @@ const AllUser = () => {
     };
     fetchUsers();
   }, []);
+
+  // Filter users based on search text
+  const filteredUsers = users.filter(user => {
+    if (!searchText) return true;
+    
+    const searchLower = searchText.toLowerCase();
+    return (
+      user.username.toLowerCase().includes(searchLower) ||
+      user.email.toLowerCase().includes(searchLower) ||
+      (user.E_ID && user.E_ID.toLowerCase().includes(searchLower)) ||
+      (user.Name && user.Name.toLowerCase().includes(searchLower)) ||
+      (user.Department && user.Department.toLowerCase().includes(searchLower)) ||
+      (user.Company_name && user.Company_name.toLowerCase().includes(searchLower))
+    );
+  });
 
   const handleLogout = () => {
     localStorage.removeItem('adminLoggedIn');
@@ -59,36 +75,36 @@ const AllUser = () => {
   };
 
   const handleSave = async (userId) => {
-  try {
-    const payload = {
-      username: editData.username,
-      email: editData.email,
-      E_ID: editData.e_id,
-      Name: editData.name,
-      Designation: editData.designation,
-      Department: editData.department,
-      Company_name: editData.company_name,
-      Phone: editData.phone
-    };
+    try {
+      const payload = {
+        username: editData.username,
+        email: editData.email,
+        E_ID: editData.e_id,
+        Name: editData.name,
+        Designation: editData.designation,
+        Department: editData.department,
+        Company_name: editData.company_name,
+        Phone: editData.phone
+      };
 
-    const response = await axios.put(`http://localhost:5137/users/${userId}`, payload);
+      const response = await axios.put(`http://localhost:5137/users/${userId}`, payload);
 
-    // Update local state
-    setUsers(users.map(user => 
-      user.userID === userId ? { ...user, ...payload } : user
-    ));
-    setEditingId(null);
-  } catch (err) {
-    setError(err.message);
-  }
-};
+      // Update local state
+      setUsers(users.map(user =>
+        user.userID === userId ? { ...user, ...payload } : user
+      ));
+      setEditingId(null);
+    } catch (err) {
+      setError(err.message);
+    }
+  };
 
   const handleDelete = async (userId) => {
     if (!window.confirm('Are you sure you want to delete this user?')) return;
 
     try {
       await axios.delete(`http://localhost:5137/users/${userId}`);
-      
+
       // Update local state
       setUsers(users.filter(user => user.userID !== userId));
     } catch (err) {
@@ -111,7 +127,7 @@ const AllUser = () => {
   return (
     <div className="flex h-screen bg-gray-100 overflow-hidden">
       <Sidebar sidebarOpen={sidebarOpen} handleLogout={handleLogout} />
-      
+
       {/* Overlay for mobile sidebar */}
       {sidebarOpen && (
         <div
@@ -135,6 +151,31 @@ const AllUser = () => {
         </header>
 
         <main className="flex-grow overflow-auto p-4 md:p-6 bg-gray-50">
+          {/* search bar : serch by username, email, e-id, Name, department,company */}
+          {/* ************************************************************************** */}
+
+          <div className="relative max-w-md py-2">
+            <div className="flex items-center">
+              <input
+                type="text"
+                placeholder="Search by username, email, ID, name..."
+                className="w-full py-2 pl-4 pr-10 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-transparent"
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+              />
+              {searchText && (
+                <button 
+                  className="absolute right-3 text-gray-400 hover:text-gray-600" 
+                  onClick={() => setSearchText('')}
+                >
+                  <FaTimes />
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* ************************************************************************** */}
+
           <div className="bg-white rounded-lg shadow overflow-auto">
             <div className="w-full overflow-x-auto">
               <table className="w-full table-auto">
@@ -152,8 +193,8 @@ const AllUser = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {users.map((user) => (
-                    <tr key={user.userID} onClick={() => navigate(`/dashboard/userprofile/${user.userID}`)}>
+                  {filteredUsers.map((user) => (
+                    <tr key={user.userID}>
                       {/* Username */}
                       <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
                         {editingId === user.userID ? (
@@ -168,7 +209,7 @@ const AllUser = () => {
                           user.username
                         )}
                       </td>
-                      
+
                       {/* Email */}
                       <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
                         {editingId === user.userID ? (
@@ -183,7 +224,7 @@ const AllUser = () => {
                           user.email
                         )}
                       </td>
-                      
+
                       {/* E-ID */}
                       <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
                         {editingId === user.userID ? (
@@ -198,7 +239,7 @@ const AllUser = () => {
                           user.E_ID
                         )}
                       </td>
-                      
+
                       {/* Name */}
                       <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
                         {editingId === user.userID ? (
@@ -213,7 +254,7 @@ const AllUser = () => {
                           user.Name
                         )}
                       </td>
-                      
+
                       {/* Designation */}
                       <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
                         {editingId === user.userID ? (
@@ -228,7 +269,7 @@ const AllUser = () => {
                           user.Designation
                         )}
                       </td>
-                      
+
                       {/* Department */}
                       <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
                         {editingId === user.userID ? (
@@ -243,7 +284,7 @@ const AllUser = () => {
                           user.Department
                         )}
                       </td>
-                      
+
                       {/* Company */}
                       <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
                         {editingId === user.userID ? (
@@ -258,7 +299,7 @@ const AllUser = () => {
                           user.Company_name
                         )}
                       </td>
-                      
+
                       {/* Phone */}
                       <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
                         {editingId === user.userID ? (
@@ -273,41 +314,16 @@ const AllUser = () => {
                           user.Phone
                         )}
                       </td>
-                      
+
                       {/* Actions */}
                       <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
                         <div className="flex space-x-2">
-                          {editingId === user.userID ? (
-                            <>
-                              <button
-                                onClick={() => handleSave(user.userID)}
-                                className="flex items-center justify-center px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition-colors text-xs"
-                              >
-                                <FaSave className="mr-1" /> Save
-                              </button>
-                              <button
-                                onClick={handleCancelEdit}
-                                className="flex items-center justify-center px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors text-xs"
-                              >
-                                <FaTimesCircle className="mr-1" /> Cancel
-                              </button>
-                            </>
-                          ) : (
-                            <>
-                              <button
-                                onClick={() => handleEdit(user)}
-                                className="flex items-center justify-center px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors text-xs"
-                              >
-                                <FaEdit className="mr-1" /> Edit
-                              </button>
-                              <button
-                                onClick={() => handleDelete(user.userID)}
-                                className="flex items-center justify-center px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition-colors text-xs"
-                              >
-                                <FaTrash className="mr-1" /> Delete
-                              </button>
-                            </>
-                          )}
+                          <button
+                            onClick={() => navigate(`/dashboard/userprofile/${user.userID}`)}
+                            className="flex items-center justify-center px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors text-xs"
+                          >
+                            <FaUser className="mr-1" /> View Profile
+                          </button>
                         </div>
                       </td>
                     </tr>
