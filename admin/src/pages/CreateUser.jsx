@@ -1,15 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { FaUserPlus, FaIdCard, FaUserTie, FaBuilding, FaPhone, FaEnvelope, FaBars, FaTimes } from 'react-icons/fa';
 import { MdDepartureBoard } from 'react-icons/md';
-import Sidebar from '../components/Sidebar/Sidebar'; 
+import Sidebar from '../components/Sidebar/Sidebar';
 import { SiGoogletasks } from "react-icons/si";
+
 
 const CreateUser = () => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [roles, setRoles] = useState([]);
+    const [designation, setDesignation] = useState([]);
+    const [department, setDepartment] = useState([]);
+    const [company, setCompany] = useState([]);
+    const [error, setError] = useState('');
     const navigate = useNavigate();
-
     const [formData, setFormData] = useState({
         username: '',
         password: '',
@@ -21,6 +26,55 @@ const CreateUser = () => {
         phone: '',
         email: ''
     });
+
+
+    useEffect(() => {
+        axios.get('http://localhost:5137/get-json/roles')
+            .then(response => {
+                setRoles(response.data.data);
+            })
+            .catch(err => {
+                console.error(err);
+                setError('Failed to fetch roles');
+            });
+    }, []);
+
+    useEffect(()=>{
+        axios.get('http://localhost:5137/get-json/designations')
+            .then(response => {
+                setDesignation(response.data.data);
+                console.log(response.data.data);
+            })
+            .catch(err => {
+                console.error(err);
+                setError('Failed to fetch designation');
+            });
+    }, []);
+
+    useEffect(()=>{
+        axios.get('http://localhost:5137/get-json/departments')
+            .then(response => {
+                setDepartment(response.data.data);
+            })
+            .catch(err => {
+                console.error(err);
+                setError('Failed to fetch department');
+            });
+    })
+
+    useEffect(()=>{
+        axios.get('http://localhost:5137/get-json/companynames')
+            .then(response => {
+                setCompany(response.data.data);
+            })
+            .catch(err => {
+                console.error(err);
+                setError('Failed to fetch company');
+            });
+    })
+
+    if (error) return <div>{error}</div>;
+    if (roles.length === 0) return <div>No roles found</div>;
 
 
     const handleLogout = () => {
@@ -197,12 +251,11 @@ const CreateUser = () => {
                                             required
                                         >
                                             <option value="">Select Designation</option>
-                                            <option value="Associate Engineer (MED Service)">Associate Engineer (MED Service)</option>
-                                            <option value="Assistant Engineer (MED Service)">Assistant Engineer (MED Service)</option>
-                                            <option value="Sub Asst. Engineer (MED service)">Sub Asst. Engineer (MED service)</option>
-                                            <option value="Sub Asst. Engineer(Service)">Sub Asst. Engineer(Service)</option>
-                                            <option value="IT Expert (MED Service)">IT Expert (MED Service)</option>
-                                            <option value="Sales Executive (MED Sales)">Sales Executive (MED Sales)</option>
+                                            {designation.map((designation) => (
+                                                <option  key={designation} value={designation}>
+                                                    {designation}
+                                                </option>
+                                            ))}
                                         </select>
                                     </div>
 
@@ -221,7 +274,11 @@ const CreateUser = () => {
                                             required
                                         >
                                             <option value="">Select Department</option>
-                                            <option value="Medical Equipment Department">Medical Equipment Department</option>
+                                            {department.map((department) => (
+                                                <option  key={department} value={department}>
+                                                    {department}
+                                                </option>
+                                            ))}
                                         </select>
                                     </div>
 
@@ -242,14 +299,11 @@ const CreateUser = () => {
                                             required
                                         >
                                             <option value="">Select Company</option>
-                                            <option value="Fashion Eye Hospital Ltd.">Fashion Eye Hospital Ltd.</option>
-                                            <option value="Ego Vision">Ego Vision</option>
-                                            <option value="Fashion Optics Ltd.">Fashion Optics Ltd.</option>
-                                            <option value="Fashion Optical Ind.">Fashion Optical Ind.</option>
-                                            <option value="CR-39 Lab">CR-39 Lab</option>
-                                            <option value="Contact Lens Lab">Contact Lens Lab</option>
-                                            <option value="Hira Panna Foundation">Hira Panna Foundation</option>
-                                            <option value="Hira Panna Hospital">Hira Panna Hospital</option>
+                                            {company.map((company) => (
+                                                <option  key={company} value={company}>
+                                                    {company}
+                                                </option>
+                                            ))}
                                         </select>
                                     </div>
 
@@ -295,7 +349,7 @@ const CreateUser = () => {
                                             <SiGoogletasks className="mr-2 text-gray-600" />
                                             Role <span className='text-red-500'>&nbsp;*</span>
                                         </label>
-                                        <input
+                                        <select
                                             type="text"
                                             id="role"
                                             name="role"
@@ -304,7 +358,15 @@ const CreateUser = () => {
                                             className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
                                             placeholder="Enter user role"
                                             required
-                                        />
+                                        >   
+                                            <option value="">Select Role</option>
+                                            {roles.map((role) => (
+                                                <option  key={role} value={role}>
+                                                    {role}
+                                                </option>
+                                            ))}
+
+                                        </select>
                                     </div>
                                 </div>
 
