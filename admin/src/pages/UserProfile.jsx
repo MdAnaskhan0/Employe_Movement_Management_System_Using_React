@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { FaBars, FaTimes, FaUser, FaClock, FaMapMarkerAlt, FaBuilding, FaPhone, FaEnvelope, FaIdBadge } from 'react-icons/fa';
+import { FaBars, FaTimes, FaUser, FaClock, FaMapMarkerAlt, FaBuilding, FaPhone, FaEnvelope, FaIdBadge, FaPeopleArrows,FaFingerprint, FaRegBuilding} from 'react-icons/fa';
+import { CiCalendarDate } from "react-icons/ci";
 import { MdWork, MdDepartureBoard, MdDescription, MdNote } from 'react-icons/md';
+import { FiDownload, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 import Sidebar from '../components/Sidebar/Sidebar';
 import axios from 'axios';
 
@@ -50,7 +54,6 @@ const UserProfile = () => {
                 setIsLoading(false);
             }
         };
-
         fetchData();
     }, [userID]);
 
@@ -186,6 +189,53 @@ const UserProfile = () => {
             </div>
         </div>
     );
+
+    // Donwload excel button
+    const handleDownloadExcel = () => {
+        const isFilterApplied =
+            searchText.trim() ||
+            (punchStatus && punchStatus !== '*') ||
+            dateFrom ||
+            dateTo;
+
+        const dataToExport = isFilterApplied ? filteredData : movementData;
+
+        if (dataToExport.length === 0) {
+            alert("No data to export.");
+            return;
+        }
+
+        const exportData = dataToExport.map(item => ({
+            Date: new Date(item.dateTime).toLocaleDateString('en-CA'),
+            Time: new Date(item.dateTime).toLocaleTimeString('en-US', {
+                hour: 'numeric',
+                minute: 'numeric',
+                hour12: true,
+            }),
+            'Punch Time': item.punchTime,
+            Status: item.visitingStatus,
+            Location: item.placeName,
+            Party: item.partyName,
+            Purpose: item.purpose,
+            Remarks: item.remark,
+        }));
+
+        const worksheet = XLSX.utils.json_to_sheet(exportData);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Movement History');
+
+        const excelBuffer = XLSX.write(workbook, {
+            bookType: 'xlsx',
+            type: 'array',
+        });
+
+        const blob = new Blob([excelBuffer], {
+            type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        });
+
+        saveAs(blob, `movement_history_${isFilterApplied ? 'filtered' : 'full'}.xlsx`);
+    };
+
 
     if (isLoading) return (
         <div className="flex justify-center items-center h-screen">
@@ -384,36 +434,44 @@ const UserProfile = () => {
                             <div className="bg-white rounded-xl shadow-sm overflow-hidden">
                                 <div className="overflow-x-auto">
                                     <table className="min-w-full divide-y divide-gray-200">
-                                        <thead className="bg-gray-50">
+                                        <thead className="bg-gray-800">
                                             <tr>
-                                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
                                                     <div className="flex items-center">
-                                                        <FaClock className="mr-2" /> Date
+                                                        <CiCalendarDate className='mr-2' /> Date
                                                     </div>
                                                 </th>
-                                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                    Time
+                                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
+                                                    <div className="flex items-center">
+                                                        <FaClock className="mr-2" /> Time
+                                                    </div>
                                                 </th>
-                                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                    Punch Time
+                                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
+                                                    <div className='flex items-center'>
+                                                        <FaFingerprint className="mr-2" /> Punch Time
+                                                    </div>
                                                 </th>
-                                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                    Status
+                                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
+                                                    <div className="flex items-center">
+                                                        <FaRegBuilding className='mr-2' /> Status
+                                                    </div>
                                                 </th>
-                                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
                                                     <div className="flex items-center">
                                                         <FaMapMarkerAlt className="mr-2" /> Location
                                                     </div>
                                                 </th>
-                                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                    Party
+                                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
+                                                    <div className="flex items-center">
+                                                        <FaPeopleArrows className="mr-2" /> Party
+                                                    </div>
                                                 </th>
-                                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
                                                     <div className="flex items-center">
                                                         <MdDescription className="mr-2" /> Purpose
                                                     </div>
                                                 </th>
-                                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
                                                     <div className="flex items-center">
                                                         <MdNote className="mr-2" /> Remarks
                                                     </div>
@@ -469,28 +527,40 @@ const UserProfile = () => {
                                 </div>
                             </div>
                         )}
-                        <div className="flex justify-between items-center mt-4">
-    <button
-        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-        disabled={currentPage === 1}
-        className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
-    >
-        Previous
-    </button>
+                        <div className='flex flex-col sm:flex-row justify-between items-center mt-6 gap-4'>
+                            <div className="flex items-center space-x-4">
+                                <button
+                                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                                    disabled={currentPage === 1}
+                                    className={`px-4 py-2 rounded-md border border-gray-300 text-sm font-medium flex items-center ${currentPage === 1
+                                        ? 'text-gray-400 bg-gray-100 cursor-not-allowed'
+                                        : 'text-gray-700 bg-white hover:bg-gray-50'
+                                        } transition-colors duration-200`}
+                                >
+                                    <FiChevronLeft className="mr-1" /> Previous
+                                </button>
 
-    <span className="text-sm text-gray-700">
-        Page {currentPage} of {totalPages}
-    </span>
+                                <span className="text-sm font-medium text-gray-600">
+                                    Page <span className="font-semibold">{currentPage}</span> of <span className="font-semibold">{totalPages}</span>
+                                </span>
 
-    <button
-        onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-        disabled={currentPage === totalPages}
-        className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
-    >
-        Next
-    </button>
-</div>
+                                <button
+                                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                                    disabled={currentPage === totalPages}
+                                    className={`px-4 py-2 rounded-md border border-gray-300 text-sm font-medium flex items-center ${currentPage === totalPages
+                                        ? 'text-gray-400 bg-gray-100 cursor-not-allowed'
+                                        : 'text-gray-700 bg-white hover:bg-gray-50'
+                                        } transition-colors duration-200`}
+                                >
+                                    Next <FiChevronRight className="ml-1" />
+                                </button>
+                            </div>
 
+                            <button onClick={handleDownloadExcel} className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none transition-colors duration-200 flex items-center">
+                                <FiDownload className="mr-2" size={14} />
+                                Download CSV
+                            </button>
+                        </div>
                     </section>
                 </main>
             </div>
