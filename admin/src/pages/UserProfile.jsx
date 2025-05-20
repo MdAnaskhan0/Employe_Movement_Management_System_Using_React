@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { FaBars, FaTimes, FaUser, FaClock, FaMapMarkerAlt, FaBuilding, FaPhone, FaEnvelope, FaIdBadge } from 'react-icons/fa';
-import { FaFilter } from 'react-icons/fa';
 import { MdWork, MdDepartureBoard, MdDescription, MdNote } from 'react-icons/md';
 import Sidebar from '../components/Sidebar/Sidebar';
 import axios from 'axios';
@@ -24,8 +23,15 @@ const UserProfile = () => {
     const navigate = useNavigate();
     const { userID } = useParams();
 
-    console.log("Filter value:", punchStatus);
-    console.log("Data values:", movementData.map(m => m.visitingStatus));
+    const [currentPage, setCurrentPage] = useState(1);
+    const rowsPerPage = 5;
+
+    const indexOfLastRow = currentPage * rowsPerPage;
+    const indexOfFirstRow = indexOfLastRow - rowsPerPage;
+    const currentRows = filteredData.slice(indexOfFirstRow, indexOfLastRow);
+
+    const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+
 
 
     // Fetch data from API
@@ -87,6 +93,7 @@ const UserProfile = () => {
         }
 
         setFilteredData(filtered);
+        setCurrentPage(1);
     }, [searchText, punchStatus, dateFrom, dateTo, movementData]);
 
     // Handle logout
@@ -365,7 +372,7 @@ const UserProfile = () => {
                             </span>
                         </div>
 
-                        {filteredData.length === 0 ? (
+                        {currentRows.length === 0 ? (
                             <div className="bg-white rounded-xl shadow-sm p-8 text-center">
                                 <div className="text-gray-400 mb-4">
                                     <FaMapMarkerAlt className="inline-block text-4xl" />
@@ -414,7 +421,7 @@ const UserProfile = () => {
                                             </tr>
                                         </thead>
                                         <tbody className="bg-white divide-y divide-gray-200">
-                                            {filteredData.map((mv, index) => {
+                                            {currentRows.map((mv, index) => {
                                                 const dt = new Date(mv.dateTime);
                                                 const datePart = dt.toLocaleDateString('en-CA');
                                                 const timePart = dt.toLocaleTimeString('en-US', {
@@ -462,6 +469,28 @@ const UserProfile = () => {
                                 </div>
                             </div>
                         )}
+                        <div className="flex justify-between items-center mt-4">
+    <button
+        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+        disabled={currentPage === 1}
+        className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
+    >
+        Previous
+    </button>
+
+    <span className="text-sm text-gray-700">
+        Page {currentPage} of {totalPages}
+    </span>
+
+    <button
+        onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+        disabled={currentPage === totalPages}
+        className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
+    >
+        Next
+    </button>
+</div>
+
                     </section>
                 </main>
             </div>
