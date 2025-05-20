@@ -18,11 +18,15 @@ const UserProfile = () => {
     const [dateFrom, setDateFrom] = useState('');
     const [dateTo, setDateTo] = useState('');
     const [filteredData, setFilteredData] = useState([]);
-    
+
     const [isEditing, setIsEditing] = useState(false);
     const [editData, setEditData] = useState({});
     const navigate = useNavigate();
     const { userID } = useParams();
+
+    console.log("Filter value:", punchStatus);
+    console.log("Data values:", movementData.map(m => m.visitingStatus));
+
 
     // Fetch data from API
     useEffect(() => {
@@ -48,28 +52,38 @@ const UserProfile = () => {
     useEffect(() => {
         let filtered = [...movementData];
 
-        // Search filter (match against purpose, remarks, location, or party)
+        // Search filter
         if (searchText.trim()) {
             const lowerSearch = searchText.toLowerCase();
             filtered = filtered.filter(item =>
                 (item.placeName?.toLowerCase().includes(lowerSearch)) ||
                 (item.partyName?.toLowerCase().includes(lowerSearch)) ||
-                (item.purpose?.toLowerCase().includes(lowerSearch)) 
+                (item.purpose?.toLowerCase().includes(lowerSearch)) ||
+                (item.remark?.toLowerCase().includes(lowerSearch)) ||
+                (item.visitingStatus?.toLowerCase().includes(lowerSearch))
             );
         }
 
-        // Punch status filter
+        // Punch Status filter
         if (punchStatus && punchStatus !== '*') {
-            filtered = filtered.filter(item => item.visitingStatus === punchStatus);
+            filtered = filtered.filter(item =>
+                item.punchTime === punchStatus
+            );
         }
 
-        // Date range filter
-        if (dateFrom) {
-            filtered = filtered.filter(item => new Date(item.dateTime) >= new Date(dateFrom));
-        }
 
-        if (dateTo) {
-            filtered = filtered.filter(item => new Date(item.dateTime) <= new Date(dateTo));
+        // Inclusive Date From - To filter
+        if (dateFrom || dateTo) {
+            filtered = filtered.filter(item => {
+                const itemDate = new Date(item.dateTime);
+                const fromDate = dateFrom ? new Date(dateFrom + 'T00:00:00') : null;
+                const toDate = dateTo ? new Date(dateTo + 'T23:59:59') : null;
+
+                const matchesFrom = !fromDate || itemDate >= fromDate;
+                const matchesTo = !toDate || itemDate <= toDate;
+
+                return matchesFrom && matchesTo;
+            });
         }
 
         setFilteredData(filtered);
@@ -313,9 +327,9 @@ const UserProfile = () => {
                                     onChange={(e) => setPunchStatus(e.target.value)}
                                     className="px-3 py-2 border rounded"
                                 >
-                                    <option value="*">All Status</option>
-                                    <option value="In">Punch In</option>
-                                    <option value="Out">Punch Out</option>
+                                    <option value="*">Punch Time</option>
+                                    <option value="Punch In">Punch In</option>
+                                    <option value="Punch Out">Punch Out</option>
                                 </select>
 
                                 <input

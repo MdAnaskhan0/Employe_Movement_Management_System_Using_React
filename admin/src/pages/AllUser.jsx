@@ -40,6 +40,7 @@ const AllUser = () => {
       (user.E_ID && user.E_ID.toLowerCase().includes(searchLower)) ||
       (user.Name && user.Name.toLowerCase().includes(searchLower)) ||
       (user.Department && user.Department.toLowerCase().includes(searchLower)) ||
+      (user.Designation && user.Designation.toLowerCase().includes(searchLower)) ||
       (user.Company_name && user.Company_name.toLowerCase().includes(searchLower))
     );
   });
