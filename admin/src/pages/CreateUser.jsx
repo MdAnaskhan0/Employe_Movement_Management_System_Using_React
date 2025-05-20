@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { FaUserPlus, FaIdCard, FaUserTie, FaBuilding, FaPhone, FaEnvelope, FaBars, FaTimes } from 'react-icons/fa';
 import { MdDepartureBoard } from 'react-icons/md';
-import Sidebar from '../components/Sidebar/Sidebar'; // Make sure to import your Sidebar component
+import Sidebar from '../components/Sidebar/Sidebar'; 
+import { SiGoogletasks } from "react-icons/si";
 
 const CreateUser = () => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -271,7 +272,7 @@ const CreateUser = () => {
                                     </div>
 
                                     {/* Email Field */}
-                                    <div className="md:col-span-2 space-y-2">
+                                    <div className="space-y-2">
                                         <label htmlFor="email" className="block text-sm font-medium text-gray-700 flex items-center">
                                             <FaEnvelope className="mr-2 text-gray-600" />
                                             Email Address <span className='text-red-500'>&nbsp;*</span>
@@ -284,6 +285,24 @@ const CreateUser = () => {
                                             onChange={handleChange}
                                             className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
                                             placeholder="Enter email address"
+                                            required
+                                        />
+                                    </div>
+
+                                    {/* Role Field */}
+                                    <div className="space-y-2">
+                                        <label htmlFor="email" className="block text-sm font-medium text-gray-700 flex items-center">
+                                            <SiGoogletasks className="mr-2 text-gray-600" />
+                                            Role <span className='text-red-500'>&nbsp;*</span>
+                                        </label>
+                                        <input
+                                            type="text"
+                                            id="role"
+                                            name="role"
+                                            value={formData.role}
+                                            onChange={handleChange}
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                                            placeholder="Enter user role"
                                             required
                                         />
                                     </div>

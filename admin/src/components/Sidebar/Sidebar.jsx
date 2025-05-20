@@ -55,6 +55,7 @@ const Sidebar = ({ sidebarOpen, handleLogout }) => {
           Add Field Data
         </Link>
         <button
+          onClick={handleLogout}
           className="flex items-center w-full py-3 px-4 rounded hover:bg-gray-700 transition text-gray-300 hover:text-white text-left"
         >
           <FaSignOutAlt className="w-5 h-5 mr-3" />

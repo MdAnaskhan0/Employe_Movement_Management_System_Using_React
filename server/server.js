@@ -317,6 +317,29 @@ app.post('/update-json', (req, res) => {
 });
 
 
+// Get JSON file data
+app.get('/get-json/:fileName', (req, res) => {
+  const fileName = req.params.fileName;
+  const filePath = path.join(baseDir, `${fileName}.json`);
+
+  if (!fs.existsSync(filePath)) {
+    return res.status(404).json({ error: 'File not found' });
+  }
+
+  fs.readFile(filePath, 'utf-8', (err, data) => {
+    if (err) return res.status(500).json({ error: 'Failed to read file' });
+
+    try {
+      const jsonData = JSON.parse(data);
+      res.json({ data: jsonData });
+    } catch (e) {
+      res.status(500).json({ error: 'Invalid JSON format' });
+    }
+  });
+});
+
+
+
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });

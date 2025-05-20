@@ -119,7 +119,7 @@ export default function JsonUpdater() {
                                 <div className="text-green-600 text-sm">{message}</div>
                             )}
                             {error && (
-                                <div className="text-red-600 text-sm">{error}</div>
+                                <div className="text-red-600 text-sm">Already exists</div>
                             )}
 
                             <div>
