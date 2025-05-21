@@ -22,7 +22,7 @@ const Dashboard = ({ children }) => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get('http://localhost:5137/users');
+        const response = await axios.get('http://192.168.111.140:5137/users');
         setUsers(response.data.data);
       } catch (err) {
         setError(err.message);

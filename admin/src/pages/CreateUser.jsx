@@ -29,7 +29,7 @@ const CreateUser = () => {
 
 
     useEffect(() => {
-        axios.get('http://localhost:5137/get-json/roles')
+        axios.get('http://192.168.111.140:5137/get-json/roles')
             .then(response => {
                 setRoles(response.data.data);
             })
@@ -40,7 +40,7 @@ const CreateUser = () => {
     }, []);
 
     useEffect(()=>{
-        axios.get('http://localhost:5137/get-json/designations')
+        axios.get('http://192.168.111.140:5137/get-json/designations')
             .then(response => {
                 setDesignation(response.data.data);
                 console.log(response.data.data);
@@ -52,7 +52,7 @@ const CreateUser = () => {
     }, []);
 
     useEffect(()=>{
-        axios.get('http://localhost:5137/get-json/departments')
+        axios.get('http://192.168.111.140:5137/get-json/departments')
             .then(response => {
                 setDepartment(response.data.data);
             })
@@ -63,7 +63,7 @@ const CreateUser = () => {
     })
 
     useEffect(()=>{
-        axios.get('http://localhost:5137/get-json/companynames')
+        axios.get('http://192.168.111.140:5137/get-json/companynames')
             .then(response => {
                 setCompany(response.data.data);
             })
@@ -99,7 +99,7 @@ const CreateUser = () => {
         e.preventDefault();
         console.log('Form submitted:', formData);
         try {
-            const response = await axios.post('http://localhost:5137/users', formData);
+            const response = await axios.post('http://192.168.111.140:5137/users', formData);
 
             if (response.data.status === 'ok') {
                 alert('User created successfully!');

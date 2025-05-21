@@ -33,7 +33,7 @@ export default function JsonUpdater() {
             setError(null);
             setMessage(null);
 
-            const res = await axios.post('http://localhost:5137/update-json', {
+            const res = await axios.post('http://192.168.111.140:5137/update-json', {
                 fileName,
                 value: inputValue,
             });

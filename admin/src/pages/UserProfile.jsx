@@ -42,10 +42,10 @@ const UserProfile = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const userRes = await axios.get(`http://localhost:5137/users/${userID}`);
+                const userRes = await axios.get(`http://192.168.111.140:5137/users/${userID}`);
                 setUserData(userRes.data.data);
 
-                const movementRes = await axios.get(`http://localhost:5137/movementdata/${userID}`);
+                const movementRes = await axios.get(`http://192.168.111.140:5137/movementdata/${userID}`);
                 setMovementData(movementRes.data.data || []);
                 setFilteredData(movementRes.data.data || []); // Initialize filteredData
             } catch (err) {
@@ -147,7 +147,7 @@ const UserProfile = () => {
                 Phone: editData.phone
             };
 
-            await axios.put(`http://localhost:5137/users/${userID}`, payload);
+            await axios.put(`http://192.168.111.140:5137/users/${userID}`, payload);
 
             setUserData({ ...userData, ...payload });
             setIsEditing(false);
@@ -161,7 +161,7 @@ const UserProfile = () => {
         if (!window.confirm('Are you sure you want to delete this user?')) return;
 
         try {
-            await axios.delete(`http://localhost:5137/users/${userID}`);
+            await axios.delete(`http://192.168.111.140:5137/users/${userID}`);
             navigate('/alluser');
         } catch (err) {
             setError(err.message);

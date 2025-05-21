@@ -9,7 +9,7 @@ const port = 5137;
 // Middleware
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:5174', '192.168.111.140:5173', '192.168.111.140:5174'],
+  origin: ['http://localhost:5173', 'http://localhost:5174', 'http://192.168.111.140:5173', 'http://192.168.111.140:5173/'],
   credentials: true
 }));
 
@@ -17,7 +17,7 @@ app.use(express.json());
 
 // MySQL connection
 const db = mysql.createConnection({
-  host: ['localhost', '192.168.111.140'],
+  host: 'localhost',
   user: 'root',
   password: '',
   database: 'employee_movement'
@@ -340,6 +340,6 @@ app.get('/get-json/:fileName', (req, res) => {
 
 
 
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+app.listen(port, '0.0.0.0', () => {
+  console.log(`Server is running on http://0.0.0.0:${port}`);
 });

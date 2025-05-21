@@ -16,7 +16,7 @@ const Home = () => {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:5137/adminlogin', {
+      const response = await fetch('http://192.168.111.140:5137/adminlogin', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -103,9 +103,8 @@ const Home = () => {
               <button
                 type="submit"
                 disabled={isLoading}
-                className={`w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-                  isLoading ? 'opacity-70 cursor-not-allowed' : ''
-                }`}
+                className={`w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${isLoading ? 'opacity-70 cursor-not-allowed' : ''
+                  }`}
               >
                 {isLoading ? (
                   <span className="flex items-center justify-center">
@@ -147,16 +146,16 @@ const Home = () => {
       </div>
 
       {/* Toast Container for notifications */}
-      <ToastContainer 
-        position="top-right" 
-        autoClose={3000} 
-        hideProgressBar={false} 
-        newestOnTop={false} 
-        closeOnClick 
-        rtl={false} 
-        pauseOnFocusLoss 
-        draggable 
-        pauseOnHover 
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
       />
     </>
   );
