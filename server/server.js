@@ -980,6 +980,36 @@ app.delete('/roles/:roleID', (req, res) => {
 });
 
 
+// create team assignments
+app.post('/team_assignments', async (req, res) => {
+    const { teamLeaderId, teamMemberIds } = req.body;
+
+    if (!teamLeaderId || !Array.isArray(teamMemberIds) || teamMemberIds.length === 0) {
+        return res.status(400).json({ status: 'error', message: 'Invalid input.' });
+    }
+
+    try {
+        await db.query('DELETE FROM team_assignments WHERE team_leader_id = ?', [teamLeaderId]);
+
+        const values = teamMemberIds.map(memberId => [teamLeaderId, memberId]);
+
+        await db.query(
+            'INSERT INTO team_assignments (team_leader_id, team_member_id) VALUES ?',
+            [values]
+        );
+
+        res.json({ status: 'ok', message: 'Team members assigned successfully.' });
+    } catch (error) {
+        console.error('Error assigning team members:', error);
+        res.status(500).json({ status: 'error', message: 'Server error.' });
+    }
+});
+
+
+
+
+
+// App listerner
 app.listen(port, '0.0.0.0', () => {
   console.log(`Server is running on http://0.0.0.0:${port}`);
 });
