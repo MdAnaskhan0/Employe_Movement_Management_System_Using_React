@@ -13,7 +13,10 @@ import UserProfile from './pages/UserProfile';
 import CompanyNames from './pages/SettingsPages/CompanyNames';
 import Departments from './pages/SettingsPages/Departments';
 import Designations from './pages/SettingsPages/Designations';
-
+import BranchNames from './pages/SettingsPages/BranchNames';
+import PartyNames from './pages/SettingsPages/PartyNames';
+import Roles from './pages/SettingsPages/Roles';
+import VisitingStatus from './pages/SettingsPages/VisitingStatus';
 
 const App = () => {
   return (
@@ -23,25 +26,28 @@ const App = () => {
         {/* Public Route */}
         <Route path="/" element={<Home />} />
 
-        {/* Protected Routes */}
-        <Route 
-          path="/" 
+        {/* Protected Routes Under /dashboard */}
+        <Route
+          path="/dashboard"
           element={
             <ProtectedRoute>
-              {/* This will wrap all nested routes */}
               <Outlet />
             </ProtectedRoute>
           }
         >
-          <Route path="dashboard" element={<Dashboard />} />
-          <Route path="/dashboard/createuser" element={<CreateUser />} />
-          <Route path="/dashboard/movementreports" element={<MovementReports />} />
-          <Route path="/dashboard/alluser" element={<AllUser />} />
-          <Route path="/dashboard/userprofile/:userID" element={<UserProfile />} />
-          <Route path="/dashboard/jsonupdater" element={<JsonUpdater />} />
-          <Route path="/dashboard/companynames" element={<CompanyNames />} />
-          <Route path="/dashboard/departments" element={<Departments />} />
-          <Route path="/dashboard/designations" element={<Designations />} />
+          <Route index element={<Dashboard />} />
+          <Route path="createuser" element={<CreateUser />} />
+          <Route path="movementreports" element={<MovementReports />} />
+          <Route path="alluser" element={<AllUser />} />
+          <Route path="userprofile/:userID" element={<UserProfile />} />
+          <Route path="jsonupdater" element={<JsonUpdater />} />
+          <Route path="companynames" element={<CompanyNames />} />
+          <Route path="branchnames" element={<BranchNames />} />
+          <Route path="designations" element={<Designations />} />
+          <Route path="departments" element={<Departments />} />
+          <Route path="partynames" element={<PartyNames />} />
+          <Route path="roles" element={<Roles />} />
+          <Route path="visitingstatus" element={<VisitingStatus />} />
         </Route>
       </Routes>
       <Footer />

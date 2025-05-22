@@ -221,14 +221,14 @@ const CompanyNames = () => {
 
                     <div className="mb-4">
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Description
+                        Address
                       </label>
                       <textarea
                         value={companyDescription}
                         onChange={(e) => setCompanyDescription(e.target.value)}
                         className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                         rows={3}
-                        placeholder="Enter company description"
+                        placeholder="Enter company address"
                       />
                     </div>
                   </div>
@@ -266,7 +266,7 @@ const CompanyNames = () => {
                         />
                       </label>
                       <p className="mt-1 text-xs text-gray-500">
-                        JPG, PNG or GIF (Max 2MB)
+                        JPG, PNG or GIF (Max 1MB)
                       </p>
                     </div>
                   </div>
@@ -346,7 +346,7 @@ const CompanyNames = () => {
                           Name
                         </th>
                         <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">
-                          Description
+                          Address
                         </th>
                         <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Actions
@@ -361,7 +361,7 @@ const CompanyNames = () => {
                               {company.companyLogo ? (
                                 <img
                                   className="h-10 w-10 rounded-full object-cover"
-                                  src={`http://localhost:5137/companylogos/${company.companynameID}?${Date.now()}`}
+                                  src={`http://192.168.111.140:5137/companylogos/${company.companynameID}?${Date.now()}`}
                                   alt={`${company.companyname} logo`}
                                   onError={(e) => {
                                     e.target.onerror = null;

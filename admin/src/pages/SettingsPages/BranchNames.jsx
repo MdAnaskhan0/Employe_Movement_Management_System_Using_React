@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { FaBars, FaTimes } from 'react-icons/fa';
 import Sidebar from '../../components/Sidebar/Sidebar';
 
-const PlaceNames = ({ children }) => {
+const BranchNames = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -43,7 +43,7 @@ const PlaceNames = ({ children }) => {
             )}
           </button>
 
-          <h1 className="text-xl font-semibold text-gray-800">Place Names</h1>
+          <h1 className="text-xl font-semibold text-gray-800">Branch Name Details</h1>
         </header>
 
         {/* Content */}
@@ -55,4 +55,4 @@ const PlaceNames = ({ children }) => {
   );
 };
 
-export default PlaceNames;
+export default BranchNames;

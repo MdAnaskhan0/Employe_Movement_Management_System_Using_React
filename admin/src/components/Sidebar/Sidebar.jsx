@@ -16,8 +16,8 @@ import { TbGitBranch } from "react-icons/tb"; //bracnch
 import { CgIfDesign } from "react-icons/cg"; //Designation
 import { FaTransgender } from "react-icons/fa6"; //department
 import { LiaUserFriendsSolid } from "react-icons/lia"; //party
-import { MdLocationOn } from "react-icons/md"; //place
 import { MdPeopleAlt } from "react-icons/md"; //visiting status 
+import { MdTaskAlt } from "react-icons/md";
 
 
 const Sidebar = ({ sidebarOpen, handleLogout }) => {
@@ -145,19 +145,19 @@ const Sidebar = ({ sidebarOpen, handleLogout }) => {
               <LiaUserFriendsSolid className='mr-2' /> Party Name
             </Link>
 
-            <Link
+            {/* <Link
               to="/dashboard/placenames"
               className="flex items-center py-2 px-4 rounded hover:bg-gray-700 transition text-gray-300 hover:text-white text-sm"
             >
               <MdLocationOn className='mr-2' /> Place Name
-            </Link>
+            </Link> */}
 
             <Link to="/dashboard/visitingstatus" className="flex items-center py-2 px-4 rounded hover:bg-gray-700 transition text-gray-300 hover:text-white text-sm">
               <MdPeopleAlt className='mr-2' /> Visiting Status
             </Link>
 
             <Link to="/dashboard/role" className="flex items-center py-2 px-4 rounded hover:bg-gray-700 transition text-gray-300 hover:text-white text-sm">
-              Add Role
+              <MdTaskAlt className='mr-2' /> Role Details
             </Link>
           </div>
         )}

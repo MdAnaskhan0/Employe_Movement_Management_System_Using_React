@@ -269,7 +269,7 @@ app.get('/users/:id', (req, res) => {
 
 
 /* Json Data API Started */
-/************************************************************************************************/ 
+/************************************************************************************************/
 
 // Update JSON based on file name and value
 const fs = require('fs');
@@ -360,20 +360,22 @@ const upload = multer({
 });
 
 
+// Company Names API
 app.post('/companynames', upload.single('companyLogo'), (req, res) => {
   const { companyname, companyDescription } = req.body;
   const companyLogo = req.file ? req.file.buffer : null;
+  const companyLogoType = req.file ? req.file.mimetype : null;
 
   if (!companyname) {
     return res.status(400).send({ status: 'error', message: 'companyname is required' });
   }
 
   const sql = `
-    INSERT INTO companynames (companyname, companyDescription, companyLogo)
-    VALUES (?, ?, ?)
-  `;
+  INSERT INTO companynames (companyname, companyDescription, companyLogo, companyLogoType)
+  VALUES (?, ?, ?, ?)
+`;
 
-  db.query(sql, [companyname, companyDescription, companyLogo], (err, result) => {
+  db.query(sql, [companyname, companyDescription, companyLogo, companyLogoType], (err, result) => {
     if (err) {
       console.error('Error adding company:', err);
       return res.status(500).send({ status: 'error', message: 'Database error' });
@@ -386,24 +388,25 @@ app.post('/companynames', upload.single('companyLogo'), (req, res) => {
 
 // Get company logo
 app.get('/companylogos/:id', (req, res) => {
-  const companyId = req.params.id;
+  const companyId = req.params.id; 
+  const sql = 'SELECT companyLogo, companyLogoType FROM companynames WHERE companynameID = ?';
 
-  const sql = 'SELECT companyLogo FROM companynames WHERE companynameID = ?';
   db.query(sql, [companyId], (err, results) => {
     if (err || results.length === 0) {
       return res.status(404).send({ status: 'error', message: 'Logo not found' });
     }
 
-    const logo = results[0].companyLogo;
+    const { companyLogo, companyLogoType } = results[0];
 
-    if (!logo) {
+    if (!companyLogo) {
       return res.status(404).send({ status: 'error', message: 'Logo not stored' });
     }
 
-    res.set('Content-Type', 'image/png');
-    res.send(logo);
+    res.set('Content-Type', companyLogoType || 'image/png');
+    res.send(companyLogo);
   });
 });
+
 
 
 // Get all company names
@@ -435,16 +438,35 @@ app.get('/companynames/:id', (req, res) => {
 });
 
 // Update company by ID (excluding logo update here)
-app.put('/companynames/:id', (req, res) => {
+app.put('/companynames/:id', upload.single('companyLogo'), (req, res) => {
   const companyId = req.params.id;
   const { companyname, companyDescription } = req.body;
+  const companyLogo = req.file ? req.file.buffer : null;
+  const companyLogoType = req.file ? req.file.mimetype : null;
 
   if (!companyname) {
     return res.status(400).send({ status: 'error', message: 'companyname is required' });
   }
 
-  const sql = 'UPDATE companynames SET companyname = ?, companyDescription = ? WHERE companynameID = ?';
-  db.query(sql, [companyname, companyDescription, companyId], (err, result) => {
+  const updateFields = [];
+  const values = [];
+
+  updateFields.push('companyname = ?');
+  values.push(companyname);
+
+  updateFields.push('companyDescription = ?');
+  values.push(companyDescription);
+
+  if (companyLogo) {
+    updateFields.push('companyLogo = ?');
+    updateFields.push('companyLogoType = ?');
+    values.push(companyLogo, companyLogoType);
+  }
+
+  values.push(companyId);
+
+  const sql = `UPDATE companynames SET ${updateFields.join(', ')} WHERE companynameID = ?`;
+  db.query(sql, values, (err, result) => {
     if (err) {
       console.error('Error updating company:', err);
       return res.status(500).send({ status: 'error', message: 'Database error' });
@@ -455,6 +477,7 @@ app.put('/companynames/:id', (req, res) => {
     res.send({ status: 'ok', message: 'Company updated successfully' });
   });
 });
+
 
 // Delete company by ID
 app.delete('/companynames/:id', (req, res) => {
@@ -472,6 +495,110 @@ app.delete('/companynames/:id', (req, res) => {
   });
 });
 
+
+// // GET all partynames
+app.get('/partynames', (req, res) => {
+  db.query('SELECT * FROM partynames', (err, results) => {
+    if (err) return res.status(500).send(err);
+    res.json(results);
+  });
+});
+
+// GET a single partyname by ID
+app.get('/partynames/:id', (req, res) => {
+  db.query('SELECT * FROM partynames WHERE partynameID = ?', [req.params.id], (err, results) => {
+    if (err) return res.status(500).send(err);
+    if (results.length === 0) return res.status(404).send({ message: 'Partyname not found' });
+    res.json(results[0]);
+  });
+});
+
+// POST a new partyname
+app.post('/partynames', (req, res) => {
+  const { partyname, partyaddress } = req.body;
+  if (!partyname || !partyaddress) return res.status(400).send({ message: 'Missing fields' });
+
+  db.query('INSERT INTO partynames (partyname, partyaddress) VALUES (?, ?)', [partyname, partyaddress], (err, result) => {
+    if (err) return res.status(500).send(err);
+    res.status(201).send({ id: result.insertId, partyname, partyaddress });
+  });
+});
+
+// PUT (update) a partyname
+app.put('/partynames/:id', (req, res) => {
+  const { partyname, partyaddress } = req.body;
+  db.query(
+    'UPDATE partynames SET partyname = ?, partyaddress = ? WHERE partynameID = ?',
+    [partyname, partyaddress, req.params.id],
+    (err, result) => {
+      if (err) return res.status(500).send(err);
+      if (result.affectedRows === 0) return res.status(404).send({ message: 'Partyname not found' });
+      res.send({ message: 'Updated successfully' });
+    }
+  );
+});
+
+// DELETE a partyname
+app.delete('/partynames/:id', (req, res) => {
+  db.query('DELETE FROM partynames WHERE partynameID = ?', [req.params.id], (err, result) => {
+    if (err) return res.status(500).send(err);
+    if (result.affectedRows === 0) return res.status(404).send({ message: 'Partyname not found' });
+    res.send({ message: 'Deleted successfully' });
+  });
+});
+
+
+
+// ----------------------------------
+// POST /departments - Create new department
+app.post('/departments', (req, res) => {
+  const { departmentName } = req.body;
+  const sql = 'INSERT INTO departments (departmentName) VALUES (?)';
+  db.query(sql, [departmentName], (err, result) => {
+    if (err) return res.status(500).send(err);
+    res.status(201).send({ id: result.insertId, departmentName });
+  });
+});
+
+// GET /departments - Get all departments
+app.get('/departments', (req, res) => {
+  const sql = 'SELECT * FROM departments';
+  db.query(sql, (err, results) => {
+    if (err) return res.status(500).send(err);
+    res.send(results);
+  });
+});
+
+// GET /departments/:id - Get a single department by ID
+app.get('/departments/:id', (req, res) => {
+  const sql = 'SELECT * FROM departments WHERE departmentID = ?';
+  db.query(sql, [req.params.id], (err, results) => {
+    if (err) return res.status(500).send(err);
+    if (results.length === 0) return res.status(404).send({ message: 'Department not found' });
+    res.send(results[0]);
+  });
+});
+
+// PUT /departments/:id - Update department name
+app.put('/departments/:id', (req, res) => {
+  const { departmentName } = req.body;
+  const sql = 'UPDATE departments SET departmentName = ? WHERE departmentID = ?';
+  db.query(sql, [departmentName, req.params.id], (err, result) => {
+    if (err) return res.status(500).send(err);
+    if (result.affectedRows === 0) return res.status(404).send({ message: 'Department not found' });
+    res.send({ message: 'Department updated' });
+  });
+});
+
+// DELETE /departments/:id - Delete a department
+app.delete('/departments/:id', (req, res) => {
+  const sql = 'DELETE FROM departments WHERE departmentID = ?';
+  db.query(sql, [req.params.id], (err, result) => {
+    if (err) return res.status(500).send(err);
+    if (result.affectedRows === 0) return res.status(404).send({ message: 'Department not found' });
+    res.send({ message: 'Department deleted' });
+  });
+});
 
 
 app.listen(port, '0.0.0.0', () => {
