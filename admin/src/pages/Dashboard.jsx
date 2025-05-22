@@ -34,7 +34,7 @@ const Dashboard = ({ children }) => {
   }, []);
 
   return (
-    <div className="flex h-[76vh] bg-gray-100 overflow-hidden">
+    <div className="flex min-h-screen bg-gray-100 overflow-hidden">
       <Sidebar sidebarOpen={sidebarOpen} handleLogout={handleLogout} />
       
       {/* Overlay for mobile sidebar */}

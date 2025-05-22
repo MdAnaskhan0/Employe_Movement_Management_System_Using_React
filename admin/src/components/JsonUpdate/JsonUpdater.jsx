@@ -48,7 +48,7 @@ export default function JsonUpdater() {
     };
 
     return (
-        <div className="flex h-[80vh] bg-gray-100 overflow-hidden">
+        <div className="flex min-h-screen bg-gray-100 overflow-hidden">
             <Sidebar sidebarOpen={sidebarOpen} handleLogout={handleLogout} />
 
             {sidebarOpen && (

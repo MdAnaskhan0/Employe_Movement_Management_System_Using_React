@@ -10,6 +10,10 @@ import CreateUser from './pages/CreateUser';
 import MovementReports from './pages/MovementReports';
 import AllUser from './pages/AllUser';
 import UserProfile from './pages/UserProfile';
+import CompanyNames from './pages/SettingsPages/CompanyNames';
+import Departments from './pages/SettingsPages/Departments';
+import Designations from './pages/SettingsPages/Designations';
+
 
 const App = () => {
   return (
@@ -35,6 +39,9 @@ const App = () => {
           <Route path="/dashboard/alluser" element={<AllUser />} />
           <Route path="/dashboard/userprofile/:userID" element={<UserProfile />} />
           <Route path="/dashboard/jsonupdater" element={<JsonUpdater />} />
+          <Route path="/dashboard/companynames" element={<CompanyNames />} />
+          <Route path="/dashboard/departments" element={<Departments />} />
+          <Route path="/dashboard/designations" element={<Designations />} />
         </Route>
       </Routes>
       <Footer />

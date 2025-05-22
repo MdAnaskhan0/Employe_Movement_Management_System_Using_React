@@ -2,6 +2,7 @@ const express = require('express');
 const mysql = require('mysql');
 const cors = require('cors');
 const path = require('path');
+const multer = require('multer');
 
 const app = express();
 const port = 5137;
@@ -267,6 +268,9 @@ app.get('/users/:id', (req, res) => {
 });
 
 
+/* Json Data API Started */
+/************************************************************************************************/ 
+
 // Update JSON based on file name and value
 const fs = require('fs');
 const baseDir = path.join(__dirname, 'JsonFile');
@@ -335,6 +339,136 @@ app.get('/get-json/:fileName', (req, res) => {
     } catch (e) {
       res.status(500).json({ error: 'Invalid JSON format' });
     }
+  });
+});
+
+/************************************************************************************************/
+/* Json Data API Finished */
+
+// create a new company name
+// Multer setup (store image in memory, not on disk)
+const storage = multer.memoryStorage();
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 1 * 1024 * 1024 }, // 1MB limit
+  fileFilter: (req, file, cb) => {
+    if (!file.mimetype.startsWith('image/')) {
+      return cb(new Error('Only image files are allowed!'));
+    }
+    cb(null, true);
+  }
+});
+
+
+app.post('/companynames', upload.single('companyLogo'), (req, res) => {
+  const { companyname, companyDescription } = req.body;
+  const companyLogo = req.file ? req.file.buffer : null;
+
+  if (!companyname) {
+    return res.status(400).send({ status: 'error', message: 'companyname is required' });
+  }
+
+  const sql = `
+    INSERT INTO companynames (companyname, companyDescription, companyLogo)
+    VALUES (?, ?, ?)
+  `;
+
+  db.query(sql, [companyname, companyDescription, companyLogo], (err, result) => {
+    if (err) {
+      console.error('Error adding company:', err);
+      return res.status(500).send({ status: 'error', message: 'Database error' });
+    }
+
+    res.send({ status: 'ok', message: 'Company added successfully', insertId: result.insertId });
+  });
+});
+
+
+// Get company logo
+app.get('/companylogos/:id', (req, res) => {
+  const companyId = req.params.id;
+
+  const sql = 'SELECT companyLogo FROM companynames WHERE companynameID = ?';
+  db.query(sql, [companyId], (err, results) => {
+    if (err || results.length === 0) {
+      return res.status(404).send({ status: 'error', message: 'Logo not found' });
+    }
+
+    const logo = results[0].companyLogo;
+
+    if (!logo) {
+      return res.status(404).send({ status: 'error', message: 'Logo not stored' });
+    }
+
+    res.set('Content-Type', 'image/png');
+    res.send(logo);
+  });
+});
+
+
+// Get all company names
+app.get('/companynames', (req, res) => {
+  const sql = 'SELECT companynameID, companyname, companyDescription FROM companynames';
+  db.query(sql, (err, results) => {
+    if (err) {
+      console.error('Error fetching company names:', err);
+      return res.status(500).send({ status: 'error', message: 'Database error' });
+    }
+    res.send({ status: 'ok', data: results });
+  });
+});
+
+// Get company name by ID
+app.get('/companynames/:id', (req, res) => {
+  const companyId = req.params.id;
+  const sql = 'SELECT companynameID, companyname, companyDescription FROM companynames WHERE companynameID = ?';
+  db.query(sql, [companyId], (err, results) => {
+    if (err) {
+      console.error('Error fetching company:', err);
+      return res.status(500).send({ status: 'error', message: 'Database error' });
+    }
+    if (results.length === 0) {
+      return res.status(404).send({ status: 'error', message: 'Company not found' });
+    }
+    res.send({ status: 'ok', data: results[0] });
+  });
+});
+
+// Update company by ID (excluding logo update here)
+app.put('/companynames/:id', (req, res) => {
+  const companyId = req.params.id;
+  const { companyname, companyDescription } = req.body;
+
+  if (!companyname) {
+    return res.status(400).send({ status: 'error', message: 'companyname is required' });
+  }
+
+  const sql = 'UPDATE companynames SET companyname = ?, companyDescription = ? WHERE companynameID = ?';
+  db.query(sql, [companyname, companyDescription, companyId], (err, result) => {
+    if (err) {
+      console.error('Error updating company:', err);
+      return res.status(500).send({ status: 'error', message: 'Database error' });
+    }
+    if (result.affectedRows === 0) {
+      return res.status(404).send({ status: 'error', message: 'Company not found' });
+    }
+    res.send({ status: 'ok', message: 'Company updated successfully' });
+  });
+});
+
+// Delete company by ID
+app.delete('/companynames/:id', (req, res) => {
+  const companyId = req.params.id;
+  const sql = 'DELETE FROM companynames WHERE companynameID = ?';
+  db.query(sql, [companyId], (err, result) => {
+    if (err) {
+      console.error('Error deleting company:', err);
+      return res.status(500).send({ status: 'error', message: 'Database error' });
+    }
+    if (result.affectedRows === 0) {
+      return res.status(404).send({ status: 'error', message: 'Company not found' });
+    }
+    res.send({ status: 'ok', message: 'Company deleted successfully' });
   });
 });
 
