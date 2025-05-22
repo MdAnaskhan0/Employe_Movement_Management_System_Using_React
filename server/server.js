@@ -69,7 +69,8 @@ app.post('/users', (req, res) => {
     department,
     company,
     phone,
-    email
+    email,
+    role
   } = req.body;
 
   // Check if username already exists
@@ -87,7 +88,7 @@ app.post('/users', (req, res) => {
     // Insert the new user
     const insertSql = `
       INSERT INTO users 
-      (username, password, E_ID, Name, Designation, Department, Company_name, Phone, email)
+      (username, password, E_ID, Name, Designation, Department, Company_name, Phone, email, Role)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
@@ -100,7 +101,8 @@ app.post('/users', (req, res) => {
       department,
       company,
       phone,
-      email
+      email,
+      role
     ];
 
     db.query(insertSql, values, (insertErr, insertResult) => {
@@ -272,75 +274,75 @@ app.get('/users/:id', (req, res) => {
 /************************************************************************************************/
 
 // Update JSON based on file name and value
-const fs = require('fs');
-const baseDir = path.join(__dirname, 'JsonFile');
+// const fs = require('fs');
+// const baseDir = path.join(__dirname, 'JsonFile');
 
-app.post('/update-json', (req, res) => {
-  const { fileName, value } = req.body;
+// app.post('/update-json', (req, res) => {
+//   const { fileName, value } = req.body;
 
-  if (!fileName || !value) {
-    return res.status(400).json({ error: 'fileName and value are required' });
-  }
+//   if (!fileName || !value) {
+//     return res.status(400).json({ error: 'fileName and value are required' });
+//   }
 
-  const filePath = path.join(baseDir, `${fileName}.json`);
+//   const filePath = path.join(baseDir, `${fileName}.json`);
 
-  // If file doesn't exist, create it with empty array
-  if (!fs.existsSync(filePath)) {
-    fs.writeFileSync(filePath, '[]');
-  }
+//   // If file doesn't exist, create it with empty array
+//   if (!fs.existsSync(filePath)) {
+//     fs.writeFileSync(filePath, '[]');
+//   }
 
-  // Read and parse the file
-  fs.readFile(filePath, 'utf-8', (err, data) => {
-    if (err) return res.status(500).json({ error: 'Failed to read file' });
+//   // Read and parse the file
+//   fs.readFile(filePath, 'utf-8', (err, data) => {
+//     if (err) return res.status(500).json({ error: 'Failed to read file' });
 
-    let json = [];
+//     let json = [];
 
-    try {
-      json = JSON.parse(data);
-      if (!Array.isArray(json)) json = [];
-    } catch (e) {
-      return res.status(500).json({ error: 'Invalid JSON format' });
-    }
+//     try {
+//       json = JSON.parse(data);
+//       if (!Array.isArray(json)) json = [];
+//     } catch (e) {
+//       return res.status(500).json({ error: 'Invalid JSON format' });
+//     }
 
-    // Check if value already exists (case-insensitive)
-    const alreadyExists = json.some(item =>
-      typeof item === 'string' ? item.toLowerCase() === value.toLowerCase() : item === value
-    );
+//     // Check if value already exists (case-insensitive)
+//     const alreadyExists = json.some(item =>
+//       typeof item === 'string' ? item.toLowerCase() === value.toLowerCase() : item === value
+//     );
 
-    if (alreadyExists) {
-      return res.status(409).json({ message: 'Value already exists', data: json });
-    }
+//     if (alreadyExists) {
+//       return res.status(409).json({ message: 'Value already exists', data: json });
+//     }
 
-    json.push(value);
+//     json.push(value);
 
-    fs.writeFile(filePath, JSON.stringify(json, null, 2), err => {
-      if (err) return res.status(500).json({ error: 'Failed to write file' });
-      res.json({ message: 'Successfully updated', data: json });
-    });
-  });
-});
+//     fs.writeFile(filePath, JSON.stringify(json, null, 2), err => {
+//       if (err) return res.status(500).json({ error: 'Failed to write file' });
+//       res.json({ message: 'Successfully updated', data: json });
+//     });
+//   });
+// });
 
 
-// Get JSON file data
-app.get('/get-json/:fileName', (req, res) => {
-  const fileName = req.params.fileName;
-  const filePath = path.join(baseDir, `${fileName}.json`);
+// // Get JSON file data
+// app.get('/get-json/:fileName', (req, res) => {
+//   const fileName = req.params.fileName;
+//   const filePath = path.join(baseDir, `${fileName}.json`);
 
-  if (!fs.existsSync(filePath)) {
-    return res.status(404).json({ error: 'File not found' });
-  }
+//   if (!fs.existsSync(filePath)) {
+//     return res.status(404).json({ error: 'File not found' });
+//   }
 
-  fs.readFile(filePath, 'utf-8', (err, data) => {
-    if (err) return res.status(500).json({ error: 'Failed to read file' });
+//   fs.readFile(filePath, 'utf-8', (err, data) => {
+//     if (err) return res.status(500).json({ error: 'Failed to read file' });
 
-    try {
-      const jsonData = JSON.parse(data);
-      res.json({ data: jsonData });
-    } catch (e) {
-      res.status(500).json({ error: 'Invalid JSON format' });
-    }
-  });
-});
+//     try {
+//       const jsonData = JSON.parse(data);
+//       res.json({ data: jsonData });
+//     } catch (e) {
+//       res.status(500).json({ error: 'Invalid JSON format' });
+//     }
+//   });
+// });
 
 /************************************************************************************************/
 /* Json Data API Finished */
@@ -513,16 +515,36 @@ app.get('/partynames/:id', (req, res) => {
   });
 });
 
-// POST a new partyname
 app.post('/partynames', (req, res) => {
   const { partyname, partyaddress } = req.body;
-  if (!partyname || !partyaddress) return res.status(400).send({ message: 'Missing fields' });
 
-  db.query('INSERT INTO partynames (partyname, partyaddress) VALUES (?, ?)', [partyname, partyaddress], (err, result) => {
-    if (err) return res.status(500).send(err);
-    res.status(201).send({ id: result.insertId, partyname, partyaddress });
+  if (!partyname || !partyaddress) {
+    return res.status(400).send({ message: 'Missing fields' });
+  }
+
+  const checkSql = 'SELECT 1 FROM partynames WHERE partyname = ? LIMIT 1';
+  db.query(checkSql, [partyname], (checkErr, checkResult) => {
+    if (checkErr) {
+      console.error('Error checking party name:', checkErr);
+      return res.status(500).send({ message: 'Database error' });
+    }
+
+    if (checkResult.length > 0) {
+      return res.status(409).send({ message: 'Party name already exists' });
+    }
+
+    const insertSql = 'INSERT INTO partynames (partyname, partyaddress) VALUES (?, ?)';
+    db.query(insertSql, [partyname, partyaddress], (insertErr, result) => {
+      if (insertErr) {
+        console.error('Error inserting party name:', insertErr);
+        return res.status(500).send({ message: 'Database error' });
+      }
+
+      res.status(201).send({ id: result.insertId, partyname, partyaddress });
+    });
   });
 });
+
 
 // PUT (update) a partyname
 app.put('/partynames/:id', (req, res) => {
@@ -553,12 +575,36 @@ app.delete('/partynames/:id', (req, res) => {
 // POST /departments - Create new department
 app.post('/departments', (req, res) => {
   const { departmentName } = req.body;
-  const sql = 'INSERT INTO departments (departmentName) VALUES (?)';
-  db.query(sql, [departmentName], (err, result) => {
-    if (err) return res.status(500).send(err);
-    res.status(201).send({ id: result.insertId, departmentName });
+
+  if (!departmentName) {
+    return res.status(400).send({ message: 'Department name is required' });
+  }
+
+  // Check if departmentName already exists
+  const checkSql = 'SELECT 1 FROM departments WHERE departmentName = ? LIMIT 1';
+  db.query(checkSql, [departmentName], (checkErr, checkResult) => {
+    if (checkErr) {
+      console.error('Error checking department name:', checkErr);
+      return res.status(500).send({ message: 'Database error' });
+    }
+
+    if (checkResult.length > 0) {
+      return res.status(409).send({ message: 'Department name is already exist' });
+    }
+
+    // Insert new department if not exists
+    const insertSql = 'INSERT INTO departments (departmentName) VALUES (?)';
+    db.query(insertSql, [departmentName], (insertErr, result) => {
+      if (insertErr) {
+        console.error('Error inserting department:', insertErr);
+        return res.status(500).send({ message: 'Database error' });
+      }
+
+      res.status(201).send({ id: result.insertId, departmentName });
+    });
   });
 });
+
 
 // GET /departments - Get all departments
 app.get('/departments', (req, res) => {
@@ -604,12 +650,36 @@ app.delete('/departments/:id', (req, res) => {
 // Create - Add new branchname
 app.post('/branchnames', (req, res) => {
   const { branchname, address } = req.body;
-  const sql = 'INSERT INTO branchnames (branchname, address) VALUES (?, ?)';
-  db.query(sql, [branchname, address], (err, result) => {
-    if (err) return res.status(500).json({ error: err });
-    res.status(201).json({ message: 'Branch created', id: result.insertId });
+
+  if (!branchname || !address) {
+    return res.status(400).json({ message: 'Missing fields' });
+  }
+
+  // Check if branchname already exists
+  const checkSql = 'SELECT 1 FROM branchnames WHERE branchname = ? LIMIT 1';
+  db.query(checkSql, [branchname], (checkErr, checkResult) => {
+    if (checkErr) {
+      console.error('Error checking branchname:', checkErr);
+      return res.status(500).json({ error: 'Database error' });
+    }
+
+    if (checkResult.length > 0) {
+      return res.status(409).json({ message: 'branchname is already exist' });
+    }
+
+    // Insert new branch if not exists
+    const insertSql = 'INSERT INTO branchnames (branchname, address) VALUES (?, ?)';
+    db.query(insertSql, [branchname, address], (insertErr, result) => {
+      if (insertErr) {
+        console.error('Error inserting branch:', insertErr);
+        return res.status(500).json({ error: 'Database error' });
+      }
+
+      res.status(201).json({ message: 'Branch created', id: result.insertId });
+    });
   });
 });
+
 
 // Read - Get all branches
 app.get('/branchnames', (req, res) => {
@@ -668,13 +738,35 @@ app.get('/designations/:id', (req, res) => {
 // POST a new designation
 app.post('/designations', (req, res) => {
   const { designationName } = req.body;
-  if (!designationName) return res.status(400).json({ error: 'designationName is required' });
+  if (!designationName) {
+    return res.status(400).json({ error: 'designationName is required' });
+  }
 
-  db.query('INSERT INTO designations (designationName) VALUES (?)', [designationName], (err, result) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.status(201).json({ message: 'Designation created', id: result.insertId });
+  // Check if designationName already exists
+  const checkSql = 'SELECT 1 FROM designations WHERE designationName = ? LIMIT 1';
+  db.query(checkSql, [designationName], (checkErr, checkResult) => {
+    if (checkErr) {
+      console.error('Error checking designation name:', checkErr);
+      return res.status(500).json({ error: 'Database error' });
+    }
+
+    if (checkResult.length > 0) {
+      return res.status(409).json({ error: 'Designation name already exists' });
+    }
+
+    // Insert new designation if not exists
+    const insertSql = 'INSERT INTO designations (designationName) VALUES (?)';
+    db.query(insertSql, [designationName], (insertErr, result) => {
+      if (insertErr) {
+        console.error('Error inserting designation:', insertErr);
+        return res.status(500).json({ error: 'Database error' });
+      }
+
+      res.status(201).json({ message: 'Designation created', id: result.insertId });
+    });
   });
 });
+
 
 // PUT to update a designation
 app.put('/designations/:id', (req, res) => {
@@ -700,22 +792,6 @@ app.delete('/designations/:id', (req, res) => {
 });
 
 
-// ---------------------------
-// POST: Create a new status
-// ---------------------------
-app.post('/visitingstatus', async (req, res) => {
-  const { visitingstatusname } = req.body;
-  try {
-    const result = await db.query(
-      'INSERT INTO visitingstatus (visitingstatusname) VALUES (?)',
-      [visitingstatusname]
-    );
-    res.status(201).json({ id: result.insertId, visitingstatusname });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
 
 // ---------------------------
 // POST: Create a new visiting status
@@ -727,18 +803,29 @@ app.post('/visitingstatus', (req, res) => {
     return res.status(400).json({ error: 'visitingstatusname is required' });
   }
 
-  db.query(
-    'INSERT INTO visitingstatus (visitingstatusname) VALUES (?)',
-    [visitingstatusname],
-    (err, result) => {
-      if (err) return res.status(500).json({ error: err.message });
-      res.status(201).json({
-        visitingstatusID: result.insertId,
-        visitingstatusname,
-      });
+  const checkSql = 'SELECT 1 FROM visitingstatus WHERE visitingstatusname = ? LIMIT 1';
+  db.query(checkSql, [visitingstatusname], (checkErr, checkResult) => {
+    if (checkErr) {
+      console.error('Error checking visiting status:', checkErr);
+      return res.status(500).json({ error: 'Database error' });
     }
-  );
+
+    if (checkResult.length > 0) {
+      return res.status(409).json({ error: 'Visiting status name already exists' });
+    }
+
+    const insertSql = 'INSERT INTO visitingstatus (visitingstatusname) VALUES (?)';
+    db.query(insertSql, [visitingstatusname], (insertErr, insertResult) => {
+      if (insertErr) {
+        console.error('Error inserting visiting status:', insertErr);
+        return res.status(500).json({ error: 'Database error' });
+      }
+
+      res.status(201).json({ id: insertResult.insertId, visitingstatusname });
+    });
+  });
 });
+
 
 
 // ---------------------------
@@ -797,21 +884,37 @@ app.delete('/visitingstatus/:id', (req, res) => {
 });
 
 
-// CREATE a new role
+// Add a new role
 app.post('/roles', (req, res) => {
   const { rolename } = req.body;
   if (!rolename) {
     return res.status(400).json({ error: 'rolename is required' });
   }
 
-  const sql = 'INSERT INTO roles (rolename) VALUES (?)';
-  db.query(sql, [rolename], (err, results) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
+  // Check if rolename already exists
+  const checkSql = 'SELECT 1 FROM roles WHERE rolename = ? LIMIT 1';
+  db.query(checkSql, [rolename], (checkErr, checkResult) => {
+    if (checkErr) {
+      console.error('Error checking role name:', checkErr);
+      return res.status(500).json({ error: 'Database error' });
     }
-    res.status(201).json({ roleID: results.insertId, rolename });
+
+    if (checkResult.length > 0) {
+      return res.status(409).json({ error: 'Role name already exists' });
+    }
+
+    // Insert new role if not exists
+    const insertSql = 'INSERT INTO roles (rolename) VALUES (?)';
+    db.query(insertSql, [rolename], (insertErr, results) => {
+      if (insertErr) {
+        console.error('Error inserting role:', insertErr);
+        return res.status(500).json({ error: 'Database error' });
+      }
+      res.status(201).json({ roleID: results.insertId, rolename });
+    });
   });
 });
+
 
 // READ all roles
 app.get('/roles', (req, res) => {

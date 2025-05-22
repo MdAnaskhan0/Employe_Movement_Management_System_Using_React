@@ -5,7 +5,8 @@ import { FaUserPlus, FaIdCard, FaUserTie, FaBuilding, FaPhone, FaEnvelope, FaBar
 import { MdDepartureBoard } from 'react-icons/md';
 import Sidebar from '../components/Sidebar/Sidebar';
 import { SiGoogletasks } from "react-icons/si";
-
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const CreateUser = () => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -15,6 +16,7 @@ const CreateUser = () => {
     const [company, setCompany] = useState([]);
     const [error, setError] = useState('');
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         username: '',
         password: '',
@@ -24,58 +26,76 @@ const CreateUser = () => {
         department: '',
         company: '',
         phone: '',
-        email: ''
+        email: '',
+        role: ''
     });
 
+    // Fetch all roles
+    const fetchRoles = async () => {
+        setLoading(true);
+        setError('');
+        try {
+            const res = await axios.get('http://192.168.111.140:5137/roles');
+            setRoles(res.data);
+        } catch (err) {
+            setError('Failed to fetch roles');
+            toast.error('Failed to load roles');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Fetch all designations
+    const fetchDesignations = async () => {
+        setLoading(true);
+        setError('');
+        try {
+            const res = await axios.get('http://192.168.111.140:5137/designations');
+            setDesignation(res.data);
+        } catch (err) {
+            setError('Failed to fetch designations');
+            toast.error('Failed to load designations');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Fetch all departments
+    const fetchDepartments = async () => {
+        setLoading(true);
+        setError('');
+        try {
+            const res = await axios.get('http://192.168.111.140:5137/departments');
+            setDepartment(res.data);
+        } catch (err) {
+            setError('Failed to fetch departments');
+            toast.error('Failed to load departments');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Fetch all company names
+    const fetchCompanyNames = async () => {
+        setLoading(true);
+        setError('');
+        try {
+            const res = await axios.get('http://192.168.111.140:5137/companynames');
+            setCompany(res.data.data);
+        } catch (err) {
+            setError('Failed to fetch company names');
+            toast.error('Failed to load company names');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        axios.get('http://192.168.111.140:5137/get-json/roles')
-            .then(response => {
-                setRoles(response.data.data);
-            })
-            .catch(err => {
-                console.error(err);
-                setError('Failed to fetch roles');
-            });
+        fetchCompanyNames();
+        fetchDesignations();
+        fetchDepartments();
+        fetchRoles();
     }, []);
-
-    useEffect(()=>{
-        axios.get('http://192.168.111.140:5137/get-json/designations')
-            .then(response => {
-                setDesignation(response.data.data);
-                console.log(response.data.data);
-            })
-            .catch(err => {
-                console.error(err);
-                setError('Failed to fetch designation');
-            });
-    }, []);
-
-    useEffect(()=>{
-        axios.get('http://192.168.111.140:5137/get-json/departments')
-            .then(response => {
-                setDepartment(response.data.data);
-            })
-            .catch(err => {
-                console.error(err);
-                setError('Failed to fetch department');
-            });
-    })
-
-    useEffect(()=>{
-        axios.get('http://192.168.111.140:5137/get-json/companynames')
-            .then(response => {
-                setCompany(response.data.data);
-            })
-            .catch(err => {
-                console.error(err);
-                setError('Failed to fetch company');
-            });
-    })
-
-    if (error) return <div>{error}</div>;
-    if (roles.length === 0) return <div>No roles found</div>;
-
 
     const handleLogout = () => {
         localStorage.removeItem('adminLoggedIn');
@@ -97,24 +117,45 @@ const CreateUser = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log('Form submitted:', formData);
+        setLoading(true);
+
         try {
             const response = await axios.post('http://192.168.111.140:5137/users', formData);
 
             if (response.data.status === 'ok') {
-                alert('User created successfully!');
-                navigate('/dashboard');
+                toast.success('User created successfully!');
+                setTimeout(() => {
+                    navigate('/dashboard');
+                }, 2000);
             } else {
-                alert(`Error: ${response.data.message}`);
+                toast.error(`Error: ${response.data.message}`);
             }
         } catch (err) {
-            console.log("Create an error", err);
-            alert("Error creating user");
+            console.error("Create user error", err);
+            if (err.response) {
+                toast.error(`Error: ${err.response.data.message || 'Failed to create user'}`);
+            } else {
+                toast.error('Network error. Please try again.');
+            }
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
         <div className="flex h-screen bg-gray-100 overflow-hidden">
+            <ToastContainer
+                position="top-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+            />
+
             {/* Sidebar */}
             <Sidebar sidebarOpen={sidebarOpen} handleLogout={handleLogout} />
 
@@ -143,8 +184,6 @@ const CreateUser = () => {
                             <FaBars className="h-6 w-6" />
                         )}
                     </button>
-
-                    {/* <h1 className="text-xl font-semibold text-gray-800">Create New User</h1> */}
                 </header>
 
                 {/* Content */}
@@ -160,9 +199,8 @@ const CreateUser = () => {
                             </div>
 
                             <form onSubmit={handleSubmit} className="p-6">
-                                {/* Rest of your form fields remain exactly the same */}
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    {/* Username Field */}
+
                                     <div className="space-y-2">
                                         <label htmlFor="username" className="block text-sm font-medium text-gray-700 flex items-center">
                                             <FaUserTie className="mr-2 text-gray-600" />
@@ -180,7 +218,6 @@ const CreateUser = () => {
                                         />
                                     </div>
 
-                                    {/* Password Field */}
                                     <div className="space-y-2">
                                         <label htmlFor="password" className="block text-sm font-medium text-gray-700 flex items-center">
                                             <FaUserTie className="mr-2 text-gray-600" />
@@ -198,7 +235,6 @@ const CreateUser = () => {
                                         />
                                     </div>
 
-                                    {/* E-ID Field */}
                                     <div className="space-y-2">
                                         <label htmlFor="eid" className="block text-sm font-medium text-gray-700 flex items-center">
                                             <FaIdCard className="mr-2 text-gray-600" />
@@ -216,7 +252,6 @@ const CreateUser = () => {
                                         />
                                     </div>
 
-                                    {/* Name Field */}
                                     <div className="space-y-2">
                                         <label htmlFor="name" className="block text-sm font-medium text-gray-700 flex items-center">
                                             <FaUserTie className="mr-2 text-gray-600" />
@@ -234,32 +269,28 @@ const CreateUser = () => {
                                         />
                                     </div>
 
-                                    {/* Designation Field */}
                                     <div className="space-y-2">
                                         <label htmlFor="designation" className="block text-sm font-medium text-gray-700 flex items-center">
                                             <FaUserTie className="mr-2 text-gray-600" />
                                             Designation <span className='text-red-500'>&nbsp;*</span>
                                         </label>
                                         <select
-                                            type="text"
                                             id="designation"
                                             name="designation"
                                             value={formData.designation}
                                             onChange={handleChange}
                                             className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-                                            placeholder="Enter designation"
                                             required
                                         >
                                             <option value="">Select Designation</option>
-                                            {designation.map((designation) => (
-                                                <option  key={designation} value={designation}>
-                                                    {designation}
+                                            {designation.map((designationItem) => (
+                                                <option key={designationItem.designationID} value={designationItem.designationName}>
+                                                    {designationItem.designationName}
                                                 </option>
                                             ))}
                                         </select>
                                     </div>
 
-                                    {/* Department Field */}
                                     <div className="space-y-2">
                                         <label htmlFor="department" className="block text-sm font-medium text-gray-700 flex items-center">
                                             <MdDepartureBoard className="mr-2 text-gray-600" />
@@ -274,40 +305,36 @@ const CreateUser = () => {
                                             required
                                         >
                                             <option value="">Select Department</option>
-                                            {department.map((department) => (
-                                                <option  key={department} value={department}>
-                                                    {department}
+                                            {department.map((departmentItem) => (
+                                                <option key={departmentItem.departmentID} value={departmentItem.departmentName}>
+                                                    {departmentItem.departmentName}
                                                 </option>
                                             ))}
                                         </select>
                                     </div>
 
-                                    {/* Company Field */}
                                     <div className="space-y-2">
                                         <label htmlFor="company" className="block text-sm font-medium text-gray-700 flex items-center">
                                             <FaBuilding className="mr-2 text-gray-600" />
                                             Company Name <span className='text-red-500'>&nbsp;*</span>
                                         </label>
                                         <select
-                                            type="text"
                                             id="company"
                                             name="company"
                                             value={formData.company}
                                             onChange={handleChange}
                                             className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-                                            placeholder="Enter company name"
                                             required
                                         >
                                             <option value="">Select Company</option>
-                                            {company.map((company) => (
-                                                <option  key={company} value={company}>
-                                                    {company}
+                                            {company.map((companyItem) => (
+                                                <option key={companyItem.companynameID} value={companyItem.companyname}>
+                                                    {companyItem.companyname}
                                                 </option>
                                             ))}
                                         </select>
                                     </div>
 
-                                    {/* Phone Field */}
                                     <div className="space-y-2">
                                         <label htmlFor="phone" className="block text-sm font-medium text-gray-700 flex items-center">
                                             <FaPhone className="mr-2 text-gray-600" />
@@ -325,7 +352,6 @@ const CreateUser = () => {
                                         />
                                     </div>
 
-                                    {/* Email Field */}
                                     <div className="space-y-2">
                                         <label htmlFor="email" className="block text-sm font-medium text-gray-700 flex items-center">
                                             <FaEnvelope className="mr-2 text-gray-600" />
@@ -343,26 +369,23 @@ const CreateUser = () => {
                                         />
                                     </div>
 
-                                    {/* Role Field */}
                                     <div className="space-y-2">
-                                        <label htmlFor="email" className="block text-sm font-medium text-gray-700 flex items-center">
+                                        <label htmlFor="role" className="block text-sm font-medium text-gray-700 flex items-center">
                                             <SiGoogletasks className="mr-2 text-gray-600" />
                                             Role <span className='text-red-500'>&nbsp;*</span>
                                         </label>
                                         <select
-                                            type="text"
                                             id="role"
                                             name="role"
                                             value={formData.role}
                                             onChange={handleChange}
                                             className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-                                            placeholder="Enter user role"
                                             required
-                                        >   
+                                        >
                                             <option value="">Select Role</option>
                                             {roles.map((role) => (
-                                                <option  key={role} value={role}>
-                                                    {role}
+                                                <option key={role.roleID} value={role.rolename}>
+                                                    {role.rolename}
                                                 </option>
                                             ))}
 
@@ -375,14 +398,16 @@ const CreateUser = () => {
                                         onClick={handleCancel}
                                         type="button"
                                         className="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition"
+                                        disabled={loading}
                                     >
                                         Cancel
                                     </button>
                                     <button
                                         type="submit"
-                                        className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition"
+                                        className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition disabled:opacity-50"
+                                        disabled={loading}
                                     >
-                                        Create User
+                                        {loading ? 'Creating...' : 'Create User'}
                                     </button>
                                 </div>
                             </form>

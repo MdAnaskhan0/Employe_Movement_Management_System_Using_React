@@ -43,8 +43,11 @@ const PartyNames = ({ children }) => {
       fetchParties();
       toast.success('Party created successfully');
     } catch (err) {
-      console.error('Error creating party:', err);
-      toast.error('Failed to create party');
+      if (err.response) {
+        toast.error(`Error: ${err.response.data.message || 'Failed to create party'}`);
+      } else {
+        toast.error('Network error. Please try again.');
+      }
     }
   };
 
@@ -58,8 +61,7 @@ const PartyNames = ({ children }) => {
       fetchParties();
       toast.success('Party updated successfully');
     } catch (err) {
-      console.error('Error updating party:', err);
-      toast.error('Failed to update party');
+      toast.error('Error updating party', err);
     }
   };
 
