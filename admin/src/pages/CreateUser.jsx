@@ -118,7 +118,6 @@ const CreateUser = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-
         try {
             const response = await axios.post('http://192.168.111.140:5137/users', formData);
 

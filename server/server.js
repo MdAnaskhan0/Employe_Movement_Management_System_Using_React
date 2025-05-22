@@ -85,11 +85,11 @@ app.post('/users', (req, res) => {
       return res.status(400).send({ status: 'error', message: 'Username already exists' });
     }
 
-    // Insert the new user
+    // Insert the new user (✅ fixed: added correct number of placeholders - 10)
     const insertSql = `
       INSERT INTO users 
       (username, password, E_ID, Name, Designation, Department, Company_name, Phone, email, Role)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     const values = [
@@ -114,6 +114,7 @@ app.post('/users', (req, res) => {
     });
   });
 });
+
 
 
 
