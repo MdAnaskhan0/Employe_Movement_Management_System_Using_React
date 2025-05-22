@@ -16,6 +16,7 @@ import {
 import { FiUpload } from 'react-icons/fi';
 import { BsBuilding } from 'react-icons/bs';
 import { AiOutlineInfoCircle } from 'react-icons/ai';
+import { FiRefreshCw } from 'react-icons/fi';
 
 const CompanyNames = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -174,7 +175,7 @@ const CompanyNames = () => {
           </button>
 
           <div className="flex items-center">
-            <BsBuilding className="text-blue-600 mr-2 text-xl" />
+            {/* <BsBuilding className="text-blue-600 mr-2 text-xl" /> */}
             <h1 className="text-xl font-semibold text-gray-800">Company Management</h1>
           </div>
         </header>
@@ -311,12 +312,23 @@ const CompanyNames = () => {
           </div>
 
           {/* Companies List Section */}
-          <div className="max-w-4xl mx-auto">
+          <div className="max-w-6xl mx-auto">
             <div className="bg-white rounded-lg shadow-md overflow-hidden">
-              <div className="bg-gradient-to-r from-gray-700 to-gray-800 p-4 text-white">
+              <div className="bg-gradient-to-r from-gray-700 to-gray-800 p-4 text-white flex items-center justify-between">
                 <h2 className="text-lg font-semibold flex items-center">
                   <BsBuilding className="mr-2" /> Company List
                 </h2>
+                <button
+                  onClick={fetchCompanies}
+                  className="flex items-center gap-2 bg-gray-500 text-white px-3 py-1 rounded hover:bg-gray-100 hover:text-gray-800 transition"
+                  disabled={loading}
+                >
+                  <FiRefreshCw className={`${loading ? 'animate-spin' : ''}`} />
+                  Refresh
+                </button>
+              </div>
+              <div>
+                
               </div>
 
               {loading && companies.length === 0 ? (

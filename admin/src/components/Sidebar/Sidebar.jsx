@@ -156,7 +156,7 @@ const Sidebar = ({ sidebarOpen, handleLogout }) => {
               <MdPeopleAlt className='mr-2' /> Visiting Status
             </Link>
 
-            <Link to="/dashboard/role" className="flex items-center py-2 px-4 rounded hover:bg-gray-700 transition text-gray-300 hover:text-white text-sm">
+            <Link to="/dashboard/roles" className="flex items-center py-2 px-4 rounded hover:bg-gray-700 transition text-gray-300 hover:text-white text-sm">
               <MdTaskAlt className='mr-2' /> Role Details
             </Link>
           </div>

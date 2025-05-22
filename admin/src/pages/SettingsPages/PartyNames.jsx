@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaBars, FaTimes, FaEdit, FaTrash, FaSave, FaPlus } from 'react-icons/fa';
 import { FiRefreshCw } from 'react-icons/fi';
+import { MdPeople } from "react-icons/md";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Sidebar from '../../components/Sidebar/Sidebar';
@@ -126,9 +127,9 @@ const PartyNames = ({ children }) => {
           </button>
 
           <h1 className="text-xl font-semibold text-gray-800">Party Management</h1>
-          
-          <button 
-            onClick={fetchParties} 
+
+          <button
+            onClick={fetchParties}
             className="flex items-center gap-2 bg-blue-100 text-blue-600 px-3 py-1 rounded hover:bg-blue-200 transition"
             disabled={loading}
           >
@@ -197,70 +198,72 @@ const PartyNames = ({ children }) => {
 
             {/* Party List Card */}
             <div className="bg-white p-6 rounded-lg shadow-md">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-lg font-semibold text-gray-700">Party List</h2>
-                <span className="text-sm text-gray-500">
-                  Total: {partyList.length} {partyList.length === 1 ? 'party' : 'parties'}
-                </span>
+              <div className="bg-gray-600 px-4 py-3 rounded-t-lg -mx-6 -mt-6 mb-4">
+                <div className="flex justify-between items-center">
+                  <h2 className="text-lg font-semibold text-white flex items-center"><MdPeople className='mr-2' /> Party List</h2>
+                  <span className="text-sm text-white">
+                    Total: {partyList.length} {partyList.length === 1 ? 'Party' : 'Parties'}
+                  </span>
+                </div>
               </div>
 
-              {loading ? (
-                <div className="flex justify-center items-center py-8">
-                  <FiRefreshCw className="animate-spin text-blue-500 text-2xl" />
-                </div>
-              ) : partyList.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">
-                  No parties found. Create one to get started.
-                </div>
-              ) : (
-                <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Party Name
-                        </th>
-                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Address
-                        </th>
-                        <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Actions
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                      {partyList.map(party => (
-                        <tr key={party.partynameID} className="hover:bg-gray-50">
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="font-medium text-gray-900">{party.partyname}</div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-gray-500">{party.partyaddress}</div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <button
-                              onClick={() => handleEdit(party)}
-                              className="text-blue-600 hover:text-blue-900 mr-4"
-                              title="Edit"
-                            >
-                              <FaEdit />
-                            </button>
-                            <button
-                              onClick={() => handleDelete(party.partynameID)}
-                              className="text-red-600 hover:text-red-900"
-                              title="Delete"
-                            >
-                              <FaTrash />
-                            </button>
-                          </td>
+                {loading ? (
+                  <div className="flex justify-center items-center py-8">
+                    <FiRefreshCw className="animate-spin text-blue-500 text-2xl" />
+                  </div>
+                ) : partyList.length === 0 ? (
+                  <div className="text-center py-8 text-gray-500">
+                    No parties found. Create one to get started.
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Party Name
+                          </th>
+                          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Address
+                          </th>
+                          <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Actions
+                          </th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {partyList.map(party => (
+                          <tr key={party.partynameID} className="hover:bg-gray-50">
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="font-medium text-gray-900">{party.partyname}</div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-gray-500">{party.partyaddress}</div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                              <button
+                                onClick={() => handleEdit(party)}
+                                className="text-blue-600 hover:text-blue-900 mr-4"
+                                title="Edit"
+                              >
+                                <FaEdit />
+                              </button>
+                              <button
+                                onClick={() => handleDelete(party.partynameID)}
+                                className="text-red-600 hover:text-red-900"
+                                title="Delete"
+                              >
+                                <FaTrash />
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
         </main>
       </div>
     </div>

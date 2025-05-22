@@ -601,6 +601,280 @@ app.delete('/departments/:id', (req, res) => {
 });
 
 
+// Create - Add new branchname
+app.post('/branchnames', (req, res) => {
+  const { branchname, address } = req.body;
+  const sql = 'INSERT INTO branchnames (branchname, address) VALUES (?, ?)';
+  db.query(sql, [branchname, address], (err, result) => {
+    if (err) return res.status(500).json({ error: err });
+    res.status(201).json({ message: 'Branch created', id: result.insertId });
+  });
+});
+
+// Read - Get all branches
+app.get('/branchnames', (req, res) => {
+  db.query('SELECT * FROM branchnames', (err, results) => {
+    if (err) return res.status(500).json({ error: err });
+    res.json(results);
+  });
+});
+
+// Read - Get single branch by ID
+app.get('/branchnames/:id', (req, res) => {
+  db.query('SELECT * FROM branchnames WHERE branchnameID = ?', [req.params.id], (err, results) => {
+    if (err) return res.status(500).json({ error: err });
+    if (results.length === 0) return res.status(404).json({ message: 'Branch not found' });
+    res.json(results[0]);
+  });
+});
+
+// Update - Modify branch by ID
+app.put('/branchnames/:id', (req, res) => {
+  const { branchname, address } = req.body;
+  const sql = 'UPDATE branchnames SET branchname = ?, address = ? WHERE branchnameID = ?';
+  db.query(sql, [branchname, address, req.params.id], (err, result) => {
+    if (err) return res.status(500).json({ error: err });
+    res.json({ message: 'Branch updated' });
+  });
+});
+
+// Delete - Remove branch by ID
+app.delete('/branchnames/:id', (req, res) => {
+  db.query('DELETE FROM branchnames WHERE branchnameID = ?', [req.params.id], (err, result) => {
+    if (err) return res.status(500).json({ error: err });
+    res.json({ message: 'Branch deleted' });
+  });
+});
+
+
+// GET all designations
+app.get('/designations', (req, res) => {
+  db.query('SELECT * FROM designations', (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(results);
+  });
+});
+
+// GET a single designation by ID
+app.get('/designations/:id', (req, res) => {
+  const { id } = req.params;
+  db.query('SELECT * FROM designations WHERE designationID = ?', [id], (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    if (results.length === 0) return res.status(404).json({ message: 'Designation not found' });
+    res.json(results[0]);
+  });
+});
+
+// POST a new designation
+app.post('/designations', (req, res) => {
+  const { designationName } = req.body;
+  if (!designationName) return res.status(400).json({ error: 'designationName is required' });
+
+  db.query('INSERT INTO designations (designationName) VALUES (?)', [designationName], (err, result) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.status(201).json({ message: 'Designation created', id: result.insertId });
+  });
+});
+
+// PUT to update a designation
+app.put('/designations/:id', (req, res) => {
+  const { id } = req.params;
+  const { designationName } = req.body;
+  if (!designationName) return res.status(400).json({ error: 'designationName is required' });
+
+  db.query('UPDATE designations SET designationName = ? WHERE designationID = ?', [designationName, id], (err, result) => {
+    if (err) return res.status(500).json({ error: err.message });
+    if (result.affectedRows === 0) return res.status(404).json({ message: 'Designation not found' });
+    res.json({ message: 'Designation updated' });
+  });
+});
+
+// DELETE a designation
+app.delete('/designations/:id', (req, res) => {
+  const { id } = req.params;
+  db.query('DELETE FROM designations WHERE designationID = ?', [id], (err, result) => {
+    if (err) return res.status(500).json({ error: err.message });
+    if (result.affectedRows === 0) return res.status(404).json({ message: 'Designation not found' });
+    res.json({ message: 'Designation deleted' });
+  });
+});
+
+
+// ---------------------------
+// POST: Create a new status
+// ---------------------------
+app.post('/visitingstatus', async (req, res) => {
+  const { visitingstatusname } = req.body;
+  try {
+    const result = await db.query(
+      'INSERT INTO visitingstatus (visitingstatusname) VALUES (?)',
+      [visitingstatusname]
+    );
+    res.status(201).json({ id: result.insertId, visitingstatusname });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
+// ---------------------------
+// POST: Create a new visiting status
+// ---------------------------
+app.post('/visitingstatus', (req, res) => {
+  const { visitingstatusname } = req.body;
+
+  if (!visitingstatusname) {
+    return res.status(400).json({ error: 'visitingstatusname is required' });
+  }
+
+  db.query(
+    'INSERT INTO visitingstatus (visitingstatusname) VALUES (?)',
+    [visitingstatusname],
+    (err, result) => {
+      if (err) return res.status(500).json({ error: err.message });
+      res.status(201).json({
+        visitingstatusID: result.insertId,
+        visitingstatusname,
+      });
+    }
+  );
+});
+
+
+// ---------------------------
+// GET: All visiting statuses
+// ---------------------------
+app.get('/visitingstatus', (req, res) => {
+  db.query('SELECT * FROM visitingstatus', (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(rows);
+  });
+});
+
+// ---------------------------
+// GET one visiting status by ID
+// ---------------------------
+app.get('/visitingstatus/:id', (req, res) => {
+  const { id } = req.params;
+  db.query('SELECT * FROM visitingstatus WHERE visitingstatusID = ?', [id], (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message });
+    if (rows.length === 0) return res.status(404).json({ error: 'Not found' });
+    res.json(rows[0]);
+  });
+});
+
+// ---------------------------
+// PUT update visiting status
+// ---------------------------
+app.put('/visitingstatus/:id', (req, res) => {
+  const { id } = req.params;
+  const { visitingstatusname } = req.body;
+  db.query(
+    'UPDATE visitingstatus SET visitingstatusname = ? WHERE visitingstatusID = ?',
+    [visitingstatusname, id],
+    (err, result) => {
+      if (err) return res.status(500).json({ error: err.message });
+      if (result.affectedRows === 0) return res.status(404).json({ error: 'Not found' });
+      res.json({ id, visitingstatusname });
+    }
+  );
+});
+
+// ---------------------------
+// DELETE visiting status
+// ---------------------------
+app.delete('/visitingstatus/:id', (req, res) => {
+  const { id } = req.params;
+  db.query(
+    'DELETE FROM visitingstatus WHERE visitingstatusID = ?',
+    [id],
+    (err, result) => {
+      if (err) return res.status(500).json({ error: err.message });
+      if (result.affectedRows === 0) return res.status(404).json({ error: 'Not found' });
+      res.json({ message: 'Deleted successfully' });
+    }
+  );
+});
+
+
+// CREATE a new role
+app.post('/roles', (req, res) => {
+  const { rolename } = req.body;
+  if (!rolename) {
+    return res.status(400).json({ error: 'rolename is required' });
+  }
+
+  const sql = 'INSERT INTO roles (rolename) VALUES (?)';
+  db.query(sql, [rolename], (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.status(201).json({ roleID: results.insertId, rolename });
+  });
+});
+
+// READ all roles
+app.get('/roles', (req, res) => {
+  const sql = 'SELECT * FROM roles';
+  db.query(sql, (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.json(results);
+  });
+});
+
+// READ a single role by roleID
+app.get('/roles/:roleID', (req, res) => {
+  const { roleID } = req.params;
+  const sql = 'SELECT * FROM roles WHERE roleID = ?';
+  db.query(sql, [roleID], (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    if (results.length === 0) {
+      return res.status(404).json({ error: 'Role not found' });
+    }
+    res.json(results[0]);
+  });
+});
+
+// UPDATE a role by roleID
+app.put('/roles/:roleID', (req, res) => {
+  const { roleID } = req.params;
+  const { rolename } = req.body;
+  if (!rolename) {
+    return res.status(400).json({ error: 'rolename is required' });
+  }
+
+  const sql = 'UPDATE roles SET rolename = ? WHERE roleID = ?';
+  db.query(sql, [rolename, roleID], (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ error: 'Role not found' });
+    }
+    res.json({ roleID, rolename });
+  });
+});
+
+// DELETE a role by roleID
+app.delete('/roles/:roleID', (req, res) => {
+  const { roleID } = req.params;
+  const sql = 'DELETE FROM roles WHERE roleID = ?';
+  db.query(sql, [roleID], (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ error: 'Role not found' });
+    }
+    res.json({ message: 'Role deleted successfully' });
+  });
+});
+
+
 app.listen(port, '0.0.0.0', () => {
   console.log(`Server is running on http://0.0.0.0:${port}`);
 });
