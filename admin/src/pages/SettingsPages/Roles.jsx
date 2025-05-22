@@ -95,7 +95,7 @@ const Roles = () => {
       setRolename('');
       setEditRoleID(null);
     } catch (err) {
-      const errorMsg = err.response?.data?.message || 'Failed to save role';
+      toast.error(err.response?.data?.error || 'Error saving role');
       setError(errorMsg);
       toast.error(errorMsg);
     }

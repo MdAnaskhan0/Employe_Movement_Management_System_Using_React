@@ -17,6 +17,8 @@ import BranchNames from './pages/SettingsPages/BranchNames';
 import PartyNames from './pages/SettingsPages/PartyNames';
 import Roles from './pages/SettingsPages/Roles';
 import VisitingStatus from './pages/SettingsPages/VisitingStatus';
+import CreateTeams from './pages/TeamManagement/CreateTeams';
+import ViewTeams from './pages/TeamManagement/ViewTeams';
 
 const App = () => {
   return (
@@ -37,9 +39,11 @@ const App = () => {
         >
           <Route index element={<Dashboard />} />
           <Route path="createuser" element={<CreateUser />} />
-          <Route path="movementreports" element={<MovementReports />} />
           <Route path="alluser" element={<AllUser />} />
           <Route path="userprofile/:userID" element={<UserProfile />} />
+          <Route path="createteam" element={<CreateTeams />} />
+          <Route path="allteam" element={<ViewTeams />} />
+          <Route path="movementreports" element={<MovementReports />} />
           <Route path="jsonupdater" element={<JsonUpdater />} />
           <Route path="companynames" element={<CompanyNames />} />
           <Route path="branchnames" element={<BranchNames />} />

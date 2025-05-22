@@ -56,8 +56,7 @@ const VisitingStatus = () => {
       toast.success('Status added successfully');
       fetchStatuses();
     } catch (err) {
-      console.error('Error adding status', err);
-      toast.error('Failed to add status');
+      toast.error(err.response?.data?.error || 'Error saving status');
     }
   };
 

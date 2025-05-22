@@ -44,7 +44,7 @@ const PartyNames = ({ children }) => {
       toast.success('Party created successfully');
     } catch (err) {
       if (err.response) {
-        toast.error(`Error: ${err.response.data.message || 'Failed to create party'}`);
+      toast.error(err.response?.data?.message || 'Error saving party');
       } else {
         toast.error('Network error. Please try again.');
       }

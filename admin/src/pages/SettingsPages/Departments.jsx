@@ -59,7 +59,6 @@ const Departments = ({ children }) => {
       fetchDepartments();
     } catch (error) {
       toast.error(error.response?.data?.message || 'Error saving department');
-      console.error('Error saving department:', error);
     } finally {
       setIsLoading(false);
     }

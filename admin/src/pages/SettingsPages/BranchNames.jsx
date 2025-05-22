@@ -57,8 +57,7 @@ const BranchNames = () => {
       setEditingId(null);
       fetchBranches();
     } catch (err) {
-      toast.error('Error saving branch');
-      console.error('Error saving branch:', err);
+      toast.error(err.response?.data?.message || 'Error saving branch');
     }
   };
 

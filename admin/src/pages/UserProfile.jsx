@@ -47,7 +47,7 @@ const UserProfile = () => {
 
                 const movementRes = await axios.get(`http://192.168.111.140:5137/movementdata/${userID}`);
                 setMovementData(movementRes.data.data || []);
-                setFilteredData(movementRes.data.data || []); // Initialize filteredData
+                setFilteredData(movementRes.data.data || []);
             } catch (err) {
                 setError(err.message);
             } finally {

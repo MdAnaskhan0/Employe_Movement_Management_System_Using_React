@@ -93,8 +93,7 @@ const Designations = () => {
       fetchDesignations();
       toast.success('Designation updated successfully');
     } catch (error) {
-      console.error('Error updating designation:', error);
-      toast.error('Failed to update designation');
+      toast.error(error.response?.data?.error || 'Error saving designation');
     }
   };
 

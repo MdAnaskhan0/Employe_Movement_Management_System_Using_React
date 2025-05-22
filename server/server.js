@@ -116,78 +116,6 @@ app.post('/users', (req, res) => {
 });
 
 
-
-
-// Login user
-app.post('/login', (req, res) => {
-  const { username, password } = req.body;
-
-  const sql = 'SELECT * FROM users WHERE username = ? AND password = ?';
-  db.query(sql, [username, password], (err, result) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).send({ status: 'error', message: 'Error logging in' });
-    }
-
-    console.log('DB result:', result);         // <-- Add this
-    console.log('result[0]:', result[0]);       // <-- And this
-
-    if (result.length > 0) {
-      res.send({
-        status: 'ok',
-        message: 'Login successful',
-        userID: result[0].userID,
-        username: result[0].username
-      });
-    } else {
-      res.status(401).send({ status: 'error', message: 'Invalid credentials' });
-    }
-  });
-});
-
-
-// Movement data save
-app.post('/movementdata', (req, res) => {
-  const {
-    userID,
-    username,
-    punchTime,
-    visitingStatus,
-    placeName,
-    partyName,
-    purpose,
-    remark,
-  } = req.body;
-
-  if (!userID || !username || !punchTime || !visitingStatus) {
-    return res.status(400).send({ status: 'error', message: 'Missing required fields' });
-  }
-
-  // Get local time formatted for MySQL
-  const now = new Date();
-  const offsetMs = now.getTimezoneOffset() * 60 * 1000;
-  const localTime = new Date(now.getTime() - offsetMs);
-  const dateTime = localTime.toISOString().slice(0, 19).replace('T', ' ');
-
-  const sql = `
-    INSERT INTO movementdata 
-    (userID, username, dateTime, punchTime, visitingStatus, placeName, partyName, purpose, remark)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-
-  db.query(
-    sql,
-    [userID, username, dateTime, punchTime, visitingStatus, placeName, partyName, purpose, remark],
-    (err, result) => {
-      if (err) {
-        console.error('Insert failed:', err);
-        return res.status(500).send({ status: 'error', message: 'Server error' });
-      }
-
-      res.status(200).send({ status: 'ok', message: 'Data inserted successfully' });
-    }
-  );
-});
-
 // Get all users
 app.get('/users', (req, res) => {
   const sql = 'SELECT * FROM users';
@@ -242,6 +170,79 @@ app.delete('/users/:id', (req, res) => {
     res.send({ status: 'ok', message: 'User deleted successfully' });
   });
 });
+
+
+
+
+// Login user
+app.post('/login', (req, res) => {
+  const { username, password } = req.body;
+
+  const sql = 'SELECT * FROM users WHERE username = ? AND password = ?';
+  db.query(sql, [username, password], (err, result) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).send({ status: 'error', message: 'Error logging in' });
+    }
+    if (result.length > 0) {
+      res.send({
+        status: 'ok',
+        message: 'Login successful',
+        userID: result[0].userID,
+        username: result[0].username
+      });
+    } else {
+      res.status(401).send({ status: 'error', message: 'Invalid credentials' });
+    }
+  });
+});
+
+
+
+
+
+// Movement data save
+app.post('/movementdata', (req, res) => {
+  const {
+    userID,
+    username,
+    punchTime,
+    visitingStatus,
+    placeName,
+    partyName,
+    purpose,
+    remark,
+  } = req.body;
+
+  if (!userID || !username || !punchTime || !visitingStatus) {
+    return res.status(400).send({ status: 'error', message: 'Missing required fields' });
+  }
+
+  // Get local time formatted for MySQL
+  const now = new Date();
+  const offsetMs = now.getTimezoneOffset() * 60 * 1000;
+  const localTime = new Date(now.getTime() - offsetMs);
+  const dateTime = localTime.toISOString().slice(0, 19).replace('T', ' ');
+
+  const sql = `
+    INSERT INTO movementdata 
+    (userID, username, dateTime, punchTime, visitingStatus, placeName, partyName, purpose, remark)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+
+  db.query(
+    sql,
+    [userID, username, dateTime, punchTime, visitingStatus, placeName, partyName, purpose, remark],
+    (err, result) => {
+      if (err) {
+        console.error('Insert failed:', err);
+        return res.status(500).send({ status: 'error', message: 'Server error' });
+      }
+
+      res.status(200).send({ status: 'ok', message: 'Data inserted successfully' });
+    }
+  );
+});
+
 
 
 // Get all movement data for a user
