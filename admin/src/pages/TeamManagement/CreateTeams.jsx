@@ -19,30 +19,35 @@ const CreateTeams = ({ children }) => {
     const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
-        const fetchUnassignedUsersAndLeaders = async () => {
+        const fetchAllUsers = async () => {
             setIsLoading(true);
             try {
-                // Fetch unassigned team members (users)
-                const userRes = await axios.get('http://192.168.111.140:5137/unassigned-users');
-                const unassignedUsers = userRes.data.status === 'ok' ? userRes.data.data : [];
+                const res = await axios.get('http://192.168.111.140:5137/users');
+                const allUsers = res.data.data;
 
-                // Fetch unassigned team leaders
-                const leaderRes = await axios.get('http://192.168.111.140:5137/unassigned-team-leaders');
-                const unassignedLeaders = leaderRes.data.status === 'ok' ? leaderRes.data.data : [];
+                // Normalize roles to lowercase for consistent filtering
+                const normalized = allUsers.map(user => ({
+                    ...user,
+                    Role: user.Role?.toLowerCase() || ''
+                }));
 
-                // Set both categories
-                setUserCategory(unassignedUsers);
-                setTeamLeaderCategory(unassignedLeaders);
+                const leaders = normalized.filter(user => user.Role === 'team leader');
+                const members = normalized.filter(user => user.Role === 'user');
+
+                console.log("leaders", leaders);
+                console.log("members", members);
+
+                setTeamLeaderCategory(leaders);
+                setUserCategory(members);
             } catch (err) {
-                toast.error('Failed to fetch unassigned users or leaders');
+                toast.error('Failed to fetch users');
             } finally {
                 setIsLoading(false);
             }
         };
-        fetchUnassignedUsersAndLeaders();
+
+        fetchAllUsers();
     }, []);
-
-
 
     const handleLogout = () => {
         localStorage.removeItem('adminLoggedIn');
@@ -61,6 +66,11 @@ const CreateTeams = ({ children }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        if (!teamName.trim()) {
+            toast.warning('Please enter a team name');
+            return;
+        }
+
         if (!selectedTeamLeader) {
             toast.warning('Please select a team leader');
             return;
@@ -68,11 +78,6 @@ const CreateTeams = ({ children }) => {
 
         if (selectedMembers.length === 0) {
             toast.warning('Please select at least one team member');
-            return;
-        }
-
-        if (selectedMembers.length > 5) {
-            toast.warning('You can select a maximum of 5 team members');
             return;
         }
 
@@ -86,8 +91,11 @@ const CreateTeams = ({ children }) => {
 
             if (response.data.status === 'ok') {
                 toast.success('Team created successfully!');
+                // Clear all inputs after success
+                setTeamName('');
                 setSelectedTeamLeader('');
                 setSelectedMembers([]);
+                setSearchTerm('');
             } else {
                 toast.error(response.data.message || 'Failed to create team');
             }
@@ -147,8 +155,10 @@ const CreateTeams = ({ children }) => {
                                 </h2>
                                 <button
                                     onClick={() => {
+                                        setTeamName('');
                                         setSelectedTeamLeader('');
                                         setSelectedMembers([]);
+                                        setSearchTerm('');
                                     }}
                                     className="flex items-center text-sm text-gray-600 hover:text-blue-600"
                                 >
@@ -167,6 +177,7 @@ const CreateTeams = ({ children }) => {
                                             value={teamName}
                                             onChange={(e) => setTeamName(e.target.value)}
                                             className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition"
+                                            required
                                         />
                                     </div>
                                     <div>
@@ -289,7 +300,6 @@ const CreateTeams = ({ children }) => {
                                             </div>
                                             <div>
                                                 <p className="font-medium text-gray-800">{leader.Name}</p>
-                                                <p className="text-sm text-gray-500">{leader.Email}</p>
                                             </div>
                                         </div>
                                     ))}

@@ -119,7 +119,6 @@ app.post('/users', (req, res) => {
 // Get all users
 app.get('/users', (req, res) => {
   const sql = 'SELECT * FROM users';
-
   db.query(sql, (err, results) => {
     if (err) {
       console.error('Error fetching users:', err);
@@ -937,8 +936,53 @@ app.delete('/roles/:roleID', (req, res) => {
 });
 
 
-// Team assignments
-// Assign team API
+// Team assignments  
+// // Assign team API  ******** Dont remove this code ******* 
+// app.post('/assign-team', (req, res) => {
+//   const { team_leader_id, team_member_ids, team_name } = req.body;
+
+//   if (!team_leader_id || !Array.isArray(team_member_ids) || team_member_ids.length === 0) {
+//     return res.status(400).json({ status: 'error', message: 'Invalid data' });
+//   }
+
+//   // Step 1: Check if leader is already assigned
+//   const checkLeaderQuery = 'SELECT * FROM team_assignments WHERE team_leader_id = ?';
+//   db.query(checkLeaderQuery, [team_leader_id], (err, leaderResults) => {
+//     if (err) return res.status(500).json({ status: 'error', message: err.message });
+//     if (leaderResults.length > 0) {
+//       return res.status(400).json({ status: 'error', message: 'Team leader is already assigned to a team' });
+//     }
+
+//     // Step 2: Check if any member is already assigned
+//     const placeholders = team_member_ids.map(() => '?').join(',');
+//     const checkMembersQuery = `SELECT * FROM team_assignments WHERE team_member_id IN (${placeholders})`;
+//     db.query(checkMembersQuery, team_member_ids, (err, memberResults) => {
+//       if (err) return res.status(500).json({ status: 'error', message: err.message });
+//       if (memberResults.length > 0) {
+//         return res.status(400).json({ status: 'error', message: 'One or more members are already assigned to a team' });
+//       }
+
+//       // Step 3: Get next team_id
+//       const getMaxTeamIdQuery = 'SELECT MAX(team_id) AS max_id FROM team_assignments';
+//       db.query(getMaxTeamIdQuery, (err, maxResult) => {
+//         if (err) return res.status(500).json({ status: 'error', message: err.message });
+
+//         const nextTeamId = (maxResult[0].max_id || 0) + 1;
+
+//         // Step 4: Insert records
+//         const insertQuery = 'INSERT INTO team_assignments (team_id, team_name, team_leader_id, team_member_id) VALUES ?';
+//         const values = team_member_ids.map(memberId => [nextTeamId, team_name, team_leader_id, memberId]);
+
+//         db.query(insertQuery, [values], (err, result) => {
+//           if (err) return res.status(500).json({ status: 'error', message: err.message });
+
+//           res.json({ status: 'ok', message: 'Team created successfully' });
+//         });
+//       });
+//     });
+//   });
+// });
+
 app.post('/assign-team', (req, res) => {
   const { team_leader_id, team_member_ids, team_name } = req.body;
 
@@ -946,43 +990,25 @@ app.post('/assign-team', (req, res) => {
     return res.status(400).json({ status: 'error', message: 'Invalid data' });
   }
 
-  // Step 1: Check if leader is already assigned
-  const checkLeaderQuery = 'SELECT * FROM team_assignments WHERE team_leader_id = ?';
-  db.query(checkLeaderQuery, [team_leader_id], (err, leaderResults) => {
+  // Get next team_id
+  const getMaxTeamIdQuery = 'SELECT MAX(team_id) AS max_id FROM team_assignments';
+  db.query(getMaxTeamIdQuery, (err, maxResult) => {
     if (err) return res.status(500).json({ status: 'error', message: err.message });
-    if (leaderResults.length > 0) {
-      return res.status(400).json({ status: 'error', message: 'Team leader is already assigned to a team' });
-    }
 
-    // Step 2: Check if any member is already assigned
-    const placeholders = team_member_ids.map(() => '?').join(',');
-    const checkMembersQuery = `SELECT * FROM team_assignments WHERE team_member_id IN (${placeholders})`;
-    db.query(checkMembersQuery, team_member_ids, (err, memberResults) => {
+    const nextTeamId = (maxResult[0].max_id || 0) + 1;
+
+    // Insert records
+    const insertQuery = 'INSERT INTO team_assignments (team_id, team_name, team_leader_id, team_member_id) VALUES ?';
+    const values = team_member_ids.map(memberId => [nextTeamId, team_name, team_leader_id, memberId]);
+
+    db.query(insertQuery, [values], (err, result) => {
       if (err) return res.status(500).json({ status: 'error', message: err.message });
-      if (memberResults.length > 0) {
-        return res.status(400).json({ status: 'error', message: 'One or more members are already assigned to a team' });
-      }
 
-      // Step 3: Get next team_id
-      const getMaxTeamIdQuery = 'SELECT MAX(team_id) AS max_id FROM team_assignments';
-      db.query(getMaxTeamIdQuery, (err, maxResult) => {
-        if (err) return res.status(500).json({ status: 'error', message: err.message });
-
-        const nextTeamId = (maxResult[0].max_id || 0) + 1;
-
-        // Step 4: Insert records
-        const insertQuery = 'INSERT INTO team_assignments (team_id, team_name, team_leader_id, team_member_id) VALUES ?';
-        const values = team_member_ids.map(memberId => [nextTeamId, team_name, team_leader_id, memberId]);
-
-        db.query(insertQuery, [values], (err, result) => {
-          if (err) return res.status(500).json({ status: 'error', message: err.message });
-
-          res.json({ status: 'ok', message: 'Team created successfully' });
-        });
-      });
+      res.json({ status: 'ok', message: 'Team created successfully' });
     });
   });
 });
+
 
 
 app.get('/teams', (req, res) => {
@@ -1009,52 +1035,49 @@ app.get('/teams', (req, res) => {
 });
 
 
+// GET a single team by ID
 app.get('/teams/:id', (req, res) => {
   const teamId = req.params.id;
 
-  // Query to get team leader info
-  const teamLeaderQuery = `
-    SELECT DISTINCT
-      t.team_id,
+  // Updated query to get team details by team_id
+  const sql = `
+    SELECT 
+      ta.team_id,
+      MAX(ta.team_name) AS team_name,
       l.userID AS leader_id,
-      l.Name AS team_leader_name
+      l.Name AS team_leader_name,
+      u.userID AS member_id,
+      u.Name AS member_name
     FROM team_assignments ta
     JOIN users l ON ta.team_leader_id = l.userID
-    JOIN (
-      SELECT team_id, team_leader_id FROM team_assignments GROUP BY team_id
-    ) t ON ta.team_id = t.team_id
-    WHERE t.team_id = ?
-  `;
-
-  // Query to get team members (excluding the leader if needed)
-  const teamMembersQuery = `
-    SELECT u.userID, u.Name
-    FROM team_assignments ta
     JOIN users u ON ta.team_member_id = u.userID
     WHERE ta.team_id = ?
+    GROUP BY ta.team_id, l.userID, u.userID
   `;
 
-  db.query(teamLeaderQuery, [teamId], (leaderErr, leaderResults) => {
-    if (leaderErr) return res.status(500).json({ status: 'error', message: leaderErr.message });
-    if (leaderResults.length === 0) {
+  db.query(sql, [teamId], (err, results) => {
+    if (err) return res.status(500).json({ status: 'error', message: err.message });
+    if (results.length === 0) {
       return res.status(404).json({ status: 'error', message: 'Team not found' });
     }
 
     const team = {
-      team_id: leaderResults[0].team_id,
-      team_leader_name: leaderResults[0].team_leader_name,
-      team_members: []
+      team_id: results[0].team_id,
+      team_name: results[0].team_name,
+      team_leader: {
+        userID: results[0].leader_id,
+        name: results[0].team_leader_name
+      },
+      team_members: results.map(row => ({
+        userID: row.member_id,
+        name: row.member_name
+      }))
     };
 
-    db.query(teamMembersQuery, [teamId], (membersErr, membersResults) => {
-      if (membersErr) return res.status(500).json({ status: 'error', message: membersErr.message });
-
-      team.team_members = membersResults; // array of { userID, Name }
-
-      res.json({ status: 'ok', data: team });
-    });
+    res.json({ status: 'ok', data: team });
   });
 });
+
 
 
 
@@ -1117,23 +1140,48 @@ app.patch('/teams/:id/add-member', (req, res) => {
 
 
 // DELETE /teams/:id/remove-member
+// PATCH /teams/:id/remove-member
 app.patch('/teams/:id/remove-member', (req, res) => {
   const { id: teamID } = req.params;
   const { member_id } = req.body;
 
-  if (!member_id) return res.status(400).json({ status: 'error', message: 'member_id is required' });
+  if (!member_id) {
+    return res.status(400).json({ status: 'error', message: 'member_id is required' });
+  }
 
-  const query = 'DELETE FROM team_assignments WHERE team_id = ? AND team_member_id = ?';
-
-  db.query(query, [teamID, member_id], (err, result) => {
+  // Check if member exists in team
+  const checkQuery = 'SELECT * FROM team_assignments WHERE team_id = ? AND team_member_id = ?';
+  db.query(checkQuery, [teamID, member_id], (err, results) => {
     if (err) return res.status(500).json({ status: 'error', message: err.message });
+    if (results.length === 0) {
+      return res.status(404).json({ status: 'error', message: 'Member not found in team' });
+    }
 
-    res.json({ status: 'ok', message: 'Member removed successfully' });
+    // Optional: Prevent leader removal (if needed)
+    const isLeader = results[0].team_leader_id === member_id;
+    if (isLeader) {
+      return res.status(400).json({ status: 'error', message: 'Cannot remove the team leader' });
+    }
+
+    // Check team size to avoid removing the last member
+    const countQuery = 'SELECT COUNT(*) AS memberCount FROM team_assignments WHERE team_id = ?';
+    db.query(countQuery, [teamID], (err, countResults) => {
+      if (err) return res.status(500).json({ status: 'error', message: err.message });
+
+      if (countResults[0].memberCount <= 1) {
+        return res.status(400).json({ status: 'error', message: 'Cannot remove the last member of the team' });
+      }
+
+      // Proceed with deletion
+      const deleteQuery = 'DELETE FROM team_assignments WHERE team_id = ? AND team_member_id = ?';
+      db.query(deleteQuery, [teamID, member_id], (err, result) => {
+        if (err) return res.status(500).json({ status: 'error', message: err.message });
+
+        res.json({ status: 'ok', message: 'Member removed successfully' });
+      });
+    });
   });
 });
-
-
-
 
 
 

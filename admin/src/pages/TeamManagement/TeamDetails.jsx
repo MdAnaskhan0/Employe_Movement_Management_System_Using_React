@@ -31,6 +31,7 @@ const TeamDetails = () => {
     const fetchTeamDetails = async () => {
       try {
         const response = await axios.get(`http://192.168.111.140:5137/teams/${teamID}`);
+        console.log(response.data.data);
         setTeamData(response.data.data);
       } catch (err) {
         setError('Failed to fetch team details');
@@ -45,7 +46,7 @@ const TeamDetails = () => {
 
   const handleDeleteTeam = async () => {
     if (!window.confirm('Are you sure you want to delete this team?')) return;
-    
+
     try {
       await axios.delete(`http://192.168.111.140:5137/teams/${teamID}`);
       toast.success('Team deleted successfully');
@@ -86,7 +87,7 @@ const TeamDetails = () => {
       toast.success(`${selectedUser.Name} added successfully`);
       setShowAddModal(false);
       setSelectedUser(null);
-      
+
       const updatedResponse = await axios.get(`http://192.168.111.140:5137/teams/${teamID}`);
       setTeamData(updatedResponse.data.data);
     } catch (err) {
@@ -118,14 +119,14 @@ const TeamDetails = () => {
     }
 
     try {
-      await axios.patch(`http://192.168.111.140:5137/teams/${teamID}/remove-member`, { 
-        member_id: selectedMember.userID 
+      await axios.patch(`http://192.168.111.140:5137/teams/${teamID}/remove-member`, {
+        member_id: selectedMember.userID
       });
 
-      toast.success(`${selectedMember.Name} removed successfully`);
+      toast.success(`${selectedMember.name} removed successfully`);
       setShowRemoveModal(false);
       setSelectedMember(null);
-      
+
       const updatedResponse = await axios.get(`http://192.168.111.140:5137/teams/${teamID}`);
       setTeamData(updatedResponse.data.data);
     } catch (err) {
@@ -136,7 +137,7 @@ const TeamDetails = () => {
   return (
     <div className="flex h-screen bg-gray-50 overflow-hidden">
       <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} newestOnTop closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
-      
+
       <Sidebar sidebarOpen={sidebarOpen} handleLogout={handleLogout} />
 
       {sidebarOpen && (
@@ -202,20 +203,20 @@ const TeamDetails = () => {
                     <div>
                       <h3 className="text-lg font-medium text-gray-700 mb-2">Basic Details</h3>
                       <div className="space-y-3">
-                        {/* <div className="flex items-start">
-                          <span className="text-gray-500 font-medium w-32">Team ID:</span>
-                          <span className="text-gray-800">{teamData.team_id}</span>
-                        </div> */}
+                        <div className="flex items-start">
+                          <span className="text-gray-500 font-medium w-32">Team Name:</span>
+                          <span className="text-gray-800">{teamData.team_name}</span>
+                        </div>
                         <div className="flex items-start">
                           <span className="text-gray-500 font-medium w-32">Team Leader:</span>
                           <div className="flex items-center">
                             <FaUserShield className="text-green-500 mr-2" />
-                            <span className="text-gray-800">{teamData.team_leader_name}</span>
+                            <span className="text-gray-800">{teamData.team_leader.name}</span>
                           </div>
                         </div>
                       </div>
                     </div>
-                    
+
                     <div>
                       <h3 className="text-lg font-medium text-gray-700 mb-2">Team Members</h3>
                       {teamData.team_members && teamData.team_members.length > 0 ? (
@@ -225,11 +226,11 @@ const TeamDetails = () => {
                               <li key={member.userID} className="py-2 flex items-center">
                                 <div className="flex-shrink-0 h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
                                   <span className="text-blue-600 text-sm font-medium">
-                                    {member.Name.charAt(0)}
+                                    {member.name.charAt(0)}
                                   </span>
                                 </div>
                                 <div className="ml-3">
-                                  <p className="text-sm font-medium text-gray-800">{member.Name}</p>
+                                  <p className="text-sm font-medium text-gray-800">{member.name}</p>
                                   {/* <p className="text-xs text-gray-500">ID: {member.userID}</p> */}
                                 </div>
                               </li>
@@ -259,7 +260,7 @@ const TeamDetails = () => {
                       <FaUserPlus className="mr-2" />
                       Add Member
                     </button>
-                    
+
                     <button
                       onClick={handleRemoveMemberClick}
                       className="flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 transition-colors"
@@ -267,7 +268,7 @@ const TeamDetails = () => {
                       <FaUserMinus className="mr-2" />
                       Remove Member
                     </button>
-                    
+
                     <button
                       onClick={handleDeleteTeam}
                       className="flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
@@ -289,16 +290,15 @@ const TeamDetails = () => {
           <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
             <div className="p-6">
               <h3 className="text-lg font-medium text-gray-900 mb-4">Add Team Member</h3>
-              
+
               <div className="space-y-3 max-h-60 overflow-y-auto mb-4">
                 {usersToAdd.map((user) => (
-                  <div 
+                  <div
                     key={user.userID}
-                    className={`p-3 rounded-md cursor-pointer transition-colors ${
-                      selectedUser?.userID === user.userID 
-                        ? 'bg-blue-50 border border-blue-200' 
+                    className={`p-3 rounded-md cursor-pointer transition-colors ${selectedUser?.userID === user.userID
+                        ? 'bg-blue-50 border border-blue-200'
                         : 'hover:bg-gray-50 border border-transparent'
-                    }`}
+                      }`}
                     onClick={() => setSelectedUser(user)}
                   >
                     <div className="flex items-center">
@@ -333,11 +333,10 @@ const TeamDetails = () => {
                   type="button"
                   onClick={confirmAddMember}
                   disabled={!selectedUser}
-                  className={`px-4 py-2 rounded-md text-sm font-medium text-white ${
-                    selectedUser 
-                      ? 'bg-green-600 hover:bg-green-700' 
+                  className={`px-4 py-2 rounded-md text-sm font-medium text-white ${selectedUser
+                      ? 'bg-green-600 hover:bg-green-700'
                       : 'bg-green-300 cursor-not-allowed'
-                  }`}
+                    }`}
                 >
                   Add Member
                 </button>
@@ -353,26 +352,25 @@ const TeamDetails = () => {
           <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
             <div className="p-6">
               <h3 className="text-lg font-medium text-gray-900 mb-4">Remove Team Member</h3>
-              
+
               <div className="space-y-3 max-h-60 overflow-y-auto mb-4">
                 {membersToRemove.map((member) => (
-                  <div 
+                  <div
                     key={member.userID}
-                    className={`p-3 rounded-md cursor-pointer transition-colors ${
-                      selectedMember?.userID === member.userID 
-                        ? 'bg-blue-50 border border-blue-200' 
+                    className={`p-3 rounded-md cursor-pointer transition-colors ${selectedMember?.userID === member.userID
+                        ? 'bg-blue-50 border border-blue-200'
                         : 'hover:bg-gray-50 border border-transparent'
-                    }`}
+                      }`}
                     onClick={() => setSelectedMember(member)}
                   >
                     <div className="flex items-center">
                       <div className="flex-shrink-0 h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
                         <span className="text-blue-600 font-medium">
-                          {member.Name.split(' ').map(n => n[0]).join('')}
+                          {member.name?.split(' ').map(n => n[0]).join('')}
                         </span>
                       </div>
                       <div className="ml-3">
-                        <p className="text-sm font-medium text-gray-900">{member.Name}</p>
+                        <p className="text-sm font-medium text-gray-900">{member.name}</p>
                         <p className="text-xs text-gray-500">
                           {member.role || 'Team Member'}
                         </p>
@@ -397,11 +395,10 @@ const TeamDetails = () => {
                   type="button"
                   onClick={confirmRemoveMember}
                   disabled={!selectedMember}
-                  className={`px-4 py-2 rounded-md text-sm font-medium text-white ${
-                    selectedMember 
-                      ? 'bg-red-600 hover:bg-red-700' 
+                  className={`px-4 py-2 rounded-md text-sm font-medium text-white ${selectedMember
+                      ? 'bg-red-600 hover:bg-red-700'
                       : 'bg-red-300 cursor-not-allowed'
-                  }`}
+                    }`}
                 >
                   Remove Member
                 </button>
@@ -410,6 +407,7 @@ const TeamDetails = () => {
           </div>
         </div>
       )}
+
     </div>
   );
 };
