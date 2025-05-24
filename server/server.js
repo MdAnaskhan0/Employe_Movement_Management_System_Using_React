@@ -175,9 +175,10 @@ app.delete('/users/:id', (req, res) => {
 
 // GET /unassigned-users
 app.get('/unassigned-users', (req, res) => {
+
   const query = `
     SELECT * FROM users 
-    WHERE userID NOT IN (
+    WHERE role = 'user' AND userID NOT IN (
       SELECT team_member_id FROM team_assignments
     )
   `;
@@ -1068,32 +1069,80 @@ app.get('/teams', (req, res) => {
 
 
 // GET a single team by ID
+// app.get('/teams/:id', (req, res) => {
+//   const teamId = req.params.id;
+
+//   const sql = `
+//     SELECT 
+//       t.team_id,
+//       l.Name AS team_leader_name,
+//       GROUP_CONCAT(m.Name) AS team_members
+//     FROM team_assignments ta
+//     JOIN users l ON ta.team_leader_id = l.userID
+//     JOIN users m ON ta.team_member_id = m.userID
+//     JOIN (
+//       SELECT team_id, team_leader_id FROM team_assignments GROUP BY team_id
+//     ) t ON ta.team_id = t.team_id
+//     WHERE t.team_id = ?
+//     GROUP BY t.team_id, l.Name
+//   `;
+
+//   db.query(sql, [teamId], (err, result) => {
+//     if (err) return res.status(500).json({ status: 'error', message: err.message });
+//     if (result.length === 0) {
+//       return res.status(404).json({ status: 'error', message: 'Team not found' });
+//     }
+//     res.json({ status: 'ok', data: result[0] });
+//   });
+// });
+
 app.get('/teams/:id', (req, res) => {
   const teamId = req.params.id;
 
-  const sql = `
-    SELECT 
+  // Query to get team leader info
+  const teamLeaderQuery = `
+    SELECT DISTINCT
       t.team_id,
-      l.Name AS team_leader_name,
-      GROUP_CONCAT(m.Name) AS team_members
+      l.userID AS leader_id,
+      l.Name AS team_leader_name
     FROM team_assignments ta
     JOIN users l ON ta.team_leader_id = l.userID
-    JOIN users m ON ta.team_member_id = m.userID
     JOIN (
       SELECT team_id, team_leader_id FROM team_assignments GROUP BY team_id
     ) t ON ta.team_id = t.team_id
     WHERE t.team_id = ?
-    GROUP BY t.team_id, l.Name
   `;
 
-  db.query(sql, [teamId], (err, result) => {
-    if (err) return res.status(500).json({ status: 'error', message: err.message });
-    if (result.length === 0) {
+  // Query to get team members (excluding the leader if needed)
+  const teamMembersQuery = `
+    SELECT u.userID, u.Name
+    FROM team_assignments ta
+    JOIN users u ON ta.team_member_id = u.userID
+    WHERE ta.team_id = ?
+  `;
+
+  db.query(teamLeaderQuery, [teamId], (leaderErr, leaderResults) => {
+    if (leaderErr) return res.status(500).json({ status: 'error', message: leaderErr.message });
+    if (leaderResults.length === 0) {
       return res.status(404).json({ status: 'error', message: 'Team not found' });
     }
-    res.json({ status: 'ok', data: result[0] });
+
+    const team = {
+      team_id: leaderResults[0].team_id,
+      team_leader_name: leaderResults[0].team_leader_name,
+      team_members: []
+    };
+
+    db.query(teamMembersQuery, [teamId], (membersErr, membersResults) => {
+      if (membersErr) return res.status(500).json({ status: 'error', message: membersErr.message });
+
+      team.team_members = membersResults; // array of { userID, Name }
+
+      res.json({ status: 'ok', data: team });
+    });
   });
 });
+
 
 
 // UPDATE a team by ID
@@ -1156,7 +1205,7 @@ app.patch('/teams/:id/add-member', (req, res) => {
 
 // DELETE /teams/:id/remove-member
 app.patch('/teams/:id/remove-member', (req, res) => {
-  const { teamID } = req.params;
+  const { id: teamID } = req.params;
   const { member_id } = req.body;
 
   if (!member_id) return res.status(400).json({ status: 'error', message: 'member_id is required' });
@@ -1169,8 +1218,6 @@ app.patch('/teams/:id/remove-member', (req, res) => {
     res.json({ status: 'ok', message: 'Member removed successfully' });
   });
 });
-
-
 
 
 
