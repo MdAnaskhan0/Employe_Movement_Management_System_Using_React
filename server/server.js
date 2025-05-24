@@ -173,6 +173,22 @@ app.delete('/users/:id', (req, res) => {
 
 
 
+// GET /unassigned-users
+app.get('/unassigned-users', (req, res) => {
+  const query = `
+    SELECT * FROM users 
+    WHERE userID NOT IN (
+      SELECT team_member_id FROM team_assignments
+    )
+  `;
+
+  db.query(query, (err, results) => {
+    if (err) return res.status(500).json({ status: 'error', message: err.message });
+    res.json({ status: 'ok', data: results });
+  });
+});
+
+
 
 // Login user
 app.post('/login', (req, res) => {
@@ -980,77 +996,7 @@ app.delete('/roles/:roleID', (req, res) => {
 });
 
 
-// create team assignments
-// app.post('/team_assignments', async (req, res) => {
-//     const { teamLeaderId, teamMemberIds } = req.body;
-
-//     if (!teamLeaderId || !Array.isArray(teamMemberIds) || teamMemberIds.length === 0) {
-//         return res.status(400).json({ status: 'error', message: 'Invalid input.' });
-//     }
-
-//     try {
-//         await db.query('DELETE FROM team_assignments WHERE team_leader_id = ?', [teamLeaderId]);
-
-//         const values = teamMemberIds.map(memberId => [teamLeaderId, memberId]);
-
-//         await db.query(
-//             'INSERT INTO team_assignments (team_leader_id, team_member_id) VALUES ?',
-//             [values]
-//         );
-
-//         res.json({ status: 'ok', message: 'Team members assigned successfully.' });
-//     } catch (error) {
-//         console.error('Error assigning team members:', error);
-//         res.status(500).json({ status: 'error', message: 'Server error.' });
-//     }
-// });
-
-// app.post('/assign-team', (req, res) => {
-//   const { team_leader_id, team_member_ids } = req.body;
-
-//   if (!team_leader_id || !Array.isArray(team_member_ids)) {
-//     return res.status(400).json({ status: 'error', message: 'Invalid data' });
-//   }
-
-//   const memberIDsCSV = team_member_ids.join(',');
-
-//   const sql = 'INSERT INTO team_assignments (team_leader_id, team_member_ids) VALUES (?, ?)';
-//   db.query(sql, [team_leader_id, memberIDsCSV], (err, result) => {
-//     if (err) return res.status(500).json({ status: 'error', message: err.message });
-
-//     res.json({ status: 'ok', message: 'Team created successfully' });
-//   });
-// });
-
-
-// app.post('/assign-team', (req, res) => {
-//   const { team_leader_id, team_member_ids } = req.body;
-
-//   if (!team_leader_id || !Array.isArray(team_member_ids)) {
-//     return res.status(400).json({ status: 'error', message: 'Invalid data' });
-//   }
-
-//   // Check if the team leader is already assigned to a team
-//   const checkSql = 'SELECT * FROM team_assignments WHERE team_leader_id = ?';
-//   db.query(checkSql, [team_leader_id], (checkErr, checkResult) => {
-//     if (checkErr) return res.status(500).json({ status: 'error', message: checkErr.message });
-
-//     if (checkResult.length > 0) {
-//       return res.status(400).json({ status: 'error', message: 'This team leader already has a team assigned.' });
-//     }
-
-//     // If not already assigned, proceed to insert
-//     const memberIDsCSV = team_member_ids.join(',');
-//     const insertSql = 'INSERT INTO team_assignments (team_leader_id, team_member_ids) VALUES (?, ?)';
-
-//     db.query(insertSql, [team_leader_id, memberIDsCSV], (insertErr, insertResult) => {
-//       if (insertErr) return res.status(500).json({ status: 'error', message: insertErr.message });
-
-//       res.json({ status: 'ok', message: 'Team created successfully' });
-//     });
-//   });
-// });
-
+// Team assignments
 // Assign team API
 app.post('/assign-team', (req, res) => {
   const { team_leader_id, team_member_ids } = req.body;
@@ -1119,6 +1065,117 @@ app.get('/teams', (req, res) => {
     res.json({ status: 'ok', data: result });
   });
 });
+
+
+// GET a single team by ID
+app.get('/teams/:id', (req, res) => {
+  const teamId = req.params.id;
+
+  const sql = `
+    SELECT 
+      t.team_id,
+      l.Name AS team_leader_name,
+      GROUP_CONCAT(m.Name) AS team_members
+    FROM team_assignments ta
+    JOIN users l ON ta.team_leader_id = l.userID
+    JOIN users m ON ta.team_member_id = m.userID
+    JOIN (
+      SELECT team_id, team_leader_id FROM team_assignments GROUP BY team_id
+    ) t ON ta.team_id = t.team_id
+    WHERE t.team_id = ?
+    GROUP BY t.team_id, l.Name
+  `;
+
+  db.query(sql, [teamId], (err, result) => {
+    if (err) return res.status(500).json({ status: 'error', message: err.message });
+    if (result.length === 0) {
+      return res.status(404).json({ status: 'error', message: 'Team not found' });
+    }
+    res.json({ status: 'ok', data: result[0] });
+  });
+});
+
+
+// UPDATE a team by ID
+app.put('/teams/:id', (req, res) => {
+  const teamId = req.params.id;
+  const { team_leader_id, team_member_ids } = req.body;
+
+  if (!team_leader_id || !Array.isArray(team_member_ids) || team_member_ids.length === 0) {
+    return res.status(400).json({ status: 'error', message: 'Invalid data' });
+  }
+
+  // Delete existing team
+  const deleteQuery = 'DELETE FROM team_assignments WHERE team_id = ?';
+
+  db.query(deleteQuery, [teamId], (err) => {
+    if (err) return res.status(500).json({ status: 'error', message: err.message });
+
+    // Insert updated members
+    const insertQuery = 'INSERT INTO team_assignments (team_id, team_leader_id, team_member_id) VALUES ?';
+    const values = team_member_ids.map(memberId => [teamId, team_leader_id, memberId]);
+
+    db.query(insertQuery, [values], (err, result) => {
+      if (err) return res.status(500).json({ status: 'error', message: err.message });
+      res.json({ status: 'ok', message: 'Team updated successfully' });
+    });
+  });
+});
+
+
+// Delete a team by ID
+app.delete('/teams/:id', (req, res) => {
+  const teamId = req.params.id;
+
+  const deleteQuery = 'DELETE FROM team_assignments WHERE team_id = ?';
+
+  db.query(deleteQuery, [teamId], (err, result) => {
+    if (err) return res.status(500).json({ status: 'error', message: err.message });
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ status: 'error', message: 'Team not found' });
+    }
+
+    res.json({ status: 'ok', message: 'Team deleted successfully' });
+  });
+});
+
+
+// PATCH /teams/:id/add-member
+app.patch('/teams/:id/add-member', (req, res) => {
+  const teamId = req.params.id;
+  const { member_id } = req.body;
+
+  const query = 'INSERT INTO team_assignments (team_id, team_leader_id, team_member_id) SELECT ?, team_leader_id, ? FROM team_assignments WHERE team_id = ? LIMIT 1';
+  db.query(query, [teamId, member_id, teamId], (err) => {
+    if (err) return res.status(500).json({ status: 'error', message: err.message });
+    res.json({ status: 'ok', message: 'Member added' });
+  });
+});
+
+
+// DELETE /teams/:id/remove-member
+app.patch('/teams/:id/remove-member', (req, res) => {
+  const { teamID } = req.params;
+  const { member_id } = req.body;
+
+  if (!member_id) return res.status(400).json({ status: 'error', message: 'member_id is required' });
+
+  const query = 'DELETE FROM team_assignments WHERE team_id = ? AND team_member_id = ?';
+
+  db.query(query, [teamID, member_id], (err, result) => {
+    if (err) return res.status(500).json({ status: 'error', message: err.message });
+
+    res.json({ status: 'ok', message: 'Member removed successfully' });
+  });
+});
+
+
+
+
+
+
+
 
 
 
