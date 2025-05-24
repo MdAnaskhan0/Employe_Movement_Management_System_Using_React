@@ -10,8 +10,7 @@ import Sidebar from '../../components/Sidebar/Sidebar';
 const CreateTeams = ({ children }) => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const navigate = useNavigate();
-
-    const [users, setUsers] = useState([]);
+    const [teamName, setTeamName] = useState('');
     const [userCategory, setUserCategory] = useState([]);
     const [teamLeaderCategory, setTeamLeaderCategory] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -19,42 +18,31 @@ const CreateTeams = ({ children }) => {
     const [selectedMembers, setSelectedMembers] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
 
-    const getAllUsers = async () => {
-        try {
-            const response = await axios.get('http://192.168.111.140:5137/users');
-            if (response.data.status === 'ok') {
-                return response.data.data;
-            } else {
-                toast.error('Failed to fetch users');
-                return [];
-            }
-        } catch (error) {
-            toast.error('Network error while fetching users');
-            return [];
-        }
-    };
-
     useEffect(() => {
-        const fetchUsers = async () => {
+        const fetchUnassignedUsersAndLeaders = async () => {
             setIsLoading(true);
             try {
-                const allUsers = await getAllUsers();
-                setUsers(allUsers);
+                // Fetch unassigned team members (users)
+                const userRes = await axios.get('http://192.168.111.140:5137/unassigned-users');
+                const unassignedUsers = userRes.data.status === 'ok' ? userRes.data.data : [];
 
-                const usersCategory = allUsers.filter(user => user.Role.toLowerCase() === 'user');
-                const teamLeadersCategory = allUsers.filter(user => user.Role.toLowerCase() === 'team leader');
+                // Fetch unassigned team leaders
+                const leaderRes = await axios.get('http://192.168.111.140:5137/unassigned-team-leaders');
+                const unassignedLeaders = leaderRes.data.status === 'ok' ? leaderRes.data.data : [];
 
-                setUserCategory(usersCategory);
-                setTeamLeaderCategory(teamLeadersCategory);
+                // Set both categories
+                setUserCategory(unassignedUsers);
+                setTeamLeaderCategory(unassignedLeaders);
             } catch (err) {
-                toast.error('Failed to fetch users');
+                toast.error('Failed to fetch unassigned users or leaders');
             } finally {
                 setIsLoading(false);
             }
         };
-
-        fetchUsers();
+        fetchUnassignedUsersAndLeaders();
     }, []);
+
+
 
     const handleLogout = () => {
         localStorage.removeItem('adminLoggedIn');
@@ -91,6 +79,7 @@ const CreateTeams = ({ children }) => {
         setIsLoading(true);
         try {
             const response = await axios.post('http://192.168.111.140:5137/assign-team', {
+                team_name: teamName,
                 team_leader_id: selectedTeamLeader,
                 team_member_ids: selectedMembers,
             });
@@ -171,6 +160,16 @@ const CreateTeams = ({ children }) => {
                             <form onSubmit={handleSubmit} className="space-y-6">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div>
+                                        <label className="block mb-2 font-medium text-gray-700">Team Name</label>
+                                        <input
+                                            type="text"
+                                            placeholder="Enter Team Name"
+                                            value={teamName}
+                                            onChange={(e) => setTeamName(e.target.value)}
+                                            className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition"
+                                        />
+                                    </div>
+                                    <div>
                                         <label className="block mb-2 font-medium text-gray-700 flex items-center">
                                             <FaUserShield className="mr-2 text-blue-500" />
                                             Team Leader
@@ -184,7 +183,7 @@ const CreateTeams = ({ children }) => {
                                             <option value="">Select Team Leader</option>
                                             {teamLeaderCategory.map((leader) => (
                                                 <option key={leader.userID} value={leader.userID}>
-                                                    {leader.Name} ({leader.Email})
+                                                    {leader.Name}
                                                 </option>
                                             ))}
                                         </select>

@@ -190,6 +190,23 @@ app.get('/unassigned-users', (req, res) => {
 });
 
 
+// GET /unassigned-team-leaders
+app.get('/unassigned-team-leaders', (req, res) => {
+  const query = `
+    SELECT * FROM users 
+    WHERE role = 'team leader' AND userID NOT IN (
+      SELECT team_leader_id FROM team_assignments
+    )
+  `;
+
+  db.query(query, (err, results) => {
+    if (err) return res.status(500).json({ status: 'error', message: err.message });
+    res.json({ status: 'ok', data: results });
+  });
+});
+
+
+
 
 // Login user
 app.post('/login', (req, res) => {
@@ -288,83 +305,6 @@ app.get('/users/:id', (req, res) => {
   });
 });
 
-
-/* Json Data API Started */
-/************************************************************************************************/
-
-// Update JSON based on file name and value
-// const fs = require('fs');
-// const baseDir = path.join(__dirname, 'JsonFile');
-
-// app.post('/update-json', (req, res) => {
-//   const { fileName, value } = req.body;
-
-//   if (!fileName || !value) {
-//     return res.status(400).json({ error: 'fileName and value are required' });
-//   }
-
-//   const filePath = path.join(baseDir, `${fileName}.json`);
-
-//   // If file doesn't exist, create it with empty array
-//   if (!fs.existsSync(filePath)) {
-//     fs.writeFileSync(filePath, '[]');
-//   }
-
-//   // Read and parse the file
-//   fs.readFile(filePath, 'utf-8', (err, data) => {
-//     if (err) return res.status(500).json({ error: 'Failed to read file' });
-
-//     let json = [];
-
-//     try {
-//       json = JSON.parse(data);
-//       if (!Array.isArray(json)) json = [];
-//     } catch (e) {
-//       return res.status(500).json({ error: 'Invalid JSON format' });
-//     }
-
-//     // Check if value already exists (case-insensitive)
-//     const alreadyExists = json.some(item =>
-//       typeof item === 'string' ? item.toLowerCase() === value.toLowerCase() : item === value
-//     );
-
-//     if (alreadyExists) {
-//       return res.status(409).json({ message: 'Value already exists', data: json });
-//     }
-
-//     json.push(value);
-
-//     fs.writeFile(filePath, JSON.stringify(json, null, 2), err => {
-//       if (err) return res.status(500).json({ error: 'Failed to write file' });
-//       res.json({ message: 'Successfully updated', data: json });
-//     });
-//   });
-// });
-
-
-// // Get JSON file data
-// app.get('/get-json/:fileName', (req, res) => {
-//   const fileName = req.params.fileName;
-//   const filePath = path.join(baseDir, `${fileName}.json`);
-
-//   if (!fs.existsSync(filePath)) {
-//     return res.status(404).json({ error: 'File not found' });
-//   }
-
-//   fs.readFile(filePath, 'utf-8', (err, data) => {
-//     if (err) return res.status(500).json({ error: 'Failed to read file' });
-
-//     try {
-//       const jsonData = JSON.parse(data);
-//       res.json({ data: jsonData });
-//     } catch (e) {
-//       res.status(500).json({ error: 'Invalid JSON format' });
-//     }
-//   });
-// });
-
-/************************************************************************************************/
-/* Json Data API Finished */
 
 // create a new company name
 // Multer setup (store image in memory, not on disk)
@@ -1000,7 +940,7 @@ app.delete('/roles/:roleID', (req, res) => {
 // Team assignments
 // Assign team API
 app.post('/assign-team', (req, res) => {
-  const { team_leader_id, team_member_ids } = req.body;
+  const { team_leader_id, team_member_ids, team_name } = req.body;
 
   if (!team_leader_id || !Array.isArray(team_member_ids) || team_member_ids.length === 0) {
     return res.status(400).json({ status: 'error', message: 'Invalid data' });
@@ -1031,8 +971,8 @@ app.post('/assign-team', (req, res) => {
         const nextTeamId = (maxResult[0].max_id || 0) + 1;
 
         // Step 4: Insert records
-        const insertQuery = 'INSERT INTO team_assignments (team_id, team_leader_id, team_member_id) VALUES ?';
-        const values = team_member_ids.map(memberId => [nextTeamId, team_leader_id, memberId]);
+        const insertQuery = 'INSERT INTO team_assignments (team_id, team_name, team_leader_id, team_member_id) VALUES ?';
+        const values = team_member_ids.map(memberId => [nextTeamId, team_name, team_leader_id, memberId]);
 
         db.query(insertQuery, [values], (err, result) => {
           if (err) return res.status(500).json({ status: 'error', message: err.message });
@@ -1048,7 +988,8 @@ app.post('/assign-team', (req, res) => {
 app.get('/teams', (req, res) => {
   const sql = `
     SELECT 
-      t.team_id,
+      ta.team_id,
+      MAX(ta.team_name) AS team_name,
       l.Name AS team_leader_name,
       GROUP_CONCAT(m.Name) AS team_members
     FROM team_assignments ta
@@ -1057,7 +998,7 @@ app.get('/teams', (req, res) => {
     JOIN (
       SELECT team_id, team_leader_id FROM team_assignments GROUP BY team_id
     ) t ON ta.team_id = t.team_id
-    GROUP BY t.team_id, l.Name
+    GROUP BY ta.team_id, l.Name
   `;
 
   db.query(sql, (err, result) => {
@@ -1067,34 +1008,6 @@ app.get('/teams', (req, res) => {
   });
 });
 
-
-// GET a single team by ID
-// app.get('/teams/:id', (req, res) => {
-//   const teamId = req.params.id;
-
-//   const sql = `
-//     SELECT 
-//       t.team_id,
-//       l.Name AS team_leader_name,
-//       GROUP_CONCAT(m.Name) AS team_members
-//     FROM team_assignments ta
-//     JOIN users l ON ta.team_leader_id = l.userID
-//     JOIN users m ON ta.team_member_id = m.userID
-//     JOIN (
-//       SELECT team_id, team_leader_id FROM team_assignments GROUP BY team_id
-//     ) t ON ta.team_id = t.team_id
-//     WHERE t.team_id = ?
-//     GROUP BY t.team_id, l.Name
-//   `;
-
-//   db.query(sql, [teamId], (err, result) => {
-//     if (err) return res.status(500).json({ status: 'error', message: err.message });
-//     if (result.length === 0) {
-//       return res.status(404).json({ status: 'error', message: 'Team not found' });
-//     }
-//     res.json({ status: 'ok', data: result[0] });
-//   });
-// });
 
 app.get('/teams/:id', (req, res) => {
   const teamId = req.params.id;

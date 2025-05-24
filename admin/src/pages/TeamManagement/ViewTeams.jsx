@@ -9,7 +9,6 @@ import axios from 'axios';
 const ViewTeams = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
-
   const [teams, setTeams] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -135,18 +134,19 @@ const ViewTeams = () => {
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                       <tr>
-                        <th 
-                          scope="col" 
+                        <th
+                          scope="col"
                           className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                          onClick={() => requestSort('team_id')}
+                          onClick={() => requestSort('team_name')}
                         >
                           <div className="flex items-center">
-                            ID
-                            {getSortIcon('team_id')}
+                            Team Name
+                            {getSortIcon('team_name')}
                           </div>
                         </th>
-                        <th 
-                          scope="col" 
+
+                        <th
+                          scope="col"
                           className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
                           onClick={() => requestSort('team_leader_name')}
                         >
@@ -155,8 +155,8 @@ const ViewTeams = () => {
                             {getSortIcon('team_leader_name')}
                           </div>
                         </th>
-                        <th 
-                          scope="col" 
+                        <th
+                          scope="col"
                           className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
                           onClick={() => requestSort('team_members')}
                         >
@@ -173,8 +173,11 @@ const ViewTeams = () => {
                     <tbody className="bg-white divide-y divide-gray-200">
                       {sortedTeams.map((team) => (
                         <tr key={team.team_id} className="hover:bg-gray-50">
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                            {team.team_id}
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <div className="flex items-center">
+                              <FaUserTie className="mr-2 text-blue-500" />
+                              <p className="text-sm font-medium text-gray-900">{team.team_name}</p>
+                            </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             <div className="flex items-center">

@@ -383,7 +383,7 @@ const CreateUser = () => {
                                         >
                                             <option value="">Select Role</option>
                                             {roles.map((role) => (
-                                                <option key={role.roleID} value={role.rolename}>
+                                                <option key={role.roleID} value={role.rolename} className='capitalize'>
                                                     {role.rolename}
                                                 </option>
                                             ))}
