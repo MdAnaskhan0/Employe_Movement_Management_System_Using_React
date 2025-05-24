@@ -194,7 +194,7 @@ const ViewTeams = () => {
                           <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                             <div className="flex space-x-2">
                               <button
-                                onClick={() => navigate(`/view-team/${team.team_id}`)}
+                                onClick={() => navigate(`/team/${team.team_id}`)}
                                 className="text-blue-600 hover:text-blue-900 flex items-center"
                                 title="View"
                               >

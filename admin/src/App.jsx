@@ -19,6 +19,7 @@ import Roles from './pages/SettingsPages/Roles';
 import VisitingStatus from './pages/SettingsPages/VisitingStatus';
 import CreateTeams from './pages/TeamManagement/CreateTeams';
 import ViewTeams from './pages/TeamManagement/ViewTeams';
+import Team from './pages/TeamManagement/TeamDetails';
 
 const App = () => {
   return (
@@ -27,6 +28,14 @@ const App = () => {
       <Routes>
         {/* Public Route */}
         <Route path="/" element={<Home />} />
+        <Route
+          path="/team/:teamID"
+          element={
+            <ProtectedRoute>
+              <Team />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Protected Routes Under /dashboard */}
         <Route
@@ -43,6 +52,7 @@ const App = () => {
           <Route path="userprofile/:userID" element={<UserProfile />} />
           <Route path="createteam" element={<CreateTeams />} />
           <Route path="allteam" element={<ViewTeams />} />
+          <Route path="team/:teamID" element={<Team />} />
           <Route path="movementreports" element={<MovementReports />} />
           <Route path="jsonupdater" element={<JsonUpdater />} />
           <Route path="companynames" element={<CompanyNames />} />
