@@ -70,40 +70,23 @@ const CreateTeams = ({ children }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!selectedTeamLeader) {
-            setMessage('Please select a team leader.');
-            return;
-        }
-
-        if (selectedMembers.length === 0) {
-            setMessage('Please select at least one team member.');
-            return;
-        }
-
-        setIsLoading(true);
-        setMessage('');
-
         try {
-            const res = await axios.post('http://192.168.111.140:5137/api/teams', {
-                teamLeaderId: parseInt(selectedTeamLeader),
-                teamMemberIds: selectedMembers,
+            const response = await axios.post('http://192.168.111.140:5137/assign-team', {
+                team_leader_id: selectedTeamLeader,
+                team_member_ids: selectedMembers, // array
             });
 
-            if (res.data.status === 'ok') {
-                setMessage('Team assigned successfully!');
-                setSelectedMembers([]);
-                setSelectedTeamLeader('');
-                document.querySelectorAll('input[type="checkbox"]').forEach(el => (el.checked = false));
+            if (response.data.status === 'ok') {
+                setMessage('Team created successfully');
             } else {
-                setMessage(res.data.message || 'Failed to assign team members.');
+                setMessage('Error: ' + response.data.message);
             }
-        } catch (error) {
-            setMessage('Error occurred while assigning team members.');
-            console.error(error);
-        } finally {
-            setIsLoading(false);
+        } catch (err) {
+            setMessage('Failed to create team');
         }
     };
+
+
 
     return (
         <div className="flex h-screen bg-gray-100 overflow-hidden">
