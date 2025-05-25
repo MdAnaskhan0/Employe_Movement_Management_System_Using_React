@@ -289,25 +289,31 @@ app.post('/add_movement', (req, res) => {
 });
 
 
-
-
-// READ: Get all movement records
-app.get('/get_all_movement', (req, res) => {
-  db.query('SELECT * FROM movementdata', (err, results) => {
+// get all movement records for a user
+app.get('/get_all_movement/:userID', (req, res) => {
+  const userID = req.params.userID;
+  db.query('SELECT * FROM movementdata WHERE userID = ?', [userID], (err, results) => { 
     if (err) return res.status(500).json({ error: err });
     res.json(results);
   });
 });
 
-// READ: Get movement record by ID
-app.get('/get_movement/:id', (req, res) => {
-  const id = req.params.id;
-  db.query('SELECT * FROM movementdata WHERE movementID = ?', [id], (err, result) => {
-    if (err) return res.status(500).json({ error: err });
-    if (result.length === 0) return res.status(404).json({ message: 'Record not found' });
-    res.json(result[0]);
+// READ: Get all movement records by userID
+app.get('/get_movement/:userID', (req, res) => {
+  const userID = req.params.userID;
+  db.query('SELECT * FROM movementdata WHERE userID = ?', [userID], (err, result) => {
+    if (err) {
+      return res.status(500).json({ error: err });
+    }
+
+    if (result.length === 0) {
+      return res.status(404).json({ message: 'No movement records found for this user.' });
+    }
+
+    res.json(result); // Return full array of movements
   });
 });
+
 
 // UPDATE: Update movement record by ID (including punchingTime)
 app.put('/update_movement/:id', (req, res) => {
