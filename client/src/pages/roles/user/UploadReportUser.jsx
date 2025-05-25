@@ -112,11 +112,11 @@ const UploadReportUser = () => {
       >
         <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
           <div className="bg-gradient-to-r from-emerald-600 to-teal-500 py-5 px-6">
-            <h2 className="text-2xl font-semibold text-white flex items-center space-x-3">
+            <h2 className="text-lg md:text-2xl font-semibold text-white flex items-center space-x-3">
               <FiClock className="text-white" />
               <span>Movement Status Report</span>
             </h2>
-            <p className="text-teal-100 mt-1">Record your daily movements and visits</p>
+            <p className="text-sm text-teal-100 md:text-teal-100 mt-1">Record your daily movements and visits</p>
           </div>
 
           <form onSubmit={handleSubmit} className="p-6 space-y-6">
