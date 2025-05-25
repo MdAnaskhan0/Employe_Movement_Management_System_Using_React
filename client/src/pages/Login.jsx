@@ -15,12 +15,12 @@ export default function Login() {
     e.preventDefault();
     setIsLoading(true);
     setError('');
-    
+
     try {
       const username = form.username.trim();
       const password = form.password.trim();
       const res = await login(username, password);
-      
+
       if (res.success) {
         const role = res.role.toLowerCase();
         if (role.includes('admin')) navigate('/dashboard');
@@ -39,13 +39,6 @@ export default function Login() {
 
   return (
     <div className="w-full">
-      <div className="text-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-900">Sign in to continue</h2>
-        <p className="mt-2 text-sm text-gray-600">
-          Enter your credentials to access your account
-        </p>
-      </div>
-
       {error && (
         <div className="mb-4 bg-red-50 border-l-4 border-red-500 p-4 rounded">
           <div className="flex items-center">

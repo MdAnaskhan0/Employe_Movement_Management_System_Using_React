@@ -1,45 +1,37 @@
-import React from 'react'
-import { useState, useEffect } from 'react'
-import logo from '../../assets/logo.png'
-import { Link } from 'react-router-dom'
+// src/components/layout/Header.jsx
+import React from 'react';
+import logo from '../../assets/logo.png';
+import { Link } from 'react-router-dom';
+import { useAuth } from '../../auth/AuthContext';
 
 export default function Header() {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { user } = useAuth();
+  const isLoggedIn = !!user;
 
-    useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (token) {
-            setIsLoggedIn(true);
-        } else {
-            setIsLoggedIn(false);
-        }
-    }, []);
-    return (
-        <>
-            <div className="bg-gray-100 py-2 px-6 shadow-md">
-                <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
+  return (
+    <div className="bg-gray-100 py-2 px-6 shadow-md">
+      <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
 
-                    {/* Logo */}
-                    <div className="w-full md:w-1/2 flex justify-center md:justify-start items-center">
-                        {isLoggedIn ? (
-                            <Link to="/dashboard">
-                                <img src={logo} alt="Logo" className="w-40 md:w-48 items-center p-4" />
-                            </Link>
-                        ) : (
-                           <Link to="/">
-                               <img src={logo} alt="Logo" className="w-40 md:w-48 items-center p-4" />
-                           </Link>
-                        )}
-                    </div>
+        {/* Logo */}
+        <div className="w-full md:w-1/2 flex justify-center md:justify-start items-center">
+          {isLoggedIn ? (
+            <Link to="/dashboard">
+              <img src={logo} alt="Logo" className="w-40 md:w-48 items-center p-4" />
+            </Link>
+          ) : (
+            <Link to="/">
+              <img src={logo} alt="Logo" className="w-40 md:w-48 items-center p-4" />
+            </Link>
+          )}
+        </div>
 
-                    {/* Management System */}
-                    <div className="w-full md:w-1/2 text-center md:text-right">
-                        <h1 className="text-sm md:text-3xl font-bold text-gray-800">
-                            Employee Movement Management System
-                        </h1>
-                    </div>
-                </div>
-            </div>
-        </>
-    )
+        {/* Management System */}
+        <div className="w-full md:w-1/2 text-center md:text-right">
+          <h1 className="text-sm md:text-3xl font-bold text-gray-800">
+            Employee Movement Management System
+          </h1>
+        </div>
+      </div>
+    </div>
+  );
 }

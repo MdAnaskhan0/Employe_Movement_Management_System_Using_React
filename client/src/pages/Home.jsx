@@ -3,7 +3,7 @@ import Login from './Login';
 
 const Home = () => {
   return (
-    <div className="min-h-[80vh] bg-white flex">
+    <div className="min-h-[50vh] bg-white flex">
       {/* Left Content - Text + Illustration */}
       <div className="hidden lg:flex w-1/2 bg-white p-12 flex-col justify-between">
         <div>
@@ -23,7 +23,7 @@ const Home = () => {
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8 sm:p-12">
         <div className="w-full max-w-md">
           <div className="text-center mb-8 lg:hidden">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h1>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome!</h1>
             <p className="text-gray-600">Sign in to access your account</p>
           </div>
           <Login />
