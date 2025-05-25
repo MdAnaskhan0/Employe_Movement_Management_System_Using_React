@@ -3,7 +3,7 @@ import React from 'react'
 const UserReport = () => {
     return (
         <>
-            <h1>User Report</h1>
+            <h1>User Dashboard</h1>
         </>
     )
 }

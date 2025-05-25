@@ -1,40 +1,60 @@
 import { Routes, Route } from 'react-router-dom';
 import { PrivateRoute } from '../components/PrivateRoute';
-import Login from '../pages/Login';
+import Header from '../components/Header/Header';
+import Footer from '../components/Footer/Footer';
+import Home from '../pages/Home';
 import NotFound from '../pages/NotFound';
+import Dashboard from '../pages/Dashboard';
+// Admin
+import MovementReports from '../pages/roles/admin/MovementReports';
+import UserProfile from '../pages/roles/admin/UserProfile';
+import Users from '../pages/roles/admin/Users';
 
-import AdminDashboard from '../pages/roles/admin/Dashboard';
-import CreateUser from '../pages/roles/admin/CreateUser';
-import MovementReports from '../pages/roles/manager/MovementReports';
-import UploadReport from '../pages/roles/teamLeader/UploadReport';
+// Team Manager
+import AllMovementReports from '../pages/roles/manager/MovementReports';
+
+// Team Leader
+import UploadReport from '../pages/roles/teamLeader/UploadReportLeader';
+import LeaderReport from '../pages/roles/teamLeader/LeaderReport';
+import TeamReports from '../pages/roles/teamLeader/TeamReports';
+
+// User
+import UploadReportUser from '../pages/roles/user/UploadReportUser';
 import UserReport from '../pages/roles/user/UserReport';
 
 export default function AppRoutes() {
   return (
-    <Routes>
-      <Route path="/login" element={<Login />} />
-      <Route path="/unauthorized" element={<div>Unauthorized</div>} />
+    <>
+      <Header />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/unauthorized" element={<div>Unauthorized</div>} />
 
-      <Route element={<PrivateRoute allowedRoles={['admin']} />}>
-        <Route path="/admin/dashboard" element={<AdminDashboard />} />
-        <Route path="/admin/create-user" element={<CreateUser />} />
-      </Route>
+        <Route element={<PrivateRoute allowedRoles={['admin']} />}>
+          <Route path="/admin/MovementReports" element={<MovementReports />} />
+          <Route path="/admin/UserProfile" element={<UserProfile />} />
+          <Route path="/admin/Users" element={<Users />} />
+        </Route>
 
-      <Route element={<PrivateRoute allowedRoles={['accounce', 'manager']} />}>
-        <Route path="/movement-reports" element={<MovementReports />} />
-      </Route>
+        <Route element={<PrivateRoute allowedRoles={['accounce', 'manager']} />}>
+          <Route path="/movement-reports" element={<AllMovementReports />} />
+        </Route>
 
-      <Route element={<PrivateRoute allowedRoles={['teamLeader']} />}>
-        <Route path="/team/upload-report" element={<UploadReport />} />
-        <Route path="/team/my-report" element={<UserReport />} />
-      </Route>
+        <Route element={<PrivateRoute allowedRoles={['teamLeader']} />}>
+          <Route path="/team/upload-report" element={<UploadReport />} />
+          <Route path="/team/LeaderReport" element={<LeaderReport />} />
+          <Route path="/team/TeamReports" element={<TeamReports />} />
+        </Route>
 
-      <Route element={<PrivateRoute allowedRoles={['user']} />}>
-        <Route path="/user/my-report" element={<UserReport />} />
-        <Route path="/user/upload-report" element={<UploadReport />} />
-      </Route>
+        <Route element={<PrivateRoute allowedRoles={['user']} />}>
+          <Route path="/user/upload-report" element={<UploadReportUser />} />
+          <Route path="/user/UserReport" element={<UserReport />} />
+        </Route>
 
-      <Route path="*" element={<NotFound />} />
-    </Routes>
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+      <Footer />
+    </>
   );
 }
