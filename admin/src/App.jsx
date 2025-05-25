@@ -20,6 +20,7 @@ import VisitingStatus from './pages/SettingsPages/VisitingStatus';
 import CreateTeams from './pages/TeamManagement/CreateTeams';
 import ViewTeams from './pages/TeamManagement/ViewTeams';
 import Team from './pages/TeamManagement/TeamDetails';
+import ErrorPage from './pages/ErrorPage';
 
 const App = () => {
   return (
@@ -28,6 +29,7 @@ const App = () => {
       <Routes>
         {/* Public Route */}
         <Route path="/" element={<Home />} />
+        <Route path="*" element={<ErrorPage />} />
         <Route
           path="/team/:teamID"
           element={
