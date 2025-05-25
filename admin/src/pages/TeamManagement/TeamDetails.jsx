@@ -348,7 +348,7 @@ const TeamDetails = () => {
 
       {/* Remove Member Modal */}
       {showRemoveModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-transparent bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
             <div className="p-6">
               <h3 className="text-lg font-medium text-gray-900 mb-4">Remove Team Member</h3>

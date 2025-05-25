@@ -10,33 +10,35 @@ import Sidebar from '../components/Sidebar/Sidebar';
 import axios from 'axios';
 
 const UserProfile = () => {
+    // All hooks must be called unconditionally at the top level
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [userData, setUserData] = useState(null);
     const [movementData, setMovementData] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
-
     const [searchText, setSearchText] = useState('');
     const [punchStatus, setPunchStatus] = useState('');
     const [dateFrom, setDateFrom] = useState('');
     const [dateTo, setDateTo] = useState('');
     const [filteredData, setFilteredData] = useState([]);
-
     const [isEditing, setIsEditing] = useState(false);
     const [editData, setEditData] = useState({});
+    const [currentPage, setCurrentPage] = useState(1);
+    const [roles, setRoles] = useState([]);
+    const [designations, setDesignations] = useState([]);
+    const [departments, setDepartments] = useState([]);
+    const [companyNames, setCompanyNames] = useState([]);
+    const [punchStatuses, setPunchStatuses] = useState([]);
+    const [visitingStatuses, setVisitingStatuses] = useState([]);
+
     const navigate = useNavigate();
     const { userID } = useParams();
-
-    const [currentPage, setCurrentPage] = useState(1);
     const rowsPerPage = 5;
 
     const indexOfLastRow = currentPage * rowsPerPage;
     const indexOfFirstRow = indexOfLastRow - rowsPerPage;
     const currentRows = filteredData.slice(indexOfFirstRow, indexOfLastRow);
-
     const totalPages = Math.ceil(filteredData.length / rowsPerPage);
-
-
 
     // Fetch data from API
     useEffect(() => {
@@ -48,6 +50,22 @@ const UserProfile = () => {
                 const movementRes = await axios.get(`http://192.168.111.140:5137/movementdata/${userID}`);
                 setMovementData(movementRes.data.data || []);
                 setFilteredData(movementRes.data.data || []);
+
+                // Fetch dropdown data
+                const responseRoles = await axios.get('http://192.168.111.140:5137/roles');
+                const responseDesignations = await axios.get('http://192.168.111.140:5137/designations');
+                const responseDepartments = await axios.get('http://192.168.111.140:5137/departments');
+                const responseCompanyNames = await axios.get('http://192.168.111.140:5137/companynames');
+                const responsePunchStatuses = await axios.get('http://192.168.111.140:5137/visitingstatus');
+                const responseVisitingStatuses = await axios.get('http://192.168.111.140:5137/visitingstatus');
+                
+                setRoles(responseRoles.data);
+                setDesignations(responseDesignations.data);
+                setDepartments(responseDepartments.data);
+                setCompanyNames(responseCompanyNames.data.data);
+                console.log(responseCompanyNames.data.data);
+                setPunchStatuses(responsePunchStatuses.data);
+                setVisitingStatuses(responseVisitingStatuses.data);
             } catch (err) {
                 setError(err.message);
             } finally {
@@ -79,7 +97,6 @@ const UserProfile = () => {
                 item.punchTime === punchStatus
             );
         }
-
 
         // Inclusive Date From - To filter
         if (dateFrom || dateTo) {
@@ -117,7 +134,8 @@ const UserProfile = () => {
             designation: userData.Designation,
             department: userData.Department,
             company_name: userData.Company_name,
-            phone: userData.Phone
+            phone: userData.Phone,
+            role: userData.Role
         });
     };
 
@@ -144,7 +162,8 @@ const UserProfile = () => {
                 Designation: editData.designation,
                 Department: editData.department,
                 Company_name: editData.company_name,
-                Phone: editData.phone
+                Phone: editData.phone,
+                Role: editData.role
             };
 
             await axios.put(`http://192.168.111.140:5137/users/${userID}`, payload);
@@ -176,13 +195,59 @@ const UserProfile = () => {
             <div>
                 <h3 className="text-sm font-medium text-gray-500">{label.title}</h3>
                 {isEditing ? (
-                    <input
-                        type="text"
-                        name={key}
-                        value={editData[key] || ''}
-                        onChange={handleEditChange}
-                        className="text-lg font-semibold text-gray-800 border-b border-gray-300 focus:outline-none"
-                    />
+                    key === 'role' ? (
+                        <select
+                            name={key}
+                            value={editData[key] || ''}
+                            onChange={handleEditChange}
+                            className="text-lg font-semibold text-gray-800 border-b border-gray-300 focus:outline-none bg-transparent"
+                        >
+                            {roles.map(role => (
+                                <option key={role.roleID} value={role.rolename}>{role.rolename}</option>
+                            ))}
+                        </select>
+                    ) : key === 'designation' ? (
+                        <select
+                            name={key}
+                            value={editData[key] || ''}
+                            onChange={handleEditChange}
+                            className="text-lg font-semibold text-gray-800 border-b border-gray-300 focus:outline-none bg-transparent"
+                        >
+                            {designations.map(designation => (
+                                <option key={designation.designationID} value={designation.designationName}>{designation.designationName}</option>
+                            ))}
+                        </select>
+                    ) : key === 'department' ? (
+                        <select
+                            name={key}
+                            value={editData[key] || ''}
+                            onChange={handleEditChange}
+                            className="text-lg font-semibold text-gray-800 border-b border-gray-300 focus:outline-none bg-transparent"
+                        >
+                            {departments.map(department => (
+                                <option key={department.departmentID} value={department.departmentName}>{department.departmentName}</option>
+                            ))}
+                        </select>
+                    ) : key === 'company_name' ? (
+                        <select
+                            name={key}
+                            value={editData[key] || ''}
+                            onChange={handleEditChange}
+                            className="text-lg font-semibold text-gray-800 border-b border-gray-300 focus:outline-none bg-transparent"
+                        >
+                            {companyNames.map(company => (
+                                <option key={company.companynameID} value={company.companyname}>{company.companyname}</option>
+                            ))}
+                        </select>
+                    ) : (
+                        <input
+                            type="text"
+                            name={key}
+                            value={editData[key] || ''}
+                            onChange={handleEditChange}
+                            className="text-lg font-semibold text-gray-800 border-b border-gray-300 focus:outline-none"
+                        />
+                    )
                 ) : (
                     <p className="text-lg font-semibold">{userData[label.stateKey]}</p>
                 )}
@@ -190,7 +255,7 @@ const UserProfile = () => {
         </div>
     );
 
-    // Donwload excel button
+    // Download excel button
     const handleDownloadExcel = () => {
         const isFilterApplied =
             searchText.trim() ||
@@ -235,7 +300,6 @@ const UserProfile = () => {
 
         saveAs(blob, `movement_history_${isFilterApplied ? 'filtered' : 'full'}.xlsx`);
     };
-
 
     if (isLoading) return (
         <div className="flex justify-center items-center h-screen">
@@ -293,27 +357,48 @@ const UserProfile = () => {
                                                     onChange={handleEditChange}
                                                     className="text-2xl font-bold text-gray-800 border-b border-gray-300"
                                                 />
-                                                <p className="text-gray-600">
-                                                    <input
-                                                        type="text"
+                                                <div className="flex items-center space-x-4 mt-1">
+                                                    <select
                                                         name="designation"
                                                         value={editData.designation || ''}
                                                         onChange={handleEditChange}
-                                                        className="mr-2 border-b border-gray-300"
-                                                    />
+                                                        className="border-b border-gray-300 w-32"
+                                                    >
+                                                        {designations.map(designation => (
+                                                            <option key={designation.designationID} value={designation.designationName}>{designation.designationName}</option>
+                                                        ))}
+                                                    </select>
                                                     •
-                                                    <input
-                                                        type="text"
+                                                    <select
                                                         name="department"
                                                         value={editData.department || ''}
                                                         onChange={handleEditChange}
-                                                        className="ml-2 border-b border-gray-300"
-                                                    />
-                                                </p>
+                                                        className="border-b border-gray-300 w-32"
+                                                    >
+                                                        {departments.map(department => (
+                                                            <option key={department.departmentID} value={department.departmentName}>{department.departmentName}</option>
+                                                        ))}
+                                                    </select>
+                                                    •
+                                                    <select
+                                                        name="role"
+                                                        value={editData.role || ''}
+                                                        onChange={handleEditChange}
+                                                        className="border-b border-gray-300 bg-transparent"
+                                                    >
+                                                        <option value="">Select Role</option>
+                                                        {roles.map(role => (
+                                                            <option key={role.roleID} value={role.rolename}>{role.rolename}</option>
+                                                        ))}
+                                                    </select>
+                                                </div>
                                             </>
                                         ) : (
                                             <>
-                                                <h2 className="text-2xl font-bold">{userData.Name}</h2>
+                                                <div className='flex items-center space-x-2'>
+                                                    <h2 className="text-2xl font-bold">{userData.Name}</h2>
+                                                    <p className='text-gray-500 capitalize'>{userData.Role}</p>
+                                                </div>
                                                 <p className="text-gray-600">{userData.Designation} • {userData.Department}</p>
                                             </>
                                         )}
@@ -361,6 +446,7 @@ const UserProfile = () => {
                                 {displayOrEdit({ title: "Company", icon: <FaBuilding className="text-gray-600" />, stateKey: "Company_name" }, "company_name")}
                                 {displayOrEdit({ title: "Designation", icon: <MdWork className="text-gray-600 text-xl" />, stateKey: "Designation" }, "designation")}
                                 {displayOrEdit({ title: "Department", icon: <MdDepartureBoard className="text-gray-600 text-xl" />, stateKey: "Department" }, "department")}
+                                {/* {displayOrEdit({ title: "Role", icon: <FaUser className="text-gray-600" />, stateKey: "Role" }, "role")} */}
                             </div>
                         </div>
                     </section>
@@ -405,7 +491,6 @@ const UserProfile = () => {
 
                                 <button
                                     onClick={() => {
-                                        // Reset all filters
                                         setSearchText('');
                                         setPunchStatus('');
                                         setDateFrom('');
