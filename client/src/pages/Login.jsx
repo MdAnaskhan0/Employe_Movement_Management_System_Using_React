@@ -40,7 +40,7 @@ export default function Login() {
   return (
     <div className="w-full">
       {error && (
-        <div className="mb-4 bg-red-50 border-l-4 border-red-500 p-4 rounded">
+        <div className=" bg-red-50 border-l-4 border-red-500 p-4 rounded">
           <div className="flex items-center">
             <div className="flex-shrink-0">
               <svg className="h-5 w-5 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">

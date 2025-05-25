@@ -3,6 +3,8 @@ import { PrivateRoute } from '../components/PrivateRoute';
 import Header from '../components/Header/Header';
 import Footer from '../components/Footer/Footer';
 import Sidebar from '../components/Sidebar/Sidebar';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import Home from '../pages/Home';
 import NotFound from '../pages/NotFound';
@@ -27,7 +29,7 @@ export default function AppRoutes() {
       <Header />
       <div className="flex">
         <Sidebar />
-        <main className="flex-1 p-4 min-h-screen bg-gray-50">
+        <main className="flex-1 p-4 min-h-[80vh] bg-white">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/dashboard" element={<Dashboard />} />
@@ -59,6 +61,7 @@ export default function AppRoutes() {
         </main>
       </div>
       <Footer />
+      <ToastContainer position="bottom-right" autoClose={3000} />
     </>
   );
 }

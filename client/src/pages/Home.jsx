@@ -3,7 +3,7 @@ import Login from './Login';
 
 const Home = () => {
   return (
-    <div className="min-h-[50vh] bg-white flex">
+    <div className="min-h-[80vh] bg-white flex items-center justify-center">
       {/* Left Content - Text + Illustration */}
       <div className="hidden lg:flex w-1/2 bg-white p-12 flex-col justify-between">
         <div>
