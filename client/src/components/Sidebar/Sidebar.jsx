@@ -1,4 +1,5 @@
 // src/components/Sidebar/Sidebar.jsx
+
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../auth/AuthContext';
@@ -28,6 +29,23 @@ export default function Sidebar() {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
+    useEffect(() => {
+        // Auto open submenu if current path matches any submenu item
+        if (user) {
+            const role = user.role.toLowerCase().replace(/\s+/g, '');
+            const menu = sidebarMenu[role] || [];
+            const newActive = {};
+            menu.forEach((item, idx) => {
+                if (item.submenu) {
+                    if (item.submenu.some(sub => location.pathname.startsWith(sub.path))) {
+                        newActive[idx] = true;
+                    }
+                }
+            });
+            setActiveSubmenus(newActive);
+        }
+    }, [location.pathname, user]);
+
     if (!user) return null;
 
     const role = user.role.toLowerCase().replace(/\s+/g, '');
@@ -42,11 +60,11 @@ export default function Sidebar() {
 
     const handleLinkClick = (item) => {
         if (isMobile) setIsOpen(false);
-        toast.info(`Navigating to ${item.name}`, {
-            position: "top-right",
-            autoClose: 2000,
-            hideProgressBar: true,
-        });
+        // toast.info(`Navigating to ${item.name}`, {
+        //     position: "top-right",
+        //     autoClose: 2000,
+        //     hideProgressBar: true,
+        // });
     };
 
     return (
@@ -77,8 +95,7 @@ export default function Sidebar() {
                                     <div className="mb-1">
                                         <button
                                             onClick={() => toggleSubmenu(idx)}
-                                            className={`w-full flex justify-between items-center px-3 py-3 rounded-lg hover:bg-gray-100 transition-colors ${location.pathname.startsWith(item.path) ? 'bg-blue-50 text-blue-600' : ''
-                                                }`}
+                                            className={`w-full flex justify-between items-center px-3 py-3 rounded-lg hover:bg-gray-700 transition-colors ${activeSubmenus[idx] ? 'bg-gray-700' : ''}`}
                                         >
                                             <span className="flex items-center">
                                                 {item.icon && <span className="mr-3">{item.icon}</span>}
@@ -88,16 +105,14 @@ export default function Sidebar() {
                                         </button>
 
                                         <div
-                                            className={`overflow-hidden transition-all duration-300 pl-8 ${activeSubmenus[idx] ? 'max-h-96' : 'max-h-0'
-                                                }`}
+                                            className={`overflow-hidden transition-all duration-300 pl-4 border-l border-gray-700 ${activeSubmenus[idx] ? 'max-h-96 py-2' : 'max-h-0'} `}
                                         >
                                             {item.submenu.map((subItem, subIdx) => (
                                                 <Link
                                                     key={subIdx}
                                                     to={subItem.path}
                                                     onClick={() => handleLinkClick(subItem)}
-                                                    className={`block px-3 py-2 rounded-lg hover:bg-gray-100 text-sm ${location.pathname === subItem.path ? 'bg-blue-100 text-blue-600 font-medium' : ''
-                                                        }`}
+                                                    className={`block px-3 py-2 rounded-lg text-sm hover:bg-gray-600 ${location.pathname === subItem.path ? 'bg-gray-700 text-white font-medium' : 'text-gray-300'}`}
                                                 >
                                                     {subItem.name}
                                                 </Link>
@@ -108,7 +123,7 @@ export default function Sidebar() {
                                     <Link
                                         to={item.path}
                                         onClick={() => handleLinkClick(item)}
-                                        className={`block px-3 py-3 rounded-lg hover:bg-gray-600 transition-colors ${location.pathname === item.path ? 'bg-gray-600 text-gray-50 font-medium' : ''
+                                        className={`block px-3 py-3 rounded-lg hover:bg-gray-600 transition-colors ${location.pathname === item.path ? 'bg-gray-600 text-gray-50 font-medium' : 'text-gray-300'
                                             }`}
                                     >
                                         <span className="flex items-center">

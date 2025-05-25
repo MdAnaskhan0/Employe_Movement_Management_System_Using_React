@@ -246,66 +246,6 @@ app.post('/login', (req, res) => {
 });
 
 
-
-
-
-
-// Movement data save
-app.post('/movementdata', (req, res) => {
-  const {
-    userID,
-    username,
-    punchTime,
-    visitingStatus,
-    placeName,
-    partyName,
-    purpose,
-    remark,
-  } = req.body;
-
-  if (!userID || !username || !punchTime || !visitingStatus) {
-    return res.status(400).send({ status: 'error', message: 'Missing required fields' });
-  }
-
-  // Get local time formatted for MySQL
-  const now = new Date();
-  const offsetMs = now.getTimezoneOffset() * 60 * 1000;
-  const localTime = new Date(now.getTime() - offsetMs);
-  const dateTime = localTime.toISOString().slice(0, 19).replace('T', ' ');
-
-  const sql = `
-    INSERT INTO movementdata 
-    (userID, username, dateTime, punchTime, visitingStatus, placeName, partyName, purpose, remark)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-
-  db.query(
-    sql,
-    [userID, username, dateTime, punchTime, visitingStatus, placeName, partyName, purpose, remark],
-    (err, result) => {
-      if (err) {
-        console.error('Insert failed:', err);
-        return res.status(500).send({ status: 'error', message: 'Server error' });
-      }
-
-      res.status(200).send({ status: 'ok', message: 'Data inserted successfully' });
-    }
-  );
-});
-
-
-
-// Get all movement data for a user
-app.get('/movementdata/:userID', (req, res) => {
-  const { userID } = req.params;
-  const sql = 'SELECT * FROM movementdata WHERE userID = ?';
-  db.query(sql, [userID], (err, result) => {
-    if (err) {
-      return res.status(500).send({ status: 'error', message: 'Error getting movement data' });
-    }
-    res.send({ data: result });
-  });
-});
-
 // Get a single user by ID
 app.get('/users/:id', (req, res) => {
   const { id } = req.params;
@@ -314,6 +254,96 @@ app.get('/users/:id', (req, res) => {
     if (err) return res.status(500).send({ error: err.message });
     if (!result.length) return res.status(404).send({ message: 'User not found' });
     res.send({ data: result[0] });
+  });
+});
+
+
+
+// Movement data save
+// Assuming you have your express app and db connection initialized above this
+app.post('/add_movement', (req, res) => {
+  const {
+    userID,
+    username,
+    visitingStatus,
+    placeName,
+    partyName,
+    purpose,
+    remark,
+    punchTime,      
+    punchingTime
+  } = req.body;
+
+  const sql = `INSERT INTO movementdata 
+    (userID, username, visitingStatus, placeName, partyName, purpose, remark, punchTime, punchingTime) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+
+  db.query(sql, [
+    userID, username, visitingStatus,
+    placeName, partyName, purpose,
+    remark, punchTime, punchingTime
+  ], (err, result) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.status(201).json({ message: 'Movement record added', id: result.insertId });
+  });
+});
+
+
+
+
+// READ: Get all movement records
+app.get('/get_all_movement', (req, res) => {
+  db.query('SELECT * FROM movementdata', (err, results) => {
+    if (err) return res.status(500).json({ error: err });
+    res.json(results);
+  });
+});
+
+// READ: Get movement record by ID
+app.get('/get_movement/:id', (req, res) => {
+  const id = req.params.id;
+  db.query('SELECT * FROM movementdata WHERE movementID = ?', [id], (err, result) => {
+    if (err) return res.status(500).json({ error: err });
+    if (result.length === 0) return res.status(404).json({ message: 'Record not found' });
+    res.json(result[0]);
+  });
+});
+
+// UPDATE: Update movement record by ID (including punchingTime)
+app.put('/update_movement/:id', (req, res) => {
+  const id = req.params.id;
+  const {
+    userID,
+    username,
+    visitingStatus,
+    placeName,
+    partyName,
+    purpose,
+    remark,
+    punchTime,
+    punchingTime
+  } = req.body;
+
+  const sql = `UPDATE movementdata SET 
+    userID = ?, username = ?, visitingStatus = ?, placeName = ?, 
+    partyName = ?, purpose = ?, remark = ?, punchTime = ?, punchingTime = ?
+    WHERE movementID = ?`;
+
+  db.query(sql, [
+    userID, username, visitingStatus, placeName,
+    partyName, purpose, remark, punchTime, punchingTime, id
+  ], (err, result) => {
+    if (err) return res.status(500).json({ error: err });
+    res.json({ message: 'Movement record updated' });
+  });
+});
+
+// DELETE: Remove a movement record
+app.delete('/delete_movement/:id', (req, res) => {
+  const id = req.params.id;
+  db.query('DELETE FROM movementdata WHERE movementID = ?', [id], (err, result) => {
+    if (err) return res.status(500).json({ error: err });
+    res.json({ message: 'Movement record deleted' });
   });
 });
 

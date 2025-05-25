@@ -1,9 +1,12 @@
 import React from 'react'
 
 const UserReport = () => {
+
+    
+
     return (
         <>
-            <h1>User Dashboard</h1>
+            {/* User Details with user all movement data */}
         </>
     )
 }
