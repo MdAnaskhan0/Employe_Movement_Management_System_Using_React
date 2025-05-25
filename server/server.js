@@ -129,21 +129,6 @@ app.get('/users', (req, res) => {
   });
 });
 
-// // Get user by ID
-// app.get('/users/:id', (req, res) => {
-//   const userId = req.params.id;
-
-//   const sql = 'SELECT * FROM users WHERE userID = ?';
-
-//   db.query(sql, [userId], (err, results) => {
-//     if (err) {
-//       console.error('Error fetching user:', err);
-//       return res.status(500).send({ status: 'error', message: 'Database error' });
-//     }
-
-//     res.send({ status: 'ok', data: results });
-//   });
-// });
 
 // Update user
 app.put('/users/:id', (req, res) => {
@@ -297,8 +282,6 @@ app.post('/movementdata', (req, res) => {
 // Get all movement data for a user
 app.get('/movementdata/:userID', (req, res) => {
   const { userID } = req.params;
-  console.log(`Fetching movement data for userID: ${userID}`);
-
   const sql = 'SELECT * FROM movementdata WHERE userID = ?';
   db.query(sql, [userID], (err, result) => {
     if (err) {
