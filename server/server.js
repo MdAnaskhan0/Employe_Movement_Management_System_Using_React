@@ -10,9 +10,15 @@ const port = 5137;
 // Middleware
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:5174', 'http://192.168.111.140:5173', 'http://192.168.111.140:5173/'],
+  origin: [
+    'http://localhost:5173', 
+    'http://localhost:5174', 
+    'http://192.168.111.140:5173', 
+    'http://192.168.111.140:5174'
+  ],
   credentials: true
 }));
+
 
 app.use(express.json());
 
@@ -208,26 +214,33 @@ app.get('/unassigned-team-leaders', (req, res) => {
 
 
 
-// Login user
 app.post('/login', (req, res) => {
   const { username, password } = req.body;
+  if (!username || !password) {
+    return res.status(400).json({ status: 'error', message: 'Username and password required' });
+  }
 
   const sql = 'SELECT * FROM users WHERE username = ? AND password = ?';
-  db.query(sql, [username, password], (err, result) => {
+
+  db.query(sql, [username, password], (err, results) => {
     if (err) {
-      console.error(err);
-      return res.status(500).send({ status: 'error', message: 'Error logging in' });
+      return res.status(500).json({ status: 'error', message: 'Internal Server Error' });
     }
-    if (result.length > 0) {
-      res.send({
-        status: 'ok',
-        message: 'Login successful',
-        userID: result[0].userID,
-        username: result[0].username
-      });
-    } else {
-      res.status(401).send({ status: 'error', message: 'Invalid credentials' });
+
+    if (results.length === 0) {
+      return res.status(401).json({ status: 'error', message: 'Invalid credentials' });
     }
+
+    const user = results[0];
+    res.json({
+      status: 'success',
+      user: {
+        userID: user.userID,
+        username: user.username,
+        name: user.Name,
+        role: user.Role,
+      },
+    });
   });
 });
 

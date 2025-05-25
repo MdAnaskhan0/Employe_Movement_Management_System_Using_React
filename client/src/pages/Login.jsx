@@ -1,95 +1,37 @@
-import React, { useState, useContext } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import axios from 'axios';
-import { AuthContext } from '../context/AuthContext'; // import AuthContext
+import { useState } from 'react';
+import { useAuth } from '../auth/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 export default function Login() {
-  const [value, setValue] = useState({ username: '', password: '' });
+  const { login } = useAuth();
+  const [form, setForm] = useState({ username: '', password: '' });
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const { login } = useContext(AuthContext); // get login method from context
+  const handleChange = e => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
 
-  const handleChange = (e) => {
-    const { name, value: inputValue } = e.target;
-    setValue((prevValue) => ({
-      ...prevValue,
-      [name]: inputValue,
-    }));
-  };
-
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
-    try {
-      const res = await axios.post(
-        'http://localhost:5137/login',
-        {
-          username: value.username,
-          password: value.password,
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-
-      if (res.data.status === 'ok') {
-        const userData = { userID: res.data.userID, username: value.username, email: res.data.email };
-        login(userData);  // save user info in context
-        console.log(res.data);
-        navigate(`/user-information/${res.data.userID}`);
-      } else {
-        alert(res.data.message || 'Invalid credentials');
-      }
-    } catch (err) {
-      console.error('Axios error:', err);
-      alert(err.response?.data?.message || 'Error logging in');
+    const username = form.username.trim();
+    const password = form.password.trim();
+    console.log('Attempt login:', username, password);
+    const res = await login(username, password);
+    if (res.success) {
+      if (res.role === 'admin') navigate('/admin/dashboard');
+      else if (res.role === 'teamLeader') navigate('/team/upload-report');
+      else if (res.role === 'user') navigate('/user/my-report');
+      else navigate('/movement-reports');
+    } else {
+      setError(res.message);
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-[75.5vh] md:min-h-[80vh] bg-white">
-      <div className="w-full max-w-md bg-white p-8 rounded-xl shadow-md">
-        <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">Login</h2>
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
-            <input
-              type="text"
-              name="username"
-              value={value.username}
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-500"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-            <input
-              type="password"
-              name="password"
-              value={value.password}
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-500"
-            />
-          </div>
-          <button
-            type="submit"
-            className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition duration-200"
-          >
-            Login
-          </button>
-          <div>
-            <p className="text-sm text-gray-700">
-              Don't have an account?{' '}
-              <Link to="/signup" className="text-blue-600 font-bold hover:underline">
-                Sign Up
-              </Link>
-            </p>
-          </div>
-        </form>
-      </div>
-    </div>
+    <form onSubmit={handleSubmit}>
+      <input name="username" onChange={handleChange} placeholder="Username" />
+      <input name="password" type="password" onChange={handleChange} placeholder="Password" />
+      <button type="submit">Login</button>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+    </form>
   );
 }
