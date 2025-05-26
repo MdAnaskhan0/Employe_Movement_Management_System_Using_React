@@ -37,7 +37,6 @@ const MovementReports = () => {
     try {
       const response = await axios.get(`http://192.168.111.140:5137/get_all_movement`);
       setMovementReports(response.data);
-      // toast.success('Data loaded successfully');
     } catch (err) {
       console.error(err);
       toast.error('Failed to fetch movement reports');
@@ -221,8 +220,8 @@ const MovementReports = () => {
                 onChange={(e) => setStatusFilter(e.target.value)}
               >
                 <option value="all">All Statuses</option>
-                <option value="IN">IN</option>
-                <option value="OUT">OUT</option>
+                <option value="Punch In">Punch In</option>
+                <option value="Punch Out">Punch Out</option>
               </select>
             </div>
 
@@ -298,8 +297,13 @@ const MovementReports = () => {
                         onClick={() => requestSort('dateTime')}
                       >
                         <div className="flex items-center">
-                          Date & Time
+                          Date
                           <FaSort className="ml-1 text-gray-400" />
+                        </div>
+                      </th>
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <div className="flex items-center">
+                          <FaSort className="mr-1 text-gray-400" />Submitted Time
                         </div>
                       </th>
                       <th 
@@ -318,7 +322,7 @@ const MovementReports = () => {
                         onClick={() => requestSort('visitingStatus')}
                       >
                         <div className="flex items-center">
-                          Status
+                          Punch Status
                           <FaSort className="ml-1 text-gray-400" />
                         </div>
                       </th>
