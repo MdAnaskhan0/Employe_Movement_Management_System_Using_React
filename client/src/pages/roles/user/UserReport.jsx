@@ -376,6 +376,30 @@ const DownloadButton = styled.button`
   }
 `;
 
+const DropdownWrapper = styled.div`
+  .dropdown__control {
+    color: #4a5568;
+    font-size: 0.9rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    background-color: white;
+    padding: 2px 4px;
+    min-height: 38px;
+    transition: all 0.2s;
+  }
+
+  .dropdown__control--is-focused {
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+  }
+
+  .dropdown__menu {
+    z-index: 9999;
+  }
+`;
+
+
+
 const UserReport = () => {
     const { user } = useAuth();
     const [userData, setUserData] = useState(null);
@@ -387,6 +411,7 @@ const UserReport = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [searchTerm, setSearchTerm] = useState('');
+    const [statusFilter, setStatusFilter] = useState('');
     const [dateFilter, setDateFilter] = useState({
         startDate: null,
         endDate: null
@@ -428,8 +453,14 @@ const UserReport = () => {
                 (item.placeName && item.placeName.toLowerCase().includes(term)) ||
                 (item.partyName && item.partyName.toLowerCase().includes(term)) ||
                 (item.purpose && item.purpose.toLowerCase().includes(term)) ||
-                (item.remark && item.remark.toLowerCase().includes(term))
+                (item.punchTime && item.punchTime.toLowerCase().includes(term))
+
             );
+        }
+
+        // Apply status filter
+        if (statusFilter) {
+            result = result.filter(item => item.punchTime?.includes(statusFilter));
         }
 
         // Apply date filter
@@ -456,7 +487,7 @@ const UserReport = () => {
 
         setFilteredData(result);
         setCurrentPage(1); // Reset to first page when filters change
-    }, [searchTerm, dateFilter, movementData]);
+    }, [searchTerm, dateFilter, movementData, statusFilter]);
 
     // Pagination logic
     const indexOfLastRow = currentPage * rowsPerPage;
@@ -690,6 +721,13 @@ const UserReport = () => {
                     />
                 </SearchInput>
 
+                {/* Sort by Status */}
+                <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="px-2 py-2.5 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    <option value="">Punch Status</option>
+                    <option value="Punch In">Punch In</option>
+                    <option value="Punch Out">Punch Out</option>
+                </select>
+
                 <DateFilterContainer>
                     <FiCalendar size={16} />
                     <span>From:</span>
@@ -739,8 +777,8 @@ const UserReport = () => {
                             <TableHeader className='bg-gray-600'>
                                 <tr>
                                     <TableHeaderCell>Date</TableHeaderCell>
-                                    <TableHeaderCell>Status</TableHeaderCell>
                                     <TableHeaderCell>Punch Time</TableHeaderCell>
+                                    <TableHeaderCell>Punch Status</TableHeaderCell>
                                     <TableHeaderCell>Visit Status</TableHeaderCell>
                                     <TableHeaderCell>Place</TableHeaderCell>
                                     <TableHeaderCell>Party</TableHeaderCell>
@@ -760,11 +798,6 @@ const UserReport = () => {
                                             })}
                                         </TableCell>
                                         <TableCell>
-                                            <StatusBadge status={mv.punchTime?.includes('In') ? 'In' : 'Out'}>
-                                                {mv.punchTime || 'N/A'}
-                                            </StatusBadge>
-                                        </TableCell>
-                                        <TableCell>
                                             {editRowId === mv.movementID ? (
                                                 <InputField
                                                     type="time"
@@ -775,6 +808,11 @@ const UserReport = () => {
                                             ) : (
                                                 mv.punchingTime || 'N/A'
                                             )}
+                                        </TableCell>
+                                        <TableCell>
+                                            <StatusBadge status={mv.punchTime?.includes('In') ? 'In' : 'Out'}>
+                                                {mv.punchTime || 'N/A'}
+                                            </StatusBadge>
                                         </TableCell>
                                         <TableCell>
                                             <StatusBadge status={mv.visitingStatus}>
@@ -830,14 +868,17 @@ const UserReport = () => {
                     </TableContainer>
 
                     <PaginationContainer>
-                        <Select
-                            options={pageSizeOptions}
-                            onChange={(e) => setRowsPerPage(e.value)}
-                            value={pageSizeOptions.find((opt) => opt.value === rowsPerPage)}
-                            placeholder="Rows per page"
-                            className="dropdown-container"
-                            classNamePrefix="dropdown"
-                        />
+                        <DropdownWrapper>
+                            <Select
+                                options={pageSizeOptions}
+                                onChange={(e) => setRowsPerPage(e.value)}
+                                value={pageSizeOptions.find(opt => opt.value === rowsPerPage)}
+                                placeholder="Rows per page"
+                                classNamePrefix="dropdown"
+                                menuPlacement="auto" // ensures it opens upward if needed
+                            />
+                        </DropdownWrapper>
+
 
                         <PaginationInfo>
                             Showing {indexOfFirstRow + 1} to {Math.min(indexOfLastRow, filteredData.length)} of {filteredData.length} entries
