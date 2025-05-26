@@ -1,11 +1,7 @@
-// src/components/Sidebar/Sidebar.jsx
-
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../auth/AuthContext';
 import { sidebarMenu } from '../../config/SidebarMenuConfig';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import { FiMenu, FiX, FiChevronDown, FiChevronRight } from 'react-icons/fi';
 
 export default function Sidebar() {
@@ -18,11 +14,7 @@ export default function Sidebar() {
     useEffect(() => {
         const handleResize = () => {
             setIsMobile(window.innerWidth < 768);
-            if (window.innerWidth >= 768) {
-                setIsOpen(true);
-            } else {
-                setIsOpen(false);
-            }
+            setIsOpen(window.innerWidth >= 768);
         };
 
         window.addEventListener('resize', handleResize);
@@ -30,16 +22,13 @@ export default function Sidebar() {
     }, []);
 
     useEffect(() => {
-        // Auto open submenu if current path matches any submenu item
         if (user) {
             const role = user.role.toLowerCase().replace(/\s+/g, '');
             const menu = sidebarMenu[role] || [];
             const newActive = {};
             menu.forEach((item, idx) => {
-                if (item.submenu) {
-                    if (item.submenu.some(sub => location.pathname.startsWith(sub.path))) {
-                        newActive[idx] = true;
-                    }
+                if (item.submenu && item.submenu.some(sub => location.pathname.startsWith(sub.path))) {
+                    newActive[idx] = true;
                 }
             });
             setActiveSubmenus(newActive);
@@ -58,18 +47,13 @@ export default function Sidebar() {
         }));
     };
 
-    const handleLinkClick = (item) => {
+    const handleLinkClick = () => {
         if (isMobile) setIsOpen(false);
-        // toast.info(`Navigating to ${item.name}`, {
-        //     position: "top-right",
-        //     autoClose: 2000,
-        //     hideProgressBar: true,
-        // });
     };
 
     return (
         <>
-            {/* Mobile menu button */}
+            {/* Mobile toggle button */}
             <button
                 onClick={() => setIsOpen(!isOpen)}
                 className="md:hidden fixed top-4 left-4 z-50 p-2 rounded-md bg-gray-200 text-gray-800 shadow-lg"
@@ -79,13 +63,13 @@ export default function Sidebar() {
 
             {/* Sidebar */}
             <aside
-                className={`fixed md:relative z-40 w-64 bg-gray-800 text-gray-100 h-full p-4 border-r border-gray-200 shadow-lg transition-all duration-300 ease-in-out transform min-h-screen ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+                className={`fixed md:relative inset-y-0 left-0 z-40 w-64 bg-gray-800 text-gray-100 p-4 border-r border-gray-700 shadow-lg transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
                     }`}
             >
                 <div className="flex flex-col h-full">
                     <div className="px-3 py-2 text-sm border-b border-gray-600 mb-2">
                         <h1 className="font-bold text-gray-100">{user.name}</h1>
-                        <p className="text-gray-500 capitalize">{user.role}</p>
+                        <p className="text-gray-400 capitalize">{user.role}</p>
                     </div>
 
                     <ul className="flex-1 space-y-1 overflow-y-auto">
@@ -104,14 +88,12 @@ export default function Sidebar() {
                                             {activeSubmenus[idx] ? <FiChevronDown /> : <FiChevronRight />}
                                         </button>
 
-                                        <div
-                                            className={`overflow-hidden transition-all duration-300 pl-4 border-l border-gray-700 ${activeSubmenus[idx] ? 'max-h-96 py-2' : 'max-h-0'} `}
-                                        >
+                                        <div className={`transition-all pl-4 border-l border-gray-700 ${activeSubmenus[idx] ? 'max-h-96 py-2' : 'max-h-0 overflow-hidden'}`}>
                                             {item.submenu.map((subItem, subIdx) => (
                                                 <Link
                                                     key={subIdx}
                                                     to={subItem.path}
-                                                    onClick={() => handleLinkClick(subItem)}
+                                                    onClick={handleLinkClick}
                                                     className={`block px-3 py-2 rounded-lg text-sm hover:bg-gray-600 ${location.pathname === subItem.path ? 'bg-gray-700 text-white font-medium' : 'text-gray-300'}`}
                                                 >
                                                     {subItem.name}
@@ -122,9 +104,8 @@ export default function Sidebar() {
                                 ) : (
                                     <Link
                                         to={item.path}
-                                        onClick={() => handleLinkClick(item)}
-                                        className={`block px-3 py-3 rounded-lg hover:bg-gray-600 transition-colors ${location.pathname === item.path ? 'bg-gray-600 text-gray-50 font-medium' : 'text-gray-300'
-                                            }`}
+                                        onClick={handleLinkClick}
+                                        className={`block px-3 py-3 rounded-lg hover:bg-gray-600 transition-colors ${location.pathname === item.path ? 'bg-gray-600 text-white font-medium' : 'text-gray-300'}`}
                                     >
                                         <span className="flex items-center">
                                             {item.icon && <span className="mr-3">{item.icon}</span>}
