@@ -2,26 +2,30 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../../../auth/AuthContext';
 import { toast, ToastContainer } from 'react-toastify';
+import { FiDownload, FiSearch, FiCalendar } from 'react-icons/fi';
 import 'react-toastify/dist/ReactToastify.css';
-import { 
-  FiEdit, 
-  FiSave, 
-  FiUser, 
-  FiBriefcase, 
-  FiHome, 
-  FiPhone, 
-  FiClock,
-  FiMapPin,
-  FiUsers,
-  FiTarget,
-  FiFileText,
-  FiChevronLeft,
-  FiChevronRight,
-  FiChevronsLeft,
-  FiChevronsRight
+import Select from 'react-select';
+import {
+    FiEdit,
+    FiSave,
+    FiUser,
+    FiBriefcase,
+    FiHome,
+    FiPhone,
+    FiClock,
+    FiMapPin,
+    FiUsers,
+    FiTarget,
+    FiFileText,
+    FiChevronLeft,
+    FiChevronRight,
+    FiChevronsLeft,
+    FiChevronsRight
 } from 'react-icons/fi';
 import styled from 'styled-components';
 import { Skeleton } from '@mui/material';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 // Styled Components
 const Container = styled.div`
@@ -164,7 +168,7 @@ const StyledTable = styled.table`
 `;
 
 const TableHeader = styled.thead`
-  background-color: #f8fafc;
+  background-color: #000000;
 `;
 
 const TableRow = styled.tr`
@@ -187,7 +191,7 @@ const TableHeaderCell = styled.th`
   padding: 15px;
   text-align: left;
   font-weight: 600;
-  color: #4a5568;
+  color: #ffffff;
   text-transform: uppercase;
   font-size: 0.75rem;
   letter-spacing: 0.5px;
@@ -281,12 +285,12 @@ const StatusBadge = styled.span`
   border-radius: 12px;
   font-size: 0.75rem;
   font-weight: 500;
-  background-color: ${props => 
-    props.status === 'In' ? '#e3f9e5' : 
-    props.status === 'Out' ? '#ffe3e3' : '#f0f7ff'};
-  color: ${props => 
-    props.status === 'In' ? '#1b7052' : 
-    props.status === 'Out' ? '#c92a2a' : '#1864ab'};
+  background-color: ${props =>
+        props.status === 'In' ? '#e3f9e5' :
+            props.status === 'Out' ? '#ffe3e3' : '#f0f7ff'};
+  color: ${props =>
+        props.status === 'In' ? '#1b7052' :
+            props.status === 'Out' ? '#c92a2a' : '#1864ab'};
 `;
 
 const SkeletonRow = styled.tr`
@@ -295,15 +299,98 @@ const SkeletonRow = styled.tr`
   }
 `;
 
+const FilterContainer = styled.div`
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+`;
+
+const SearchInput = styled.div`
+  position: relative;
+  flex: 1;
+  min-width: 250px;
+
+  input {
+    padding: 8px 12px 8px 35px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    width: 100%;
+    font-family: inherit;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+
+    &:focus {
+      outline: none;
+      border-color: #3498db;
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+    }
+  }
+
+  svg {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #7f8c8d;
+  }
+`;
+
+const DateFilterContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+
+  .react-datepicker-wrapper {
+    width: 120px;
+  }
+
+  .react-datepicker__input-container input {
+    border: none;
+    width: 100%;
+    font-size: 0.9rem;
+    color: #4a5568;
+  }
+`;
+
+const DownloadButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background-color: #2980b9;
+  }
+`;
+
 const UserReport = () => {
     const { user } = useAuth();
     const [userData, setUserData] = useState(null);
     const [movementData, setMovementData] = useState([]);
+    const [filteredData, setFilteredData] = useState([]);
     const [editRowId, setEditRowId] = useState(null);
     const [editFormData, setEditFormData] = useState({});
     const [isLoading, setIsLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
-    const [rowsPerPage] = useState(5);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [dateFilter, setDateFilter] = useState({
+        startDate: null,
+        endDate: null
+    });
 
     useEffect(() => {
         const fetchData = async () => {
@@ -316,7 +403,9 @@ const UserReport = () => {
 
                 setUserData(userRes.data.data);
                 const movement = movementRes.data;
-                setMovementData(Array.isArray(movement) ? movement : [movement]);
+                const dataArray = Array.isArray(movement) ? movement : [movement];
+                setMovementData(dataArray);
+                setFilteredData(dataArray);
             } catch (err) {
                 console.error('Error fetching user or movement data:', err);
                 toast.error('Failed to load data. Please try again.');
@@ -328,11 +417,52 @@ const UserReport = () => {
         fetchData();
     }, [user]);
 
+    // Apply filters whenever search term or date range changes
+    useEffect(() => {
+        let result = movementData;
+
+        // Apply search filter
+        if (searchTerm) {
+            const term = searchTerm.toLowerCase();
+            result = result.filter(item =>
+                (item.placeName && item.placeName.toLowerCase().includes(term)) ||
+                (item.partyName && item.partyName.toLowerCase().includes(term)) ||
+                (item.purpose && item.purpose.toLowerCase().includes(term)) ||
+                (item.remark && item.remark.toLowerCase().includes(term))
+            );
+        }
+
+        // Apply date filter
+        if (dateFilter.startDate || dateFilter.endDate) {
+            result = result.filter(item => {
+                const itemDate = new Date(item.dateTime);
+                const start = dateFilter.startDate ? new Date(dateFilter.startDate) : null;
+                const end = dateFilter.endDate ? new Date(dateFilter.endDate) : null;
+
+                if (start && end) {
+                    start.setHours(0, 0, 0, 0);
+                    end.setHours(23, 59, 59, 999);
+                    return itemDate >= start && itemDate <= end;
+                } else if (start) {
+                    start.setHours(0, 0, 0, 0);
+                    return itemDate >= start;
+                } else if (end) {
+                    end.setHours(23, 59, 59, 999);
+                    return itemDate <= end;
+                }
+                return true;
+            });
+        }
+
+        setFilteredData(result);
+        setCurrentPage(1); // Reset to first page when filters change
+    }, [searchTerm, dateFilter, movementData]);
+
     // Pagination logic
     const indexOfLastRow = currentPage * rowsPerPage;
     const indexOfFirstRow = indexOfLastRow - rowsPerPage;
-    const currentRows = movementData.slice(indexOfFirstRow, indexOfLastRow);
-    const totalPages = Math.ceil(movementData.length / rowsPerPage);
+    const currentRows = filteredData.slice(indexOfFirstRow, indexOfLastRow);
+    const totalPages = Math.ceil(filteredData.length / rowsPerPage);
 
     const handleEditClick = (movement) => {
         setEditRowId(movement.movementID);
@@ -377,6 +507,59 @@ const UserReport = () => {
         if (!name) return '';
         const names = name.split(' ');
         return names.map(n => n[0]).join('').toUpperCase();
+    };
+
+    const pageSizeOptions = [
+        { value: 5, label: '5 rows' },
+        { value: 10, label: '10 rows' },
+        { value: 20, label: '20 rows' },
+        { value: 50, label: '50 rows' },
+        { value: 100, label: '100 rows' }
+    ];
+
+    const downloadCSV = () => {
+        // Prepare CSV header
+        const headers = [
+            'Date',
+            'Status',
+            'Punch Time',
+            'Visit Status',
+            'Place',
+            'Party',
+            'Purpose',
+            'Remarks'
+        ].join(',');
+
+        // Prepare CSV rows
+        const rows = filteredData.map(row => {
+            return [
+                new Date(row.dateTime).toLocaleDateString('en-US'),
+                row.punchTime || 'N/A',
+                row.punchingTime || 'N/A',
+                row.visitingStatus,
+                row.placeName,
+                row.partyName,
+                row.purpose || '-',
+                row.remark || '-'
+            ].map(field => `"${String(field).replace(/"/g, '""')}"`).join(',');
+        });
+
+        // Combine header and rows
+        const csvContent = [headers, ...rows].join('\n');
+
+        // Create download link
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `movement_report_${new Date().toISOString().slice(0, 10)}.csv`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
+    const clearDateFilters = () => {
+        setDateFilter({ startDate: null, endDate: null });
     };
 
     if (isLoading && !userData) {
@@ -443,7 +626,7 @@ const UserReport = () => {
         <Container>
             <ToastContainer position="top-right" autoClose={3000} />
             <Header>User Report</Header>
-            
+
             <ProfileSection>
                 <ProfileCard>
                     <Avatar>{getInitials(userData.Name)}</Avatar>
@@ -495,16 +678,65 @@ const UserReport = () => {
                 <FiClock size={20} />
                 Movement History
             </SectionTitle>
-            
-            {movementData.length === 0 ? (
+
+            <FilterContainer>
+                <SearchInput>
+                    <FiSearch size={18} />
+                    <input
+                        type="text"
+                        placeholder="Search by place, party, purpose..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                </SearchInput>
+
+                <DateFilterContainer>
+                    <FiCalendar size={16} />
+                    <span>From:</span>
+                    <DatePicker
+                        selected={dateFilter.startDate}
+                        onChange={(date) => setDateFilter({ ...dateFilter, startDate: date })}
+                        selectsStart
+                        startDate={dateFilter.startDate}
+                        endDate={dateFilter.endDate}
+                        placeholderText="Start date"
+                        dateFormat="dd MMM yyyy"
+                        isClearable
+                    />
+                    <span>To:</span>
+                    <DatePicker
+                        selected={dateFilter.endDate}
+                        onChange={(date) => setDateFilter({ ...dateFilter, endDate: date })}
+                        selectsEnd
+                        startDate={dateFilter.startDate}
+                        endDate={dateFilter.endDate}
+                        minDate={dateFilter.startDate}
+                        placeholderText="End date"
+                        dateFormat="dd MMM yyyy"
+                        isClearable
+                    />
+                    {(dateFilter.startDate || dateFilter.endDate) && (
+                        <ActionButton onClick={clearDateFilters} style={{ marginLeft: '0.5rem' }}>
+                            Clear
+                        </ActionButton>
+                    )}
+                </DateFilterContainer>
+
+                <DownloadButton onClick={downloadCSV}>
+                    <FiDownload size={16} />
+                    Download CSV ({filteredData.length} records)
+                </DownloadButton>
+            </FilterContainer>
+
+            {filteredData.length === 0 ? (
                 <TableContainer style={{ padding: '2rem', textAlign: 'center' }}>
-                    No movement data found.
+                    {isLoading ? 'Loading...' : 'No movement data found matching your criteria.'}
                 </TableContainer>
             ) : (
                 <>
                     <TableContainer>
                         <StyledTable>
-                            <TableHeader>
+                            <TableHeader className='bg-gray-600'>
                                 <tr>
                                     <TableHeaderCell>Date</TableHeaderCell>
                                     <TableHeaderCell>Status</TableHeaderCell>
@@ -598,23 +830,32 @@ const UserReport = () => {
                     </TableContainer>
 
                     <PaginationContainer>
+                        <Select
+                            options={pageSizeOptions}
+                            onChange={(e) => setRowsPerPage(e.value)}
+                            value={pageSizeOptions.find((opt) => opt.value === rowsPerPage)}
+                            placeholder="Rows per page"
+                            className="dropdown-container"
+                            classNamePrefix="dropdown"
+                        />
+
                         <PaginationInfo>
-                            Showing {indexOfFirstRow + 1} to {Math.min(indexOfLastRow, movementData.length)} of {movementData.length} entries
+                            Showing {indexOfFirstRow + 1} to {Math.min(indexOfLastRow, filteredData.length)} of {filteredData.length} entries
                         </PaginationInfo>
                         <PaginationButtons>
-                            <PaginationButton 
-                                onClick={() => paginate(1)} 
+                            <PaginationButton
+                                onClick={() => paginate(1)}
                                 disabled={currentPage === 1}
                             >
                                 <FiChevronsLeft size={16} />
                             </PaginationButton>
-                            <PaginationButton 
-                                onClick={() => paginate(currentPage - 1)} 
+                            <PaginationButton
+                                onClick={() => paginate(currentPage - 1)}
                                 disabled={currentPage === 1}
                             >
                                 <FiChevronLeft size={16} />
                             </PaginationButton>
-                            
+
                             {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                                 let pageNum;
                                 if (totalPages <= 5) {
@@ -626,7 +867,7 @@ const UserReport = () => {
                                 } else {
                                     pageNum = currentPage - 2 + i;
                                 }
-                                
+
                                 return (
                                     <PaginationButton
                                         key={pageNum}
@@ -637,15 +878,15 @@ const UserReport = () => {
                                     </PaginationButton>
                                 );
                             })}
-                            
-                            <PaginationButton 
-                                onClick={() => paginate(currentPage + 1)} 
+
+                            <PaginationButton
+                                onClick={() => paginate(currentPage + 1)}
                                 disabled={currentPage === totalPages}
                             >
                                 <FiChevronRight size={16} />
                             </PaginationButton>
-                            <PaginationButton 
-                                onClick={() => paginate(totalPages)} 
+                            <PaginationButton
+                                onClick={() => paginate(totalPages)}
                                 disabled={currentPage === totalPages}
                             >
                                 <FiChevronsRight size={16} />
