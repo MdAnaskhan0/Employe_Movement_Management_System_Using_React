@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { FaBars, FaTimes, FaUser, FaClock, FaMapMarkerAlt, FaBuilding, FaPhone, FaEnvelope, FaIdBadge, FaPeopleArrows,FaFingerprint, FaRegBuilding} from 'react-icons/fa';
+import { FaBars, FaTimes, FaUser, FaClock, FaMapMarkerAlt, FaBuilding, FaPhone, FaEnvelope, FaIdBadge, FaPeopleArrows, FaFingerprint, FaRegBuilding } from 'react-icons/fa';
 import { CiCalendarDate } from "react-icons/ci";
 import { MdWork, MdDepartureBoard, MdDescription, MdNote } from 'react-icons/md';
 import { FiDownload, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
@@ -47,9 +47,10 @@ const UserProfile = () => {
                 const userRes = await axios.get(`http://192.168.111.140:5137/users/${userID}`);
                 setUserData(userRes.data.data);
 
-                const movementRes = await axios.get(`http://192.168.111.140:5137/movementdata/${userID}`);
-                setMovementData(movementRes.data.data || []);
-                setFilteredData(movementRes.data.data || []);
+                const movementRes = await axios.get(`http://192.168.111.140:5137/get_movement/${userID}`);
+                console.log(movementRes.data);
+                setMovementData(movementRes.data || []);
+                setFilteredData(movementRes.data || []);
 
                 // Fetch dropdown data
                 const responseRoles = await axios.get('http://192.168.111.140:5137/roles');
@@ -58,12 +59,11 @@ const UserProfile = () => {
                 const responseCompanyNames = await axios.get('http://192.168.111.140:5137/companynames');
                 const responsePunchStatuses = await axios.get('http://192.168.111.140:5137/visitingstatus');
                 const responseVisitingStatuses = await axios.get('http://192.168.111.140:5137/visitingstatus');
-                
+
                 setRoles(responseRoles.data);
                 setDesignations(responseDesignations.data);
                 setDepartments(responseDepartments.data);
                 setCompanyNames(responseCompanyNames.data.data);
-                console.log(responseCompanyNames.data.data);
                 setPunchStatuses(responsePunchStatuses.data);
                 setVisitingStatuses(responseVisitingStatuses.data);
             } catch (err) {
@@ -453,8 +453,8 @@ const UserProfile = () => {
 
                     {/* Movement Data Section */}
                     <section>
+                        <h2 className="text-xl font-bold text-gray-800 mb-5">Movement History</h2>
                         <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-xl font-bold text-gray-800">Movement History</h2>
                             {/* Filters */}
                             <div className="flex flex-wrap gap-2 items-center">
                                 <input
@@ -528,12 +528,17 @@ const UserProfile = () => {
                                                 </th>
                                                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
                                                     <div className="flex items-center">
-                                                        <FaClock className="mr-2" /> Time
+                                                        <FaClock className="mr-2" /> Submited Time
+                                                    </div>
+                                                </th>
+                                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
+                                                    <div className="flex items-center">
+                                                        <FaClock className="mr-2" /> Punch Time
                                                     </div>
                                                 </th>
                                                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
                                                     <div className='flex items-center'>
-                                                        <FaFingerprint className="mr-2" /> Punch Time
+                                                        <FaFingerprint className="mr-2" /> Punch Status
                                                     </div>
                                                 </th>
                                                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
@@ -580,6 +585,9 @@ const UserProfile = () => {
                                                         </td>
                                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                                             {timePart}
+                                                        </td>
+                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                            {mv.punchingTime}
                                                         </td>
                                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                                             {mv.punchTime}

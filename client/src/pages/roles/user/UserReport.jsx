@@ -806,9 +806,16 @@ const UserReport = () => {
                                                     onChange={handleInputChange}
                                                 />
                                             ) : (
-                                                mv.punchingTime || 'N/A'
+                                                mv.punchingTime
+                                                    ? new Date(`1970-01-01T${mv.punchingTime}`).toLocaleTimeString('en-US', {
+                                                        hour: 'numeric',
+                                                        minute: 'numeric',
+                                                        hour12: true,
+                                                    })
+                                                    : 'N/A'
                                             )}
                                         </TableCell>
+
                                         <TableCell>
                                             <StatusBadge status={mv.punchTime?.includes('In') ? 'In' : 'Out'}>
                                                 {mv.punchTime || 'N/A'}
