@@ -27,41 +27,52 @@ export default function AppRoutes() {
   return (
     <>
       <Header />
-      <div className="flex">
-        <Sidebar />
-        <main className="flex-1 p-4 min-h-[80vh] bg-white">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/unauthorized" element={<div>Unauthorized</div>} />
+      <Routes>
+        {/* Public Home Route (with Login Form) */}
+        <Route path="/" element={<Home />} />
 
-            <Route element={<PrivateRoute allowedRoles={['admin']} />}>
-              <Route path="/admin/MovementReports" element={<MovementReports />} />
-              <Route path="/admin/UserProfile" element={<UserProfile />} />
-              <Route path="/admin/Users" element={<Users />} />
-            </Route>
+        {/* Protected Routes */}
+        <Route element={<PrivateRoute allowedRoles={['admin', 'manager', 'teamLeader', 'user']} />}>
+          <Route
+            path="*"
+            element={
+              <>
+                <div className="flex">
+                  <Sidebar />
+                  <main className="flex-1 p-4 min-h-[80vh] bg-white">
+                    <Routes>
+                      <Route path="/dashboard" element={<Dashboard />} />
+                      <Route path="/unauthorized" element={<div>Unauthorized</div>} />
 
-            <Route element={<PrivateRoute allowedRoles={['accounce', 'manager']} />}>
-              <Route path="/movement-reports" element={<AllMovementReports />} />
-            </Route>
+                      {/* Admin */}
+                      <Route path="/admin/MovementReports" element={<MovementReports />} />
+                      <Route path="/admin/UserProfile" element={<UserProfile />} />
+                      <Route path="/admin/Users" element={<Users />} />
 
-            <Route element={<PrivateRoute allowedRoles={['teamLeader']} />}>
-              <Route path="/team/upload-report" element={<UploadReport />} />
-              <Route path="/team/LeaderReport" element={<LeaderReport />} />
-              <Route path="/team/TeamReports" element={<TeamReports />} />
-            </Route>
+                      {/* Manager */}
+                      <Route path="/movement-reports" element={<AllMovementReports />} />
 
-            <Route element={<PrivateRoute allowedRoles={['user']} />}>
-              <Route path="/user/upload-report" element={<UploadReportUser />} />
-              <Route path="/user/UserReport" element={<UserReport />} />
-            </Route>
+                      {/* Team Leader */}
+                      <Route path="/team/upload-report" element={<UploadReport />} />
+                      <Route path="/team/LeaderReport" element={<LeaderReport />} />
+                      <Route path="/team/TeamReports" element={<TeamReports />} />
 
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </main>
-      </div>
+                      {/* User */}
+                      <Route path="/user/upload-report" element={<UploadReportUser />} />
+                      <Route path="/user/UserReport" element={<UserReport />} />
+
+                      {/* Not Found */}
+                      <Route path="*" element={<NotFound />} />
+                    </Routes>
+                  </main>
+                </div>
+                <ToastContainer position="bottom-right" autoClose={3000} />
+              </>
+            }
+          />
+        </Route>
+      </Routes>
       <Footer />
-      <ToastContainer position="bottom-right" autoClose={3000} />
     </>
   );
 }
