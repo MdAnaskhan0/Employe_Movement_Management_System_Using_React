@@ -5,6 +5,7 @@ import { FiClock, FiMapPin, FiBriefcase, FiFileText, FiEdit2, FiSend } from 'rea
 import { motion } from 'framer-motion';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import PlaceNames from '../../../assets/Json/Places.json';
 
 const UploadReportUser = () => {
   const { user } = useAuth();
@@ -24,6 +25,8 @@ const UploadReportUser = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [visitingStatuses, setVisitingStatuses] = useState([]);
   const [partyNames, setPartyNames] = useState([]);
+  const [filteredPlaces, setFilteredPlaces] = useState([]);
+  const [filteredParties, setFilteredParties] = useState([]);
 
   useEffect(() => {
     if (user) {
@@ -44,7 +47,7 @@ const UploadReportUser = () => {
         ]);
 
         setVisitingStatuses(visitRes.data);
-        setPartyNames(partyRes.data);
+        setPartyNames(partyRes.data.map(p => p.partyname)); // Extract only names
       } catch (error) {
         console.error('Error fetching dropdown data:', error);
         toast.error('Failed to load dropdown data', {
@@ -60,6 +63,26 @@ const UploadReportUser = () => {
   const handleChange = e => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+
+    if (name === 'placeName') {
+      const matches = PlaceNames.filter(place =>
+        place.toLowerCase().includes(value.toLowerCase())
+      );
+      setFilteredPlaces(matches);
+    }
+
+    if (name === 'partyName') {
+      const matches = partyNames.filter(party =>
+        party.toLowerCase().includes(value.toLowerCase())
+      );
+      setFilteredParties(matches);
+    }
+  };
+
+  const handleSelectSuggestion = (name, value) => {
+    setFormData(prev => ({ ...prev, [name]: value }));
+    if (name === 'placeName') setFilteredPlaces([]);
+    if (name === 'partyName') setFilteredParties([]);
   };
 
   const handleSubmit = async e => {
@@ -116,7 +139,7 @@ const UploadReportUser = () => {
               <FiClock className="text-white" />
               <span>Movement Status Report</span>
             </h2>
-            <p className="text-sm text-teal-100 md:text-teal-100 mt-1">Record your daily movements and visits</p>
+            <p className="text-sm text-teal-100 mt-1">Record your daily movements and visits</p>
           </div>
 
           <form onSubmit={handleSubmit} className="p-6 space-y-6">
@@ -180,8 +203,8 @@ const UploadReportUser = () => {
                 </select>
               </div>
 
-              {/* Place Name */}
-              <div className="space-y-1">
+              {/* Place Name with Suggestions */}
+              <div className="relative">
                 <label htmlFor="placeName" className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
                   <FiMapPin className="mr-2 text-emerald-600" />
                   Place Name
@@ -192,31 +215,52 @@ const UploadReportUser = () => {
                   value={formData.placeName}
                   onChange={handleChange}
                   required
-                  className="mt-1 block w-full pl-9 pr-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 shadow-sm"
+                  autoComplete="off"
+                  className="mt-1 block w-full pl-3 pr-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 shadow-sm"
                 />
+                {filteredPlaces.length > 0 && (
+                  <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded-b-lg max-h-40 overflow-y-auto shadow-lg">
+                    {filteredPlaces.map((place, idx) => (
+                      <li
+                        key={idx}
+                        className="px-4 py-2 hover:bg-emerald-100 cursor-pointer text-sm"
+                        onClick={() => handleSelectSuggestion('placeName', place)}
+                      >
+                        {place}
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
 
-              {/* Party Name */}
-              <div className="space-y-1">
+              {/* Party Name with Suggestions */}
+              <div className="relative">
                 <label htmlFor="partyName" className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
                   <FiBriefcase className="mr-2 text-emerald-600" />
                   Party Name
                 </label>
-                <select
+                <input
                   id="partyName"
                   name="partyName"
                   value={formData.partyName}
                   onChange={handleChange}
                   required
-                  className="mt-1 block w-full pl-9 pr-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 shadow-sm"
-                >
-                  <option value="">Select Party</option>
-                  {partyNames.map(party => (
-                    <option key={party.partynameID} value={party.partyname}>
-                      {party.partyname}
-                    </option>
-                  ))}
-                </select>
+                  autoComplete="off"
+                  className="mt-1 block w-full pl-3 pr-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 shadow-sm"
+                />
+                {filteredParties.length > 0 && (
+                  <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded-b-lg max-h-40 overflow-y-auto shadow-lg">
+                    {filteredParties.map((party, idx) => (
+                      <li
+                        key={idx}
+                        className="px-4 py-2 hover:bg-emerald-100 cursor-pointer text-sm"
+                        onClick={() => handleSelectSuggestion('partyName', party)}
+                      >
+                        {party}
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
 
               {/* Purpose */}
@@ -232,7 +276,7 @@ const UploadReportUser = () => {
                   value={formData.purpose}
                   onChange={handleChange}
                   required
-                  className="mt-1 block w-full pl-9 pr-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 shadow-sm"
+                  className="mt-1 block w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 shadow-sm"
                 />
               </div>
             </div>
@@ -270,18 +314,7 @@ const UploadReportUser = () => {
         </div>
       </motion.div>
 
-      <ToastContainer 
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        toastClassName={() => "relative flex p-4 mt-2 min-h-10 rounded-lg justify-between overflow-hidden cursor-pointer shadow-lg bg-white border border-gray-200"}
-      />
+      <ToastContainer />
     </div>
   );
 };

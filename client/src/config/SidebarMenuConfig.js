@@ -4,6 +4,22 @@ export const sidebarMenu = {
   admin: [
     { name: 'Dashboard', path: '/dashboard' },
     {
+      name : 'Users',
+      path : '/admin/users',
+      submenu : [
+        { name : 'Create User', path : '/admin/create-user'},
+        { name : 'All Users', path : '/admin/users'},
+      ]
+    },
+    {
+      name : 'Teams',
+      path : '/admin/teams',
+      submenu : [
+        { name : 'Create Team', path : '/admin/create-team'},
+        { name : 'All Teams', path : '/admin/teams'},
+      ]
+    },
+    {
       name: 'Reports',
       path: '/admin/reports',
       submenu: [
@@ -11,8 +27,16 @@ export const sidebarMenu = {
         { name: 'Leader Reports', path: '/admin/LeaderReports' }
       ]
     },
-    { name: 'User Profile', path: '/admin/UserProfile' },
-    { name: 'Users', path: '/admin/Users' },
+    {
+      name : 'Settings',
+      path : '/admin/settings',
+      submenu : [
+        { name : 'Departments', path : '/admin/departments'},
+        { name : 'Branch Names', path : '/admin/branchnames'},
+        { name : 'Designations', path : '/admin/designations'},
+        { name : 'Visiting Status', path : '/admin/visitingstatus'},
+      ]
+    }
   ],
   manager: [
     { name: 'Dashboard', path: '/dashboard' },
