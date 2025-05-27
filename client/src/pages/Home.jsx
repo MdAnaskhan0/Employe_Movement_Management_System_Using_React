@@ -1,5 +1,6 @@
 import React from 'react';
 import Login from './Login';
+import HomeVideo from '../assets/video/Home.mp4';
 
 const Home = () => {
   return (
@@ -10,12 +11,8 @@ const Home = () => {
           <h1 className="text-4xl font-bold text-gray-900 mb-6">Welcome to Our Platform</h1>
         </div>
         
-        <div className="flex justify-center">
-          <img 
-            src="https://illustrations.popsy.co/amber/digital-nomad.svg" 
-            alt="Collaboration illustration" 
-            className="w-2/4 object-contain"
-          />
+        <div className="flex justify-center items-center">
+          <video src={HomeVideo} autoPlay loop muted className="w-full object-cover rounded-2xl shadow-lg" />
         </div>
       </div>
 

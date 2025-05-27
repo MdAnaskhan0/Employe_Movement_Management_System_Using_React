@@ -45,12 +45,13 @@ const UserProfile = () => {
         const fetchData = async () => {
             try {
                 const userRes = await axios.get(`http://192.168.111.140:5137/users/${userID}`);
+                console.log(userRes.data);
                 setUserData(userRes.data.data);
 
-                const movementRes = await axios.get(`http://192.168.111.140:5137/get_movement/${userID}`);
-                console.log(movementRes.data);
-                setMovementData(movementRes.data || []);
-                setFilteredData(movementRes.data || []);
+                // const movementRes = await axios.get(`http://192.168.111.140:5137/get_movement/${userID}`);
+                // console.log(movementRes.data);
+                // setMovementData(movementRes.data || []);
+                // setFilteredData(movementRes.data || []);
 
                 // Fetch dropdown data
                 const responseRoles = await axios.get('http://192.168.111.140:5137/roles');

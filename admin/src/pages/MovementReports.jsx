@@ -6,6 +6,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Sidebar from '../components/Sidebar/Sidebar';
 import axios from 'axios';
+import { FaFileDownload } from 'react-icons/fa';
 
 const MovementReports = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -36,6 +37,7 @@ const MovementReports = () => {
     setIsLoading(true);
     try {
       const response = await axios.get(`http://192.168.111.140:5137/get_all_movement`);
+      console.log(response.data);
       setMovementReports(response.data);
     } catch (err) {
       console.error(err);
@@ -56,7 +58,7 @@ const MovementReports = () => {
     // Apply search filter
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
-      result = result.filter(item => 
+      result = result.filter(item =>
         item.username.toLowerCase().includes(term) ||
         item.placeName?.toLowerCase().includes(term) ||
         item.partyName?.toLowerCase().includes(term) ||
@@ -66,7 +68,7 @@ const MovementReports = () => {
 
     // Apply status filter
     if (statusFilter !== 'all') {
-      result = result.filter(item => item.visitingStatus === statusFilter);
+      result = result.filter(item => item.punchTime === statusFilter);
     }
 
     // Apply date range filter
@@ -76,10 +78,22 @@ const MovementReports = () => {
 
       result = result.filter(item => {
         const itemDate = new Date(item.dateTime);
-        return (
-          (!startDate || itemDate >= startDate) &&
-          (!endDate || itemDate <= endDate)
-        );
+        const itemDateOnly = new Date(itemDate.getFullYear(), itemDate.getMonth(), itemDate.getDate());
+
+        if (startDate && endDate) {
+          const startDateOnly = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+          const endDateOnly = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
+
+          // Compare only the date parts (ignoring time)
+          return itemDateOnly >= startDateOnly && itemDateOnly <= endDateOnly;
+        } else if (startDate) {
+          const startDateOnly = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+          return itemDateOnly >= startDateOnly;
+        } else if (endDate) {
+          const endDateOnly = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
+          return itemDateOnly <= endDateOnly;
+        }
+        return true;
       });
     }
 
@@ -109,14 +123,30 @@ const MovementReports = () => {
 
   const formatDateTime = (dateTime) => {
     if (!dateTime) return 'N/A';
-    const options = { 
-      year: 'numeric', 
-      month: 'short', 
+    const options = {
+      year: 'numeric',
+      month: 'short',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
+      hour12: true
     };
     return new Date(dateTime).toLocaleDateString('en-US', options);
+  };
+
+  const formatTime12Hour = (timeString) => {
+    if (!timeString) return 'N/A';
+
+    // Create a date object with today's date and the time from the string
+    const [hours, minutes, seconds] = timeString.split(':');
+    const date = new Date();
+    date.setHours(parseInt(hours, 10), parseInt(minutes, 10), parseInt(seconds || 0, 10));
+
+    return date.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    });
   };
 
   const requestSort = (key) => {
@@ -148,11 +178,62 @@ const MovementReports = () => {
     );
   };
 
+  // Function to convert data to CSV and trigger download
+  const downloadCSV = () => {
+    if (filteredData.length === 0) {
+      toast.warning('No data to download');
+      return;
+    }
+
+    // Create CSV headers
+    const headers = [
+      'User',
+      'Date',
+      'Submitted Time',
+      'Punch Time',
+      'Punch Status',
+      'Place',
+      'Party',
+      'Purpose'
+    ];
+
+    // Create CSV rows
+    const rows = filteredData.map(report => [
+      report.username,
+      formatDateTime(report.dateTime),
+      formatTime12Hour(report.punchingTime),
+      report.punchTime,
+      report.visitingStatus,
+      report.placeName || 'N/A',
+      report.partyName || 'N/A',
+      report.purpose || 'Not specified'
+    ]);
+
+    // Combine headers and rows
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.map(item => `"${item}"`).join(','))
+    ].join('\n');
+
+    // Create download link
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `movement_reports_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    toast.success('CSV download started');
+  };
+
   return (
     <div className="flex h-screen bg-gray-50 overflow-hidden">
       <ToastContainer position="top-right" autoClose={3000} />
       <Sidebar sidebarOpen={sidebarOpen} handleLogout={handleLogout} />
-      
+
       {/* Overlay for mobile sidebar */}
       {sidebarOpen && (
         <div
@@ -165,32 +246,42 @@ const MovementReports = () => {
       {/* Main content */}
       <div className="flex flex-col flex-1 w-full">
         {/* Header */}
-        <header className="flex items-center justify-between bg-white shadow p-4">
-          <div className="flex items-center">
-            {/* Mobile menu button */}
-            <button
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="text-gray-800 focus:outline-none md:hidden mr-4"
-              aria-label="Toggle sidebar"
-            >
-              {sidebarOpen ? (
-                <FaTimes className="h-6 w-6" />
-              ) : (
-                <FaBars className="h-6 w-6" />
-              )}
-            </button>
+        {/* Header */}
+      <header className="flex items-center justify-between bg-white shadow p-4">
+        <div className="flex items-center">
+          {/* Mobile menu button */}
+          <button
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="text-gray-800 focus:outline-none md:hidden mr-4"
+            aria-label="Toggle sidebar"
+          >
+            {sidebarOpen ? (
+              <FaTimes className="h-6 w-6" />
+            ) : (
+              <FaBars className="h-6 w-6" />
+            )}
+          </button>
 
-            <h1 className="text-xl font-semibold text-gray-800">Movement Reports</h1>
-          </div>
+          <h1 className="text-xl font-semibold text-gray-800">Movement Reports</h1>
+        </div>
 
-          <button 
+        <div className="flex space-x-2">
+          <button
+            onClick={downloadCSV}
+            className="flex items-center px-3 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
+          >
+            <FaFileDownload className="mr-2" />
+            Download CSV
+          </button>
+          <button
             onClick={fetchMovementReports}
             className="flex items-center px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
           >
             <MdRefresh className="mr-2" />
             Refresh Data
           </button>
-        </header>
+        </div>
+      </header>
 
         {/* Filters Section */}
         <div className="bg-white shadow-sm p-4 border-b">
@@ -235,7 +326,7 @@ const MovementReports = () => {
                 className="pl-10 pr-4 py-2 w-full border rounded-lg focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Start Date"
                 value={dateRange.start}
-                onChange={(e) => setDateRange({...dateRange, start: e.target.value})}
+                onChange={(e) => setDateRange({ ...dateRange, start: e.target.value })}
               />
             </div>
 
@@ -248,7 +339,7 @@ const MovementReports = () => {
                 className="pl-10 pr-4 py-2 w-full border rounded-lg focus:ring-blue-500 focus:border-blue-500"
                 placeholder="End Date"
                 value={dateRange.end}
-                onChange={(e) => setDateRange({...dateRange, end: e.target.value})}
+                onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })}
               />
             </div>
           </div>
@@ -263,7 +354,7 @@ const MovementReports = () => {
           ) : filteredData.length === 0 ? (
             <div className="bg-white rounded-lg shadow p-6 text-center">
               <p className="text-gray-500">No movement reports found matching your criteria</p>
-              <button 
+              <button
                 onClick={() => {
                   setSearchTerm('');
                   setStatusFilter('all');
@@ -281,8 +372,8 @@ const MovementReports = () => {
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th 
-                        scope="col" 
+                      <th
+                        scope="col"
                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
                         onClick={() => requestSort('username')}
                       >
@@ -291,8 +382,8 @@ const MovementReports = () => {
                           <FaSort className="ml-1 text-gray-400" />
                         </div>
                       </th>
-                      <th 
-                        scope="col" 
+                      <th
+                        scope="col"
                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
                         onClick={() => requestSort('dateTime')}
                       >
@@ -302,12 +393,10 @@ const MovementReports = () => {
                         </div>
                       </th>
                       <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        <div className="flex items-center">
-                          <FaSort className="mr-1 text-gray-400" />Submitted Time
-                        </div>
+                        Submitted Time
                       </th>
-                      <th 
-                        scope="col" 
+                      <th
+                        scope="col"
                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
                         onClick={() => requestSort('punchTime')}
                       >
@@ -316,8 +405,8 @@ const MovementReports = () => {
                           <FaSort className="ml-1 text-gray-400" />
                         </div>
                       </th>
-                      <th 
-                        scope="col" 
+                      <th
+                        scope="col"
                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
                         onClick={() => requestSort('visitingStatus')}
                       >
@@ -347,7 +436,10 @@ const MovementReports = () => {
                           <div className="text-sm text-gray-500">{formatDateTime(report.dateTime)}</div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-500">{report.punchTime}</div>
+                          <div className="text-sm text-gray-500">{formatTime12Hour(report.punchingTime)}</div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm text-gray-500">{(report.punchTime)}</div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           {getStatusBadge(report.visitingStatus)}
@@ -443,11 +535,10 @@ const MovementReports = () => {
                           <button
                             key={pageNum}
                             onClick={() => paginate(pageNum)}
-                            className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
-                              currentPage === pageNum
+                            className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${currentPage === pageNum
                                 ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
                                 : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
-                            }`}
+                              }`}
                           >
                             {pageNum}
                           </button>
