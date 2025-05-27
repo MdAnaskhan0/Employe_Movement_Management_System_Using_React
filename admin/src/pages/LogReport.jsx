@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  FaBars, 
-  FaTimes, 
-  FaUniversity, 
-  FaSearch, 
+import {
+  FaBars,
+  FaTimes,
+  FaUniversity,
+  FaSearch,
   FaFileExport,
   FaFilter,
   FaUser,
@@ -15,7 +15,7 @@ import {
   FaStickyNote,
   FaBuilding
 } from 'react-icons/fa';
-import { 
+import {
   MdDateRange,
   MdOutlineDataSaverOn,
   MdOutlineDataUsage,
@@ -23,8 +23,8 @@ import {
   MdBusiness,
   MdAccessTime
 } from 'react-icons/md';
-import { 
-  FiFilter, 
+import {
+  FiFilter,
   FiUser,
   FiRefreshCw
 } from 'react-icons/fi';
@@ -115,7 +115,7 @@ const LogReport = () => {
 
       setFilteredLogs(filtered);
       setCurrentPage(0);
-      
+
       if (filtered.length === 0) {
         toast.info("No logs found for the selected filters");
       } else {
@@ -136,6 +136,7 @@ const LogReport = () => {
     setFilteredLogs([]);
     setCurrentPage(0);
   };
+
 
   const handleLogout = () => {
     localStorage.removeItem('adminLoggedIn');
@@ -175,7 +176,7 @@ const LogReport = () => {
                 <p className="font-medium">{parsedData.movementID || '-'}</p>
               </div>
             </div>
-            
+
             <div className="flex items-start space-x-2">
               <FaUserTie className="text-blue-600 mt-1 flex-shrink-0" />
               <div>
@@ -183,7 +184,7 @@ const LogReport = () => {
                 <p className="font-medium">{parsedData.username || parsedData.userID || '-'}</p>
               </div>
             </div>
-            
+
             <div className="flex items-start space-x-2">
               <MdAccessTime className="text-blue-600 mt-1 flex-shrink-0" />
               <div>
@@ -193,7 +194,7 @@ const LogReport = () => {
                 </p>
               </div>
             </div>
-            
+
             <div className="flex items-start space-x-2">
               <FaMapMarkerAlt className="text-blue-600 mt-1 flex-shrink-0" />
               <div>
@@ -201,7 +202,7 @@ const LogReport = () => {
                 <p className="font-medium">{parsedData.placeName || '-'}</p>
               </div>
             </div>
-            
+
             <div className="flex items-start space-x-2">
               <MdLocationOn className="text-blue-600 mt-1 flex-shrink-0" />
               <div>
@@ -209,7 +210,7 @@ const LogReport = () => {
                 <p className="font-medium">{parsedData.visitingStatus || '-'}</p>
               </div>
             </div>
-            
+
             <div className="flex items-start space-x-2">
               <FaBuilding className="text-blue-600 mt-1 flex-shrink-0" />
               <div>
@@ -217,17 +218,41 @@ const LogReport = () => {
                 <p className="font-medium">{parsedData.partyName || '-'}</p>
               </div>
             </div>
-            
+
             <div className="flex items-start space-x-2">
               <FaClock className="text-blue-600 mt-1 flex-shrink-0" />
               <div>
                 <h4 className="text-xs font-semibold text-gray-500 uppercase">Punch Time</h4>
                 <p className="font-medium">
-                  {parsedData.punchTime || '-'} {parsedData.punchingTime ? `(${parsedData.punchingTime})` : ''}
+                  {parsedData.punchTime || '-'} {parsedData.punchingTime
+                    ? ` (${(() => {
+                      // If punchingTime is a string like "15:00:00"
+                      const timeStr = typeof parsedData.punchingTime === 'string'
+                        ? parsedData.punchingTime
+                        : parsedData.punchingTime.toTimeString().slice(0, 8); // fallback if Date object
+
+                      const [h, m] = timeStr.split(':');
+                      let hour = parseInt(h, 10);
+                      const minute = m || '00';
+                      let ampm = 'AM';
+
+                      if (hour === 0) {
+                        hour = 12;
+                        ampm = 'AM';
+                      } else if (hour === 12) {
+                        ampm = 'PM';
+                      } else if (hour > 12) {
+                        hour -= 12;
+                        ampm = 'PM';
+                      }
+
+                      return `${hour}:${minute} ${ampm}`;
+                    })()})`
+                    : ''}
                 </p>
               </div>
             </div>
-            
+
             <div className="flex items-start space-x-2">
               <FaStickyNote className="text-blue-600 mt-1 flex-shrink-0" />
               <div>
@@ -235,7 +260,7 @@ const LogReport = () => {
                 <p className="font-medium">{parsedData.purpose || '-'}</p>
               </div>
             </div>
-            
+
             {parsedData.remark && (
               <div className="md:col-span-2 flex items-start space-x-2">
                 <FaStickyNote className="text-blue-600 mt-1 flex-shrink-0" />
@@ -376,7 +401,7 @@ const LogReport = () => {
           <div className="bg-white rounded-lg shadow overflow-hidden">
             <div className="p-4 border-b flex justify-between items-center">
               <h2 className="text-lg font-semibold flex items-center">
-                <MdOutlineDataUsage className="mr-2 text-blue-600" /> 
+                <MdOutlineDataUsage className="mr-2 text-blue-600" />
                 Activity Logs
                 {filteredLogs.length > 0 && (
                   <span className="ml-2 text-sm font-normal text-gray-500">
@@ -384,7 +409,7 @@ const LogReport = () => {
                   </span>
                 )}
               </h2>
-              
+
               <div className="flex items-center space-x-4">
                 <div className="flex items-center">
                   <label htmlFor="rowsPerPage" className="mr-2 text-sm text-gray-600">
@@ -403,7 +428,7 @@ const LogReport = () => {
                     <option value="50">50</option>
                   </select>
                 </div>
-                
+
                 <button
                   className="flex items-center px-3 py-1.5 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:bg-green-300 text-sm"
                   disabled={filteredLogs.length === 0}
@@ -507,7 +532,7 @@ const LogReport = () => {
           </div>
         </main>
 
-        <ToastContainer 
+        <ToastContainer
           position="bottom-right"
           autoClose={5000}
           hideProgressBar={false}
