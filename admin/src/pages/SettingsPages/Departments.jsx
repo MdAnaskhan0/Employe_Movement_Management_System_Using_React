@@ -197,10 +197,10 @@ const Departments = ({ children }) => {
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                      {departments.map((dept) => (
+                      {departments.map((dept, index) => (
                         <tr key={dept.departmentID} className="hover:bg-gray-50">
                           <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                            {dept.departmentID}
+                            {index+1}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             {dept.departmentName}

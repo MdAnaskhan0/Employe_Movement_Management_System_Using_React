@@ -222,6 +222,9 @@ const PartyNames = ({ children }) => {
                     <table className="min-w-full divide-y divide-gray-200">
                       <thead className="bg-gray-50">
                         <tr>
+                          <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
+                            No.
+                          </th>
                           <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Party Name
                           </th>
@@ -234,8 +237,11 @@ const PartyNames = ({ children }) => {
                         </tr>
                       </thead>
                       <tbody className="bg-white divide-y divide-gray-200">
-                        {partyList.map(party => (
+                        {partyList.map((party,index) => (
                           <tr key={party.partynameID} className="hover:bg-gray-50">
+                            <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-500'>
+                              <div className='font-medium text-gray-900'>{index+1}</div>
+                            </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div className="font-medium text-gray-900">{party.partyname}</div>
                             </td>

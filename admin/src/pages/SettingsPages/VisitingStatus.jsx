@@ -170,8 +170,10 @@ const VisitingStatus = () => {
 
             {/* Status List */}
             <div className="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200">
-              <div className="px-6 py-4 border-b border-gray-200 bg-gray-600">
+              <div className="px-6 py-4 border-b border-gray-200 bg-gray-600 flex justify-between">
+                <h3 className="text-lg font-medium text-white">No</h3>
                 <h3 className="text-lg font-medium text-white">Status List</h3>
+                <h3 className='text-lg font-medium text-white pr-4'>Action</h3>
               </div>
               
               {isLoading ? (
@@ -181,7 +183,7 @@ const VisitingStatus = () => {
                 </div>
               ) : filteredStatuses.length > 0 ? (
                 <ul className="divide-y divide-gray-200">
-                  {filteredStatuses.map((status) => (
+                  {filteredStatuses.map((status, index) => (
                     <li key={status.visitingstatusID} className="px-6 py-4 hover:bg-gray-50 transition-colors duration-150">
                       {editingId === status.visitingstatusID ? (
                         <div className="flex items-center gap-3">
@@ -215,6 +217,7 @@ const VisitingStatus = () => {
                         </div>
                       ) : (
                         <div className="flex items-center justify-between">
+                          <span className='text-gray-800'>{index+1}</span>
                           <span className="text-gray-800">{status.visitingstatusname}</span>
                           <div className="flex items-center gap-2">
                             <button

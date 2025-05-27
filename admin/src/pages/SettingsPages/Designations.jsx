@@ -184,9 +184,9 @@ const Designations = () => {
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {designations.map((item) => (
+                    {designations.map((item, index) => (
                       <tr key={item.designationID} className="hover:bg-gray-50 transition">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.designationID}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"> {index + 1} </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                           {editID === item.designationID ? (
                             <input

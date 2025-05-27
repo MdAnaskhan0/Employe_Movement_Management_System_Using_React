@@ -263,10 +263,10 @@ const Roles = () => {
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                      {filteredRoles.map((role) => (
+                      {filteredRoles.map((role, index) => (
                         <tr key={role.roleID} className="hover:bg-gray-50">
                           <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                            {role.roleID}
+                            {index+1}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             {capitalize(role.rolename)}

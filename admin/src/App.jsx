@@ -21,6 +21,8 @@ import CreateTeams from './pages/TeamManagement/CreateTeams';
 import ViewTeams from './pages/TeamManagement/ViewTeams';
 import Team from './pages/TeamManagement/TeamDetails';
 import ErrorPage from './pages/ErrorPage';
+import ActivitiesReport from './pages/ActivitiesReport';
+import LogReport from './pages/LogReport';
 
 const App = () => {
   return (
@@ -51,11 +53,13 @@ const App = () => {
           <Route index element={<Dashboard />} />
           <Route path="createuser" element={<CreateUser />} />
           <Route path="alluser" element={<AllUser />} />
+          <Route path="user-activity" element={<ActivitiesReport />} />
           <Route path="userprofile/:userID" element={<UserProfile />} />
           <Route path="createteam" element={<CreateTeams />} />
           <Route path="allteam" element={<ViewTeams />} />
           <Route path="team/:teamID" element={<Team />} />
           <Route path="movementreports" element={<MovementReports />} />
+          <Route path="log-report" element={<LogReport />} />
           <Route path="jsonupdater" element={<JsonUpdater />} />
           <Route path="companynames" element={<CompanyNames />} />
           <Route path="branchnames" element={<BranchNames />} />

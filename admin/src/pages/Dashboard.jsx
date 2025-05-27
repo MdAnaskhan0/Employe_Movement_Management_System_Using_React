@@ -7,6 +7,14 @@ import axios from 'axios';
 const Dashboard = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [users, setUsers] = useState([]);
+  const [movementReports, setMovementReports] = useState([]);
+  const [teams, setTeams] = useState([]);
+  const [companyNames, setCompanyNames] = useState([]);
+  const [branchNames , setBranchNames] = useState([]);
+  const [designations, setDesignations] = useState([]);
+  const [departments, setDepartments] = useState([]);
+  const [roles, setRoles] = useState([]);
+  const [partyNames , setPartyNames] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
@@ -23,7 +31,24 @@ const Dashboard = ({ children }) => {
     const fetchUsers = async () => {
       try {
         const response = await axios.get('http://192.168.111.140:5137/users');
+        const responseMovementReports = await axios.get('http://192.168.111.140:5137/get_all_movement');
+        const responseTeams = await axios.get('http://192.168.111.140:5137/teams');
+        const responseCompanyNames = await axios.get('http://192.168.111.140:5137/companynames');
+        const responseBranchNames = await axios.get('http://192.168.111.140:5137/branchnames');
+        const responseDesignations = await axios.get('http://192.168.111.140:5137/designations');
+        const responseDepartments = await axios.get('http://192.168.111.140:5137/departments');
+        const responseRoles = await axios.get('http://192.168.111.140:5137/roles');
+        const responsePartyNames = await axios.get('http://192.168.111.140:5137/partynames');
+
         setUsers(response.data.data);
+        setMovementReports(responseMovementReports.data);
+        setTeams(responseTeams.data.data);
+        setCompanyNames(responseCompanyNames.data.data);
+        setBranchNames(responseBranchNames.data);
+        setDepartments(responseDepartments.data);
+        setDesignations(responseDesignations.data);
+        setPartyNames(responsePartyNames.data);
+        setRoles(responseRoles.data); 
       } catch (err) {
         setError(err.message);
       } finally {
@@ -82,12 +107,36 @@ const Dashboard = ({ children }) => {
                 </div>
                 <div className="bg-white p-6 rounded-lg shadow" onClick={() => navigate('/dashboard/movementreports')}>
                   <h3 className="text-lg font-semibold mb-2">Total Movement Reports</h3>
-                  <p className="text-3xl font-bold text-green-600">02</p>
+                  <p className="text-3xl font-bold text-green-600">{movementReports.length}</p>
                 </div>
-                {/* <div className="bg-white p-6 rounded-lg shadow">
-                  <h3 className="text-lg font-semibold mb-2">Pending Approvals</h3>
-                  <p className="text-3xl font-bold text-yellow-600">12</p>
-                </div> */}
+                <div className='bg-white p-6 rounded-lg shadow' onClick={() => navigate('/dashboard/allteam')}>
+                  <h3 className='text-lg font-semibold mb-2'>Total Teams</h3>
+                  <p className="text-3xl font-bold text-red-600">{teams.length}</p>
+                </div>
+                <div className='bg-white p-6 rounded-lg shadow' onClick={() => navigate('/dashboard/companynames')}>
+                  <h3 className='text-lg font-semibold mb-2'>Total Company Names</h3>
+                  <p className="text-3xl font-bold text-red-600">{companyNames.length}</p>
+                </div>
+                <div className='bg-white p-6 rounded-lg shadow' onClick={() => navigate('/dashboard/branchnames')}>
+                  <h3 className='text-lg font-semibold mb-2'>Total Branch Names</h3>
+                  <p className="text-3xl font-bold text-red-600">{branchNames.length}</p>
+                </div>
+                <div className='bg-white p-6 rounded-lg shadow' onClick={() => navigate('/dashboard/designations')}>
+                  <h3 className='text-lg font-semibold mb-2'>Total Designations</h3>
+                  <p className="text-3xl font-bold text-red-600">{designations.length}</p>
+                </div>
+                <div className='bg-white p-6 rounded-lg shadow' onClick={() => navigate('/dashboard/departments')}>
+                  <h3 className='text-lg font-semibold mb-2'>Total Departments</h3>
+                  <p className="text-3xl font-bold text-red-600">{departments.length}</p>
+                </div>
+                <div className='bg-white p-6 rounded-lg shadow' onClick={() => navigate('/dashboard/partynames')}>
+                  <h3 className='text-lg font-semibold mb-2'>Total Party Names</h3>
+                  <p className="text-3xl font-bold text-red-600">{partyNames.length}</p>
+                </div>
+                <div className='bg-white p-6 rounded-lg shadow' onClick={() => navigate('/dashboard/roles')}>
+                  <h3 className='text-lg font-semibold mb-2'>Total Roles</h3>
+                  <p className="text-3xl font-bold text-red-600">{roles.length}</p>
+                </div>
               </div>
             </>
           )}
