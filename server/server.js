@@ -11,9 +11,9 @@ const port = 5137;
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors({
   origin: [
-    'http://localhost:5173', 
-    'http://localhost:5174', 
-    'http://192.168.111.140:5173', 
+    'http://localhost:5173',
+    'http://localhost:5174',
+    'http://192.168.111.140:5173',
     'http://192.168.111.140:5174'
   ],
   credentials: true
@@ -213,10 +213,10 @@ app.get('/unassigned-team-leaders', (req, res) => {
 
 
 
-
-// Login user
+// Login user track user activity
 app.post('/login', (req, res) => {
   const { username, password } = req.body;
+
   if (!username || !password) {
     return res.status(400).json({ status: 'error', message: 'Username and password required' });
   }
@@ -233,6 +233,18 @@ app.post('/login', (req, res) => {
     }
 
     const user = results[0];
+
+    const ip =
+      req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
+
+    // Log user login
+    const logSql = 'INSERT INTO user_activity_log (username, role, action, ip_address) VALUES (?, ?, ?, ?)';
+    db.query(logSql, [user.username, user.Role, 'login', ip], (logErr) => {
+      if (logErr) {
+        console.error('Failed to log user login activity:', logErr);
+      }
+    });
+
     res.json({
       status: 'success',
       user: {
@@ -244,6 +256,62 @@ app.post('/login', (req, res) => {
     });
   });
 });
+
+
+app.post('/logout', (req, res) => {
+  const { username, role } = req.body;
+  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
+
+  const logSql = 'INSERT INTO user_activity_log (username, role, action, ip_address) VALUES (?, ?, ?, ?)';
+  db.query(logSql, [username, role, 'logout', ip], (logErr) => {
+    if (logErr) {
+      console.error('Failed to log user logout activity:', logErr);
+      return res.status(500).json({ status: 'error', message: 'Logout logging failed' });
+    }
+
+    res.json({ status: 'success', message: 'Logout logged' });
+  });
+});
+
+// Get user activities by username
+app.get('/user-activities/:username', (req, res) => {
+  const { username } = req.params;
+
+  const sql = 'SELECT * FROM user_activity_log WHERE username = ? ORDER BY timestamp DESC';
+
+  db.query(sql, [username], (err, results) => {
+    if (err) {
+      console.error('Failed to fetch user activities:', err);
+      return res.status(500).json({ status: 'error', message: 'Internal Server Error' });
+    }
+
+    res.json(results);
+  });
+});
+
+
+
+// DELETE /user-activity/:id
+app.delete('/user-activity/:id', (req, res) => {
+  const { id } = req.params;
+
+  const sql = 'DELETE FROM user_activity_log WHERE user_activity_log.id = ?';
+
+  db.query(sql, [id], (err, result) => {
+    if (err) {
+      console.error('Error deleting activity:', err);
+      return res.status(500).json({ success: false, message: 'Failed to delete activity' });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ success: false, message: 'Activity not found' });
+    }
+
+    res.status(200).json({ success: true, message: 'Activity deleted successfully' });
+  });
+});
+
+
 
 
 // Get a single user by ID
@@ -270,7 +338,7 @@ app.post('/add_movement', (req, res) => {
     partyName,
     purpose,
     remark,
-    punchTime,      
+    punchTime,
     punchingTime
   } = req.body;
 

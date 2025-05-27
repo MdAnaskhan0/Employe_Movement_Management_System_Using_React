@@ -13,9 +13,19 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [movementData, setMovementData] = useState([]);
 
-  const handleLogout = () => {
-    logout();
-    navigate('/');
+  const handleLogout = async () => {
+    try {
+      await axios.post('http://192.168.111.140:5137/logout', {
+        username: user.username,
+        role: user.role
+      });
+    } catch (error) {
+      console.error('Logout logging failed:', error);
+      // Optionally, you can show a notification here.
+    }
+
+    logout(); // Clear frontend session
+    navigate('/'); // Redirect to login/home
   };
 
   useEffect(() => {

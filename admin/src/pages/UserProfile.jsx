@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { 
-  FaBars, FaTimes, FaUser, FaClock, FaMapMarkerAlt, FaBuilding, 
-  FaPhone, FaEnvelope, FaIdBadge, FaPeopleArrows, FaFingerprint, 
-  FaRegBuilding, FaSort 
+import {
+    FaBars, FaTimes, FaUser, FaClock, FaMapMarkerAlt, FaBuilding,
+    FaPhone, FaEnvelope, FaIdBadge, FaPeopleArrows, FaFingerprint,
+    FaRegBuilding, FaSort
 } from 'react-icons/fa';
 import { CiCalendarDate } from "react-icons/ci";
 import { MdWork, MdDepartureBoard, MdDescription, MdNote, MdChevronLeft, MdChevronRight, MdFirstPage, MdLastPage } from 'react-icons/md';
@@ -28,7 +28,7 @@ const UserProfile = () => {
     const [punchStatuses, setPunchStatuses] = useState([]);
     const [visitingStatuses, setVisitingStatuses] = useState([]);
     const [movementReports, setMovementReports] = useState([]);
-    
+
     // Filter and pagination states
     const [filteredData, setFilteredData] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
@@ -517,33 +517,30 @@ const UserProfile = () => {
                                                 <option key={status.statusID} value={status.statusName}>{status.statusName}</option>
                                             ))}
                                         </select>
+                                        <div className='flex gap-2'>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+                                            <input
+                                                type="date"
+                                                className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                value={dateRange.start}
+                                                onChange={(e) => setDateRange({ ...dateRange, start: e.target.value })}
+                                            />
+                                        </div>
+                                        <div className='flex gap-2'>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+                                            <input
+                                                type="date"
+                                                className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                value={dateRange.end}
+                                                onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })}
+                                            />
+                                        </div>
                                         <button
                                             onClick={downloadCSV}
                                             className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
                                         >
                                             <FiDownload /> Export
                                         </button>
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
-                                        <input
-                                            type="date"
-                                            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                            value={dateRange.start}
-                                            onChange={(e) => setDateRange({...dateRange, start: e.target.value})}
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
-                                        <input
-                                            type="date"
-                                            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                            value={dateRange.end}
-                                            onChange={(e) => setDateRange({...dateRange, end: e.target.value})}
-                                        />
                                     </div>
                                 </div>
 
@@ -565,9 +562,9 @@ const UserProfile = () => {
                                     <div className="bg-white rounded-lg shadow overflow-hidden">
                                         <div className="overflow-x-auto">
                                             <table className="min-w-full divide-y divide-gray-200">
-                                                <thead className="bg-gray-50">
+                                                <thead className="bg-gray-600">
                                                     <tr>
-                                                        <th
+                                                        {/* <th
                                                             scope="col"
                                                             className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
                                                             onClick={() => requestSort('username')}
@@ -576,50 +573,50 @@ const UserProfile = () => {
                                                                 User
                                                                 <FaSort className="ml-1 text-gray-400" />
                                                             </div>
-                                                        </th>
+                                                        </th> */}
                                                         <th
                                                             scope="col"
-                                                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                                                            className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider cursor-pointer"
                                                             onClick={() => requestSort('dateTime')}
                                                         >
                                                             <div className="flex items-center">
-                                                               Submitted Date/Time
-                                                                <FaSort className="ml-1 text-gray-400" />
+                                                                Submitted Date/Time
+                                                                <FaSort className="ml-1 text-white" />
                                                             </div>
                                                         </th>
-                                                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
                                                             Punch Time
                                                         </th>
                                                         <th
                                                             scope="col"
-                                                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                                                            className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider cursor-pointer"
                                                             onClick={() => requestSort('punchTime')}
                                                         >
                                                             <div className="flex items-center">
                                                                 Punch Status
-                                                                <FaSort className="ml-1 text-gray-400" />
+                                                                <FaSort className="ml-1 text-white" />
                                                             </div>
                                                         </th>
                                                         <th
                                                             scope="col"
-                                                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                                                            className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider cursor-pointer"
                                                             onClick={() => requestSort('visitingStatus')}
                                                         >
                                                             <div className="flex items-center">
                                                                 Visit Status
-                                                                <FaSort className="ml-1 text-gray-400" />
+                                                                <FaSort className="ml-1 text-white" />
                                                             </div>
                                                         </th>
-                                                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
                                                             Place
                                                         </th>
-                                                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
                                                             Party
                                                         </th>
-                                                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
                                                             Purpose
                                                         </th>
-                                                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
                                                             Remarks
                                                         </th>
                                                     </tr>
@@ -627,9 +624,9 @@ const UserProfile = () => {
                                                 <tbody className="bg-white divide-y divide-gray-200">
                                                     {currentRows.map((report) => (
                                                         <tr key={report.movementID} className="hover:bg-gray-50">
-                                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                            {/* <td className="px-6 py-4 whitespace-nowrap">
                                                                 <div className="text-sm font-medium text-gray-900">{report.username}</div>
-                                                            </td>
+                                                            </td> */}
                                                             <td className="px-6 py-4 whitespace-nowrap">
                                                                 <div className="text-sm text-gray-500">{formatDateTime(report.dateTime)}</div>
                                                             </td>

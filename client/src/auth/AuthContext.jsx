@@ -35,7 +35,7 @@ export const AuthProvider = ({ children }) => {
     clearTimeout(timeoutRef.current);
     timeoutRef.current = setTimeout(() => {
       logout(true); // auto logout
-    }, 3 * 60 * 1000); // 3 minutes
+    }, 10 * 60 * 1000);
   };
 
   const resetInactivityTimer = () => {
