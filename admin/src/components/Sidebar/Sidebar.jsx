@@ -20,15 +20,19 @@ import { FaTransgender } from "react-icons/fa6";
 import { LiaUserFriendsSolid } from "react-icons/lia";
 import { MdPeopleAlt } from "react-icons/md";
 import { MdTaskAlt } from "react-icons/md";
+import { MdEditOff } from "react-icons/md";
+import { LuSquareActivity } from "react-icons/lu";
 
 const Sidebar = ({ sidebarOpen, handleLogout }) => {
   const [isSubmenuOpen, setIsSubmenuOpen] = useState(false);
   const [isUsersOpen, setIsUsersOpen] = useState(false);
   const [isTeamManagementOpen, setIsTeamManagementOpen] = useState(false);
+  const [isReportOpen, setIsReportOpen] = useState(false);
 
   const toggleSubmenu = () => setIsSubmenuOpen(!isSubmenuOpen);
   const toggleUsers = () => setIsUsersOpen(!isUsersOpen);
   const toggleTeamManagement = () => setIsTeamManagementOpen(!isTeamManagementOpen);
+  const toggleReport = () => setIsReportOpen(!isReportOpen);
 
   return (
     <aside
@@ -77,6 +81,39 @@ const Sidebar = ({ sidebarOpen, handleLogout }) => {
             >
               <FaUsers className='mr-2' /> All Users
             </Link>
+            <Link
+              to="/dashboard/user-activity"
+              className="flex items-center py-2 px-4 rounded hover:bg-gray-700 transition text-gray-300 hover:text-white text-sm"
+            >
+              <LuSquareActivity className='mr-2' /> User Activity
+            </Link>
+          </div>
+        )}
+
+        {/* Report */}
+        <button
+          onClick={toggleReport}
+          className="flex items-center justify-between w-full py-3 px-4 rounded hover:bg-gray-700 transition text-gray-300 hover:text-white"
+        >
+          <div className="flex items-center">
+            <FaChartBar className="w-5 h-5 mr-3" />
+            Report
+          </div>
+          {isReportOpen ? <FaChevronDown className="w-4 h-4" /> : <FaChevronRight className="w-4 h-4" />}
+        </button>
+
+        {isReportOpen && (
+          <div className="flex flex-col space-y-1 pl-12">
+            <Link
+              to="/dashboard/movementreports"
+              className="flex items-center py-2 px-4 rounded hover:bg-gray-700 transition text-gray-300 hover:text-white text-sm"
+            >
+              <FaChartBar className='mr-2' /> Movement Reports
+            </Link>
+
+            <Link to={"/dashboard/log-report"} className='flex items-center py-2 px-4 rounded hover:bg-gray-700 transition text-gray-300 hover:text-white text-sm'>
+              <MdEditOff className='mr-2' /> Log Reports
+            </Link>
           </div>
         )}
 
@@ -109,13 +146,10 @@ const Sidebar = ({ sidebarOpen, handleLogout }) => {
           </div>
         )}
 
-        <Link
-          to="/dashboard/movementreports"
-          className="flex items-center py-3 px-4 rounded hover:bg-gray-700 transition text-gray-300 hover:text-white"
-        >
-          <FaUserCircle className="w-5 h-5 mr-3" />
-          Movement Reports
-        </Link>
+        {/* Report */}
+        {
+          
+        }
 
         {/* Settings */}
         <button
