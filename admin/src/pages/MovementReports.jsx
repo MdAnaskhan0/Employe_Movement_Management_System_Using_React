@@ -11,10 +11,10 @@ import { FaFileDownload } from 'react-icons/fa';
 const MovementReports = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
+  
   const [movementReports, setMovementReports] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
-  const navigate = useNavigate();
-
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
