@@ -909,20 +909,32 @@ const UserReport = () => {
                                             )}
                                         </TableCell>
                                         <TableCell>
-                                            {editRowId === mv.movementID ? (
-                                                <div style={{ display: 'flex', gap: '5px' }}>
-                                                    <ActionButton primary onClick={handleSaveClick}>
-                                                        <FiSave size={14} /> Save
-                                                    </ActionButton>
-                                                    <ActionButton onClick={handleCancelClick}>
-                                                        Cancel
-                                                    </ActionButton>
-                                                </div>
-                                            ) : (
-                                                <ActionButton onClick={() => handleEditClick(mv)}>
-                                                    <FiEdit size={14} /> Edit
-                                                </ActionButton>
-                                            )}
+                                            {(() => {
+                                                if (!mv.dateTime) return null; // no dateTime, no edit
+
+                                                const submittedTime = new Date(mv.dateTime);
+                                                const now = new Date();
+                                                const diffMinutes = (now - submittedTime) / 1000 / 60; // difference in minutes
+
+                                                if (diffMinutes <= 10) {
+                                                    // Allow editing within 10 minutes
+                                                    return editRowId === mv.movementID ? (
+                                                        <div style={{ display: 'flex', gap: '5px' }}>
+                                                            <ActionButton primary onClick={handleSaveClick}>
+                                                                <FiSave size={14} /> Save
+                                                            </ActionButton>
+                                                            <ActionButton onClick={handleCancelClick}>Cancel</ActionButton>
+                                                        </div>
+                                                    ) : (
+                                                        <ActionButton onClick={() => handleEditClick(mv)}>
+                                                            <FiEdit size={14} /> Edit
+                                                        </ActionButton>
+                                                    );
+                                                } else {
+                                                    // After 10 minutes, show Done
+                                                    return <span className="text-gray-500 font-semibold">Done</span>;
+                                                }
+                                            })()}
                                         </TableCell>
                                     </TableRow>
                                 ))}
