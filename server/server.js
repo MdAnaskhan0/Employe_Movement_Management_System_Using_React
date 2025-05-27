@@ -3,6 +3,7 @@ const mysql = require('mysql');
 const cors = require('cors');
 const path = require('path');
 const multer = require('multer');
+const util = require('util');
 
 const app = express();
 const port = 5137;
@@ -312,8 +313,6 @@ app.delete('/user-activity/:id', (req, res) => {
 });
 
 
-
-
 // Get a single user by ID
 app.get('/users/:id', (req, res) => {
   const { id } = req.params;
@@ -422,6 +421,51 @@ app.delete('/delete_movement/:id', (req, res) => {
     res.json({ message: 'Movement record deleted' });
   });
 });
+
+
+
+const query = util.promisify(db.query).bind(db);
+// Movement edit history
+app.post('/movement_edit_logs', async (req, res) => {
+  const { movementID, userID, originalData, updatedData } = req.body;
+
+  if (!movementID || !userID || !originalData || !updatedData) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+
+  try {
+    const sql = `
+      INSERT INTO movement_edit_logs (movementID, userID, originalData, updatedData)
+      VALUES (?, ?, ?, ?)
+    `;
+
+    await query(sql, [
+      movementID,
+      userID,
+      JSON.stringify(originalData),
+      JSON.stringify(updatedData),
+    ]);
+
+    res.status(201).json({ message: 'Edit log saved' });
+  } catch (err) {
+    console.error('Error saving edit log:', err);
+    res.status(500).json({ error: 'Failed to save edit log' });
+  }
+});
+
+// Example endpoint: Get all movement edit logs
+app.get('/movement_edit_logs', async (req, res) => {
+  try {
+    const sql = `SELECT * FROM movement_edit_logs ORDER BY editTime DESC`;
+    const results = await query(sql);
+    res.json(results);
+  } catch (err) {
+    console.error('Error fetching edit logs:', err);
+    res.status(500).json({ error: 'Failed to fetch edit logs' });
+  }
+});
+
+
 
 
 // create a new company name

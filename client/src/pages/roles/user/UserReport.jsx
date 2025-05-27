@@ -501,9 +501,14 @@ const UserReport = () => {
             ...movement,
             punchingTime: movement.punchingTime || '',
             purpose: movement.purpose || '',
-            remark: movement.remark || ''
+            remark: movement.remark || '',
+            punchTime: movement.punchTime || '',
+            visitingStatus: movement.visitingStatus || '',
+            placeName: movement.placeName || '',
+            partyName: movement.partyName || '',
         });
     };
+
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -512,7 +517,18 @@ const UserReport = () => {
 
     const handleSaveClick = async () => {
         try {
+            const original = movementData.find(m => m.movementID === editRowId);
+
             await axios.put(`http://192.168.111.140:5137/update_movement/${editRowId}`, editFormData);
+
+            // Save history
+            await axios.post(`http://192.168.111.140:5137/movement_edit_logs`, {
+                userID: user.userID,
+                movementID: editRowId,
+                originalData: original,
+                updatedData: editFormData,
+                editTime: new Date().toISOString()
+            });
 
             setMovementData((prevData) =>
                 prevData.map((item) =>
@@ -527,6 +543,7 @@ const UserReport = () => {
             toast.error('Failed to update record. Please try again.');
         }
     };
+
 
     const handleCancelClick = () => {
         setEditRowId(null);
@@ -817,17 +834,56 @@ const UserReport = () => {
                                         </TableCell>
 
                                         <TableCell>
-                                            <StatusBadge status={mv.punchTime?.includes('In') ? 'In' : 'Out'}>
-                                                {mv.punchTime || 'N/A'}
-                                            </StatusBadge>
+                                            {editRowId === mv.movementID ? (
+                                                <select name="punchTime" value={editFormData.punchTime} onChange={handleInputChange}>
+                                                    <option value="">Select</option>
+                                                    <option value="Punch In">Punch In</option>
+                                                    <option value="Punch Out">Punch Out</option>
+                                                </select>
+                                            ) : (
+                                                mv.punchTime || 'N/A'
+                                            )}
                                         </TableCell>
+
                                         <TableCell>
-                                            <StatusBadge status={mv.visitingStatus}>
-                                                {mv.visitingStatus}
-                                            </StatusBadge>
+                                            {editRowId === mv.movementID ? (
+                                                <input
+                                                    name="visitingStatus"
+                                                    type="text"
+                                                    value={editFormData.visitingStatus}
+                                                    onChange={handleInputChange}
+                                                />
+                                            ) : (
+                                                mv.visitingStatus
+                                            )}
                                         </TableCell>
-                                        <TableCell>{mv.placeName}</TableCell>
-                                        <TableCell>{mv.partyName}</TableCell>
+
+                                        <TableCell>
+                                            {editRowId === mv.movementID ? (
+                                                <input
+                                                    name="placeName"
+                                                    type="text"
+                                                    value={editFormData.placeName}
+                                                    onChange={handleInputChange}
+                                                />
+                                            ) : (
+                                                mv.placeName
+                                            )}
+                                        </TableCell>
+
+                                        <TableCell>
+                                            {editRowId === mv.movementID ? (
+                                                <input
+                                                    name="partyName"
+                                                    type="text"
+                                                    value={editFormData.partyName}
+                                                    onChange={handleInputChange}
+                                                />
+                                            ) : (
+                                                mv.partyName
+                                            )}
+                                        </TableCell>
+
                                         <TableCell>
                                             {editRowId === mv.movementID ? (
                                                 <InputField
