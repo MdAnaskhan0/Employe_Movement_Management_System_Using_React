@@ -27,6 +27,7 @@ const UploadReportUser = () => {
   const [partyNames, setPartyNames] = useState([]);
   const [filteredPlaces, setFilteredPlaces] = useState([]);
   const [filteredParties, setFilteredParties] = useState([]);
+  const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
     if (user) {
@@ -42,8 +43,8 @@ const UploadReportUser = () => {
     const fetchData = async () => {
       try {
         const [visitRes, partyRes] = await Promise.all([
-          axios.get('http://192.168.111.140:5137/visitingstatus'),
-          axios.get('http://192.168.111.140:5137/partynames'),
+          axios.get(`${baseUrl}/visitingstatus`),
+          axios.get(`${baseUrl}/partynames`),
         ]);
 
         setVisitingStatuses(visitRes.data);
@@ -90,7 +91,7 @@ const UploadReportUser = () => {
     setIsSubmitting(true);
 
     try {
-      const res = await axios.post('http://192.168.111.140:5137/add_movement', formData);
+      const res = await axios.post(`${baseUrl}/add_movement`, formData);
 
       if (res.status === 201) {
         toast.success('Movement recorded successfully!', {

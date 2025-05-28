@@ -416,15 +416,16 @@ const UserReport = () => {
         startDate: null,
         endDate: null
     });
+    const baseUrl = import.meta.env.VITE_API_BASE_URL;
+    
 
     useEffect(() => {
         const fetchData = async () => {
             if (!user || !user.userID) return;
-
             setIsLoading(true);
             try {
-                const userRes = await axios.get(`http://192.168.111.140:5137/users/${user.userID}`);
-                const movementRes = await axios.get(`http://192.168.111.140:5137/get_movement/${user.userID}`);
+                const userRes = await axios.get(`${baseUrl}/users/${user.userID}`);
+                const movementRes = await axios.get(`${baseUrl}/get_movement/${user.userID}`);
 
                 setUserData(userRes.data.data);
                 const movement = movementRes.data;
@@ -519,10 +520,10 @@ const UserReport = () => {
         try {
             const original = movementData.find(m => m.movementID === editRowId);
 
-            await axios.put(`http://192.168.111.140:5137/update_movement/${editRowId}`, editFormData);
+            await axios.put(`${baseUrl}/update_movement/${editRowId}`, editFormData);
 
             // Save history
-            await axios.post(`http://192.168.111.140:5137/movement_edit_logs`, {
+            await axios.post(`${baseUrl}/movement_edit_logs`, {
                 userID: user.userID,
                 movementID: editRowId,
                 originalData: original,
