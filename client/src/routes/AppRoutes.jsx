@@ -16,9 +16,7 @@ import Users from '../pages/roles/admin/Users';
 // Manager
 import AllMovementReports from '../pages/roles/manager/MovementReports';
 // Team Leader
-import UploadReport from '../pages/roles/teamLeader/UploadReportLeader';
-import LeaderReport from '../pages/roles/teamLeader/LeaderReport';
-import TeamReports from '../pages/roles/teamLeader/TeamReports';
+import ManageTeam from '../pages/roles/teamLeader/ManageTeam';
 // User
 import UploadReportUser from '../pages/roles/user/UploadReportUser';
 import UserReport from '../pages/roles/user/UserReport';
@@ -53,9 +51,7 @@ export default function AppRoutes() {
                       <Route path="/movement-reports" element={<AllMovementReports />} />
 
                       {/* Team Leader */}
-                      <Route path="/team/upload-report" element={<UploadReport />} />
-                      <Route path="/team/LeaderReport" element={<LeaderReport />} />
-                      <Route path="/team/TeamReports" element={<TeamReports />} />
+                      <Route path="team/manage-team" element={<ManageTeam />}/>
 
                       {/* User */}
                       <Route path="/user/upload-report" element={<UploadReportUser />} />

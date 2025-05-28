@@ -57,7 +57,14 @@ export const sidebarMenu = {
     { name: 'Dashboard', path: '/dashboard' },
     { name: 'Movement Status', path: '/user/upload-report' },
     { name: 'Movement Report', path: '/user/UserReport' },
-    { name: 'Team Reports', path: '/team/TeamReports' },
+    {
+      name: 'Team',
+      path: '/team/team',
+      submenu: [
+        { name: 'Manage Team', path: '/team/manage-team' },
+        { name: 'View Report', path: '/team/team-report' }
+      ]
+    }
   ],
   user: [
     { name: 'Dashboard', path: '/dashboard' },

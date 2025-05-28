@@ -674,7 +674,7 @@ const UserReport = () => {
     return (
         <Container>
             <ToastContainer position="top-right" autoClose={3000} />
-            <Header>User Report</Header>
+            <Header>Movement Reports</Header>
 
             <ProfileSection>
                 <ProfileCard>

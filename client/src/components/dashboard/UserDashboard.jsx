@@ -48,9 +48,9 @@ const UserDashboard = ({ movementData }) => {
     return (
         <div className="container mx-auto px-4 py-8">
             <ToastContainer position="top-right" autoClose={3000} />
-            
+
             <h1 className="text-3xl font-bold text-gray-800 mb-8">Dashboard</h1>
-            
+
             {/* User Information Card */}
             <div className="bg-white rounded-lg shadow-md p-6 mb-8">
                 <div className="flex justify-between items-start mb-6">
@@ -63,10 +63,10 @@ const UserDashboard = ({ movementData }) => {
                         className="bg-blue-500 hover:bg-blue-600 text-white md:px-4 md:py-2 rounded-md flex items-center transition duration-300 text-sm md:text-base px-2 py-1"
                     >
                         <FaUpload className="mr-2" />
-                        Upload Report
+                        Add Movement Report
                     </button>
                 </div>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <InfoCard icon={<FaUser />} title="Username" value={userData.username} />
                     <InfoCard icon={<FaIdCard />} title="Name" value={userData.Name} />
@@ -78,9 +78,9 @@ const UserDashboard = ({ movementData }) => {
                     <InfoCard icon={<FaEnvelope />} title="Email" value={userData.email} />
                 </div>
             </div>
-            
+
             {/* Movement Data Card */}
-            <div 
+            <div
                 onClick={() => navigate('/user/UserReport')}
                 className="bg-white rounded-lg shadow-md p-6 cursor-pointer hover:shadow-lg transition duration-300"
             >
