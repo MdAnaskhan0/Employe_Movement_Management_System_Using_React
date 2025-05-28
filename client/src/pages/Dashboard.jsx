@@ -62,8 +62,9 @@ const Dashboard = () => {
         {role === 'user' && <UserDashboard movementData={movementData} />}
         {role === 'admin' && <AdminDashboard />}
         {(role === 'manager' || role === 'accounce') && <ManagerDashboard />}
-        {role === 'team leader' && <TeamLeaderDashboard />}
+        {role === 'team leader' && <TeamLeaderDashboard movementData={movementData} />}
       </main>
+
     </div>
   );
 };

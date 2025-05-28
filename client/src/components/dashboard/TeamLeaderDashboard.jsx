@@ -10,22 +10,20 @@ import { MdDepartureBoard, MdWork } from 'react-icons/md';
 import { GiMovementSensor } from 'react-icons/gi';
 import { BsGraphUp } from 'react-icons/bs';
 
-const TeamLeaderDashboard = () => {
+const TeamLeaderDashboard = ({movementData}) => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [userData, setUserData] = useState({});
   const [loading, setLoading] = useState(true);
   const baseUrl = import.meta.env.VITE_API_BASE_URL;
-  const [movementData, setMovementData] = useState([]);
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
         setLoading(true);
         const res = await axios.get(`${baseUrl}/users/${user.userID}`);
-        const movementRes = await axios.get(`${baseUrl}/get_movement/${user.userID}`);
+        console.log("res value", res.data.data);
         setUserData(res.data.data);
-        setMovementData(movementRes.data);
       } catch (error) {
         console.error('Error fetching user data:', error);
         toast.error('Failed to load user data');
@@ -38,6 +36,7 @@ const TeamLeaderDashboard = () => {
       fetchUserData();
     }
   }, [user]);
+
 
   if (loading) {
     return (

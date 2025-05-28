@@ -23,6 +23,7 @@ const UserDashboard = ({ movementData }) => {
                 setLoading(true);
                 const res = await axios.get(`${baseUrl}/users/${user.userID}`);
                 setUserData(res.data.data);
+                
                 // toast.success('User data loaded successfully');
             } catch (error) {
                 console.error('Error fetching user data:', error);
