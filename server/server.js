@@ -1180,7 +1180,8 @@ app.get('/teams', (req, res) => {
       ta.team_id,
       MAX(ta.team_name) AS team_name,
       l.Name AS team_leader_name,
-      GROUP_CONCAT(m.Name) AS team_members
+      GROUP_CONCAT(m.Name) AS team_members,
+      GROUP_CONCAT(m.userID) AS team_member_ids
     FROM team_assignments ta
     JOIN users l ON ta.team_leader_id = l.userID
     JOIN users m ON ta.team_member_id = m.userID
@@ -1196,6 +1197,7 @@ app.get('/teams', (req, res) => {
     res.json({ status: 'ok', data: result });
   });
 });
+
 
 
 // GET a single team by ID
