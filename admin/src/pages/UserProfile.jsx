@@ -514,9 +514,8 @@ const UserProfile = () => {
                                             onChange={(e) => setStatusFilter(e.target.value)}
                                         >
                                             <option value="all">All Statuses</option>
-                                            {punchStatuses.map(status => (
-                                                <option key={status.statusID} value={status.statusName}>{status.statusName}</option>
-                                            ))}
+                                            <option value="Punch In">Punch In</option>
+                                            <option value="Punch Out">Punch Out</option>
                                         </select>
                                         <div className='flex gap-2'>
                                             <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaBars, FaTimes, FaSearch, FaFilter, FaCalendarAlt, FaSort } from 'react-icons/fa';
-import { MdRefresh, MdFirstPage, MdLastPage, MdChevronLeft, MdChevronRight } from 'react-icons/md';
+import { MdFirstPage, MdLastPage, MdChevronLeft, MdChevronRight } from 'react-icons/md';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Sidebar from '../components/Sidebar/Sidebar';
@@ -21,11 +21,14 @@ const MovementReports = () => {
 
   // Filter states
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedUser, setSelectedUser] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [dateRange, setDateRange] = useState({
     start: '',
     end: ''
   });
+
+  const [users, setUsers] = useState([]);
 
   // Sort state
   const [sortConfig, setSortConfig] = useState({
@@ -33,12 +36,16 @@ const MovementReports = () => {
     direction: 'desc'
   });
 
+  
+
   const fetchMovementReports = async () => {
     setIsLoading(true);
     try {
       const response = await axios.get(`${baseUrl}/get_all_movement`);
-      console.log(response.data);
+      const usersResponse = await axios.get(`${baseUrl}/users`);
+      setUsers(usersResponse.data.data);
       setMovementReports(response.data);
+      setFilteredData(response.data); // Initialize filteredData with all data
     } catch (err) {
       console.error(err);
       toast.error('Failed to fetch movement reports');
@@ -51,19 +58,13 @@ const MovementReports = () => {
     fetchMovementReports();
   }, []);
 
-  useEffect(() => {
-    // Apply filters whenever data or filter criteria change
+  const applyFilters = () => {
+    // Apply filters when search button is clicked
     let result = [...movementReports];
 
-    // Apply search filter
-    if (searchTerm) {
-      const term = searchTerm.toLowerCase();
-      result = result.filter(item =>
-        item.username.toLowerCase().includes(term) ||
-        item.placeName?.toLowerCase().includes(term) ||
-        item.partyName?.toLowerCase().includes(term) ||
-        item.purpose?.toLowerCase().includes(term)
-      );
+    // Apply user filter if selected
+    if (selectedUser) {
+      result = result.filter(item => item.username.toLowerCase() === selectedUser.toLowerCase());
     }
 
     // Apply status filter
@@ -112,7 +113,7 @@ const MovementReports = () => {
 
     setFilteredData(result);
     setCurrentPage(1); // Reset to first page when filters change
-  }, [movementReports, searchTerm, statusFilter, dateRange, sortConfig]);
+  };
 
   const handleLogout = () => {
     localStorage.removeItem('adminLoggedIn');
@@ -155,6 +156,7 @@ const MovementReports = () => {
       direction = 'desc';
     }
     setSortConfig({ key, direction });
+    applyFilters(); // Re-apply filters when sorting changes
   };
 
   // Pagination logic
@@ -229,6 +231,14 @@ const MovementReports = () => {
     toast.success('CSV download started');
   };
 
+  const clearFilters = () => {
+    setSelectedUser('');
+    setStatusFilter('all');
+    setDateRange({ start: '', end: '' });
+    setFilteredData(movementReports);
+    setCurrentPage(1);
+  };
+
   return (
     <div className="flex h-screen bg-gray-50 overflow-hidden">
       <ToastContainer position="top-right" autoClose={3000} />
@@ -246,59 +256,56 @@ const MovementReports = () => {
       {/* Main content */}
       <div className="flex flex-col flex-1 w-full">
         {/* Header */}
-        {/* Header */}
-      <header className="flex items-center justify-between bg-white shadow p-4">
-        <div className="flex items-center">
-          {/* Mobile menu button */}
-          <button
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="text-gray-800 focus:outline-none md:hidden mr-4"
-            aria-label="Toggle sidebar"
-          >
-            {sidebarOpen ? (
-              <FaTimes className="h-6 w-6" />
-            ) : (
-              <FaBars className="h-6 w-6" />
-            )}
-          </button>
+        <header className="flex items-center justify-between bg-white shadow p-4">
+          <div className="flex items-center">
+            {/* Mobile menu button */}
+            <button
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              className="text-gray-800 focus:outline-none md:hidden mr-4"
+              aria-label="Toggle sidebar"
+            >
+              {sidebarOpen ? (
+                <FaTimes className="h-6 w-6" />
+              ) : (
+                <FaBars className="h-6 w-6" />
+              )}
+            </button>
 
-          <h1 className="text-xl font-semibold text-gray-800">Movement Reports</h1>
-        </div>
+            <h1 className="text-xl font-semibold text-gray-800">Movement Reports</h1>
+          </div>
 
-        <div className="flex space-x-2">
-          <button
-            onClick={downloadCSV}
-            className="flex items-center px-3 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
-          >
-            <FaFileDownload className="mr-2" />
-            Download CSV
-          </button>
-          <button
-            onClick={fetchMovementReports}
-            className="flex items-center px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-          >
-            <MdRefresh className="mr-2" />
-            Refresh Data
-          </button>
-        </div>
-      </header>
+          <div className="flex space-x-2">
+            <button
+              onClick={downloadCSV}
+              className="flex items-center px-3 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
+            >
+              <FaFileDownload className="mr-2" />
+              Download CSV
+            </button>
+          </div>
+        </header>
 
         {/* Filters Section */}
         <div className="bg-white shadow-sm p-4 border-b">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            {/* Search Filter */}
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+            {/* User Filter */}
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <FaSearch className="text-gray-400" />
               </div>
-              <input
-                type="text"
-                placeholder="Search..."
+              <select
                 className="pl-10 pr-4 py-2 w-full border rounded-lg focus:ring-blue-500 focus:border-blue-500"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
+                value={selectedUser}
+                onChange={(e) => setSelectedUser(e.target.value)}
+              >
+                <option value="">All Users</option>
+                {users.map(user => (
+                  <option key={user.username} value={user.username} className='capitalize'>
+                    {user.username}
+                  </option>
+                ))}
+              </select>
+            </div> 
 
             {/* Status Filter */}
             <div className="relative">
@@ -342,6 +349,16 @@ const MovementReports = () => {
                 onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })}
               />
             </div>
+
+            {/* Search Button */}
+            <div>
+              <button
+                onClick={applyFilters}
+                className="w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+              >
+                Search
+              </button>
+            </div>
           </div>
         </div>
 
@@ -355,11 +372,7 @@ const MovementReports = () => {
             <div className="bg-white rounded-lg shadow p-6 text-center">
               <p className="text-gray-500">No movement reports found matching your criteria</p>
               <button
-                onClick={() => {
-                  setSearchTerm('');
-                  setStatusFilter('all');
-                  setDateRange({ start: '', end: '' });
-                }}
+                onClick={clearFilters}
                 className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
               >
                 Clear Filters
