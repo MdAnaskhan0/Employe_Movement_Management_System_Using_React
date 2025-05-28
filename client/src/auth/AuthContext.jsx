@@ -6,6 +6,7 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true); // NEW
+  const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
   const timeoutRef = useRef(null);
 
@@ -44,7 +45,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (username, password) => {
     try {
-      const res = await axios.post('http://192.168.111.140:5137/login', { username, password });
+      const res = await axios.post(`${baseUrl}/login`, { username, password });
       if (res.data.status === 'success') {
         setUser(res.data.user);
         localStorage.setItem('user', JSON.stringify(res.data.user));

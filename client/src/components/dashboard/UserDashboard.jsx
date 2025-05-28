@@ -15,12 +15,13 @@ const UserDashboard = ({ movementData }) => {
     const navigate = useNavigate();
     const [userData, setUserData] = useState({});
     const [loading, setLoading] = useState(true);
+    const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
     useEffect(() => {
         const fetchUserData = async () => {
             try {
                 setLoading(true);
-                const res = await axios.get(`http://192.168.111.140:5137/users/${user.userID}`);
+                const res = await axios.get(`${baseUrl}/users/${user.userID}`);
                 setUserData(res.data.data);
                 // toast.success('User data loaded successfully');
             } catch (error) {

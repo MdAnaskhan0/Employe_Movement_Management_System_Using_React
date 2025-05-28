@@ -12,10 +12,11 @@ const Dashboard = () => {
   const { logout, user } = useAuth();
   const navigate = useNavigate();
   const [movementData, setMovementData] = useState([]);
+  const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
   const handleLogout = async () => {
     try {
-      await axios.post('http://192.168.111.140:5137/logout', {
+      await axios.post(`${baseUrl}/logout`, {
         username: user.username,
         role: user.role
       });
@@ -31,7 +32,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchMovementData = async () => {
       try {
-        const res = await axios.get(`http://192.168.111.140:5137/get_movement/${user.userID}`);
+        const res = await axios.get(`${baseUrl}/get_movement/${user.userID}`);
         setMovementData(res.data);
       } catch (error) {
         console.error('Error fetching movement data:', error);
