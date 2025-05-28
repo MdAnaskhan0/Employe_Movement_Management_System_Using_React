@@ -16,6 +16,7 @@ const Designations = () => {
   const [editName, setEditName] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
   const handleLogout = () => {
     localStorage.removeItem('adminLoggedIn');
@@ -31,7 +32,7 @@ const Designations = () => {
   const fetchDesignations = async () => {
     setLoading(true);
     try {
-      const res = await axios.get('http://192.168.111.140:5137/designations');
+      const res = await axios.get(`${baseUrl}/designations`);
       setDesignations(res.data);
     } catch (error) {
       console.error('Error fetching designations:', error);
@@ -48,7 +49,7 @@ const Designations = () => {
     }
 
     try {
-      await axios.post('http://192.168.111.140:5137/designations', {
+      await axios.post(`${baseUrl}/designations`, {
         designationName: newDesignation
       });
       setNewDesignation('');
@@ -63,7 +64,7 @@ const Designations = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this designation?')) {
       try {
-        await axios.delete(`http://192.168.111.140:5137/designations/${id}`);
+        await axios.delete(`${baseUrl}/designations/${id}`);
         fetchDesignations();
         toast.success('Designation deleted successfully');
       } catch (error) {
@@ -85,7 +86,7 @@ const Designations = () => {
     }
 
     try {
-      await axios.put(`http://192.168.111.140:5137/designations/${editID}`, {
+      await axios.put(`${baseUrl}/designations/${editID}`, {
         designationName: editName
       });
       setEditID(null);

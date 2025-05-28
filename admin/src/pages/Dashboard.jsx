@@ -18,6 +18,7 @@ const Dashboard = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
 
   const handleLogout = () => {
@@ -30,15 +31,15 @@ const Dashboard = ({ children }) => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get('http://192.168.111.140:5137/users');
-        const responseMovementReports = await axios.get('http://192.168.111.140:5137/get_all_movement');
-        const responseTeams = await axios.get('http://192.168.111.140:5137/teams');
-        const responseCompanyNames = await axios.get('http://192.168.111.140:5137/companynames');
-        const responseBranchNames = await axios.get('http://192.168.111.140:5137/branchnames');
-        const responseDesignations = await axios.get('http://192.168.111.140:5137/designations');
-        const responseDepartments = await axios.get('http://192.168.111.140:5137/departments');
-        const responseRoles = await axios.get('http://192.168.111.140:5137/roles');
-        const responsePartyNames = await axios.get('http://192.168.111.140:5137/partynames');
+        const response = await axios.get(`${baseUrl}/users`);
+        const responseMovementReports = await axios.get(`${baseUrl}/get_all_movement`);
+        const responseTeams = await axios.get(`${baseUrl}/teams`);
+        const responseCompanyNames = await axios.get(`${baseUrl}/companynames`);
+        const responseBranchNames = await axios.get(`${baseUrl}/branchnames`);
+        const responseDesignations = await axios.get(`${baseUrl}/designations`);
+        const responseDepartments = await axios.get(`${baseUrl}/departments`);
+        const responseRoles = await axios.get(`${baseUrl}/roles`); 
+        const responsePartyNames = await axios.get(`${baseUrl}/partynames`);
 
         setUsers(response.data.data);
         setMovementReports(responseMovementReports.data);

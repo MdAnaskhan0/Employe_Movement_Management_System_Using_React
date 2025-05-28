@@ -17,8 +17,9 @@ const PartyNames = ({ children }) => {
   const [partyList, setPartyList] = useState([]);
   const [editId, setEditId] = useState(null);
   const [loading, setLoading] = useState(false);
+  const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
-  const apiUrl = 'http://192.168.111.140:5137/partynames';
+  const apiUrl = `${baseUrl}/partynames`; 
 
   // Fetch all parties
   const fetchParties = async () => {

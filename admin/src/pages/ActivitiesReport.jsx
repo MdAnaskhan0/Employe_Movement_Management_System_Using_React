@@ -20,6 +20,7 @@ const ActivitiesReport = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [loading, setLoading] = useState(false);
+  const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
   const handleLogout = () => {
     localStorage.removeItem('adminLoggedIn');
@@ -31,7 +32,7 @@ const ActivitiesReport = () => {
     const fetchUsers = async () => {
       try {
         setLoading(true);
-        const responseUser = await axios.get('http://192.168.111.140:5137/users');
+        const responseUser = await axios.get(`${baseUrl}/users`);
         setUsers(responseUser.data.data);
       } catch (err) {
         console.error(err);
@@ -52,7 +53,7 @@ const ActivitiesReport = () => {
 
     try {
       setLoading(true);
-      const url = `http://192.168.111.140:5137/user-activities/${selectedUser}`;
+      const url = `${baseUrl}/user-activities/${selectedUser}`;
       const response = await axios.get(url);
       const allActivities = response.data;
 
@@ -82,7 +83,7 @@ const ActivitiesReport = () => {
       try {
         setLoading(true);
         // Replace with your actual delete endpoint
-        await axios.delete(`http://192.168.111.140:5137/user-activity/${activityId}`);
+        await axios.delete(`${baseUrl}/user-activity/${activityId}`);
         toast.success('Activity deleted successfully');
         // Refresh the activities
         handleSearch();

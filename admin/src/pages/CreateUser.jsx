@@ -29,13 +29,14 @@ const CreateUser = () => {
         email: '',
         role: ''
     });
+    const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
     // Fetch all roles
     const fetchRoles = async () => {
         setLoading(true);
         setError('');
         try {
-            const res = await axios.get('http://192.168.111.140:5137/roles');
+            const res = await axios.get(`${baseUrl}/roles`); 
             setRoles(res.data);
         } catch (err) {
             setError('Failed to fetch roles');
@@ -50,7 +51,7 @@ const CreateUser = () => {
         setLoading(true);
         setError('');
         try {
-            const res = await axios.get('http://192.168.111.140:5137/designations');
+            const res = await axios.get(`${baseUrl}/designations`); 
             setDesignation(res.data);
         } catch (err) {
             setError('Failed to fetch designations');
@@ -65,7 +66,7 @@ const CreateUser = () => {
         setLoading(true);
         setError('');
         try {
-            const res = await axios.get('http://192.168.111.140:5137/departments');
+            const res = await axios.get(`${baseUrl}/departments`); 
             setDepartment(res.data);
         } catch (err) {
             setError('Failed to fetch departments');
@@ -80,7 +81,7 @@ const CreateUser = () => {
         setLoading(true);
         setError('');
         try {
-            const res = await axios.get('http://192.168.111.140:5137/companynames');
+            const res = await axios.get(`${baseUrl}/companynames`); 
             setCompany(res.data.data);
         } catch (err) {
             setError('Failed to fetch company names');
@@ -119,7 +120,7 @@ const CreateUser = () => {
         e.preventDefault();
         setLoading(true);
         try {
-            const response = await axios.post('http://192.168.111.140:5137/users', formData);
+            const response = await axios.post(`${baseUrl}/users`, formData); 
 
             if (response.data.status === 'ok') {
                 toast.success('User created successfully!');

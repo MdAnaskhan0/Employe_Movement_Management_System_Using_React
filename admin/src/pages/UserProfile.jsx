@@ -28,6 +28,7 @@ const UserProfile = () => {
     const [punchStatuses, setPunchStatuses] = useState([]);
     const [visitingStatuses, setVisitingStatuses] = useState([]);
     const [movementReports, setMovementReports] = useState([]);
+    const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
     // Filter and pagination states
     const [filteredData, setFilteredData] = useState([]);
@@ -57,15 +58,15 @@ const UserProfile = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const userRes = await axios.get(`http://192.168.111.140:5137/users/${userID}`);
+                const userRes = await axios.get(`${baseUrl}/users/${userID}`);
                 setUserData(userRes.data.data);
 
-                const responseRoles = await axios.get('http://192.168.111.140:5137/roles');
-                const responseDesignations = await axios.get('http://192.168.111.140:5137/designations');
-                const responseDepartments = await axios.get('http://192.168.111.140:5137/departments');
-                const responseCompanyNames = await axios.get('http://192.168.111.140:5137/companynames');
-                const responsePunchStatuses = await axios.get('http://192.168.111.140:5137/visitingstatus');
-                const responseVisitingStatuses = await axios.get('http://192.168.111.140:5137/visitingstatus');
+                const responseRoles = await axios.get('${baseUrl}/roles');
+                const responseDesignations = await axios.get(`${baseUrl}/designations`);
+                const responseDepartments = await axios.get(`${baseUrl}/departments`);
+                const responseCompanyNames = await axios.get(`${baseUrl}/companynames`);
+                const responsePunchStatuses = await axios.get(`${baseUrl}/visitingstatus`);
+                const responseVisitingStatuses = await axios.get(`${baseUrl}/visitingstatus`);
 
                 setRoles(responseRoles.data);
                 setDesignations(responseDesignations.data);
@@ -88,7 +89,7 @@ const UserProfile = () => {
         const fetchMovementReports = async () => {
             setIsLoading(true);
             try {
-                const response = await axios.get(`http://192.168.111.140:5137/get_movement/${userID}`);
+                const response = await axios.get(`${baseUrl}/get_movement/${userID}`);
                 setMovementReports(response.data);
             } catch (err) {
                 console.error(err);
@@ -200,7 +201,7 @@ const UserProfile = () => {
                 Role: editData.role
             };
 
-            await axios.put(`http://192.168.111.140:5137/users/${userID}`, payload);
+            await axios.put(`${baseUrl}/users/${userID}`, payload);
             setUserData({ ...userData, ...payload });
             setIsEditing(false);
             toast.success('User updated successfully');
@@ -214,7 +215,7 @@ const UserProfile = () => {
         if (!window.confirm('Are you sure you want to delete this user?')) return;
 
         try {
-            await axios.delete(`http://192.168.111.140:5137/users/${userID}`);
+            await axios.delete(`${baseUrl}/users/${userID}`);
             navigate('/alluser');
             toast.success('User deleted successfully');
         } catch (err) {

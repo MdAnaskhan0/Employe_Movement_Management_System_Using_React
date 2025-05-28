@@ -13,6 +13,7 @@ const Departments = ({ children }) => {
   const [departmentName, setDepartmentName] = useState('');
   const [editingId, setEditingId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
   const navigate = useNavigate();
 
@@ -25,7 +26,7 @@ const Departments = ({ children }) => {
   const fetchDepartments = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.get('http://192.168.111.140:5137/departments');
+      const response = await axios.get(`${baseUrl}/departments`);
       setDepartments(response.data);
     } catch (error) {
       toast.error('Failed to fetch departments');
@@ -44,12 +45,12 @@ const Departments = ({ children }) => {
     setIsLoading(true);
     try {
       if (editingId) {
-        await axios.put(`http://192.168.111.140:5137/departments/${editingId}`, {
+        await axios.put(`${baseUrl}/departments/${editingId}`, {
           departmentName,
         });
         toast.success('Department updated successfully');
       } else {
-        await axios.post('http://192.168.111.140:5137/departments', {
+        await axios.post(`${baseUrl}/departments`, { 
           departmentName,
         });
         toast.success('Department added successfully');
@@ -74,7 +75,7 @@ const Departments = ({ children }) => {
     if (window.confirm('Are you sure you want to delete this department?')) {
       setIsLoading(true);
       try {
-        await axios.delete(`http://192.168.111.140:5137/departments/${id}`);
+        await axios.delete(`${baseUrl}/departments/${id}`);
         toast.success('Department deleted successfully');
         fetchDepartments();
       } catch (error) {

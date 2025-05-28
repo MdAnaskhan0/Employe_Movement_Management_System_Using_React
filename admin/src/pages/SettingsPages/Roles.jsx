@@ -9,6 +9,7 @@ import Sidebar from '../../components/Sidebar/Sidebar';
 const Roles = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
+  const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
   // Roles state
   const [roles, setRoles] = useState([]);
@@ -33,7 +34,7 @@ const Roles = () => {
     setLoading(true);
     setError('');
     try {
-      const res = await axios.get('http://192.168.111.140:5137/roles');
+      const res = await axios.get(`${baseUrl}/roles`); 
       setRoles(res.data);
       setFilteredRoles(res.data);
     } catch (err) {
@@ -80,7 +81,7 @@ const Roles = () => {
       const roleData = { rolename: trimmedRolename.toLowerCase() };
       
       if (editRoleID) {
-        await axios.put(`http://192.168.111.140:5137/roles/${editRoleID}`, roleData);
+        await axios.put(`${baseUrl}/roles/${editRoleID}`, roleData);
         setRoles((prev) =>
           prev.map((role) =>
             role.roleID === editRoleID ? { ...role, rolename: trimmedRolename.toLowerCase() } : role
@@ -88,7 +89,7 @@ const Roles = () => {
         );
         toast.success('Role updated successfully');
       } else {
-        const res = await axios.post('http://192.168.111.140:5137/roles', roleData);
+        const res = await axios.post(`${baseUrl}/roles`, roleData);
         setRoles((prev) => [...prev, res.data]);
         toast.success('Role added successfully');
       }
@@ -105,7 +106,7 @@ const Roles = () => {
   const handleDelete = async (roleID) => {
     if (!window.confirm('Are you sure you want to delete this role?')) return;
     try {
-      await axios.delete(`http://192.168.111.140:5137/roles/${roleID}`);
+      await axios.delete(`${baseUrl}/roles/${roleID}`);
       setRoles((prev) => prev.filter((role) => role.roleID !== roleID));
       toast.success('Role deleted successfully');
     } catch (err) {

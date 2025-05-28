@@ -23,6 +23,7 @@ const CompanyNames = () => {
   const [companies, setCompanies] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
   // Form states
   const [companyname, setCompanyname] = useState('');
@@ -36,7 +37,7 @@ const CompanyNames = () => {
     try {
       setLoading(true);
       setError('');
-      const res = await axios.get('http://192.168.111.140:5137/companynames');
+      const res = await axios.get(`${baseUrl}/companynames`);
       setCompanies(res.data.data || []);
       setLoading(false);
     } catch (err) {
@@ -80,7 +81,7 @@ const CompanyNames = () => {
       if (editingCompanyId) {
         // Update company
         await axios.put(
-          `http://192.168.111.140:5137/companynames/${editingCompanyId}`,
+          `${baseUrl}/companynames/${editingCompanyId}`,
           formData,
           { headers: { 'Content-Type': 'multipart/form-data' } }
         );
@@ -88,7 +89,7 @@ const CompanyNames = () => {
       } else {
         // Create new company
         await axios.post(
-          'http://192.168.111.140:5137/companynames',
+          `${baseUrl}/companynames`,
           formData,
           { headers: { 'Content-Type': 'multipart/form-data' } }
         );
@@ -122,7 +123,7 @@ const CompanyNames = () => {
     setCompanyLogoFile(null);
     setPreviewLogo(
       company.companyLogo 
-        ? `http://localhost:5137/companylogos/${company.companynameID}?${Date.now()}` 
+        ? `${baseUrl}/companylogos/${company.companynameID}?${Date.now()}` 
         : null
     );
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -134,7 +135,7 @@ const CompanyNames = () => {
 
     try {
       setLoading(true);
-      await axios.delete(`http://192.168.111.140:5137/companynames/${id}`);
+      await axios.delete(`${baseUrl}/companynames/${id}`);
       toast.success('Company deleted successfully');
       fetchCompanies();
     } catch (err) {
@@ -373,7 +374,7 @@ const CompanyNames = () => {
                               {company.companyLogo ? (
                                 <img
                                   className="h-10 w-10 rounded-full object-cover"
-                                  src={`http://192.168.111.140:5137/companylogos/${company.companynameID}?${Date.now()}`}
+                                  src={`${baseUrl}/companylogos/${company.companynameID}?${Date.now()}`}
                                   alt={`${company.companyname} logo`}
                                   onError={(e) => {
                                     e.target.onerror = null;

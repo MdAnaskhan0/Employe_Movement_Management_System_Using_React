@@ -12,7 +12,7 @@ const MovementReports = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
-  
+  const baseUrl = import.meta.env.VITE_API_BASE_URL;
   const [movementReports, setMovementReports] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   // Pagination state
@@ -36,7 +36,7 @@ const MovementReports = () => {
   const fetchMovementReports = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.get(`http://192.168.111.140:5137/get_all_movement`);
+      const response = await axios.get(`${baseUrl}/get_all_movement`);
       console.log(response.data);
       setMovementReports(response.data);
     } catch (err) {

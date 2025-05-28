@@ -15,11 +15,12 @@ const AllUser = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const usersPerPage = 5;
   const navigate = useNavigate();
+  const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get('http://192.168.111.140:5137/users');
+        const response = await axios.get(`${baseUrl}/users`); 
         setUsers(response.data.data);
       } catch (err) {
         setError(err.message);
@@ -105,7 +106,7 @@ const AllUser = () => {
         Phone: editData.phone
       };
 
-      await axios.put(`http://localhost:5137/users/${userId}`, payload);
+      await axios.put(`${baseUrl}/users/${userId}`, payload);
 
       setUsers(users.map(user =>
         user.userID === userId ? { ...user, ...payload } : user
@@ -120,7 +121,7 @@ const AllUser = () => {
     if (!window.confirm('Are you sure you want to delete this user?')) return;
 
     try {
-      await axios.delete(`http://localhost:5137/users/${userId}`);
+      await axios.delete(`${baseUrl}/users/${userId}`);
       setUsers(users.filter(user => user.userID !== userId));
     } catch (err) {
       setError(err.message);

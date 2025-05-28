@@ -9,6 +9,7 @@ const Home = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -16,7 +17,7 @@ const Home = () => {
     setError('');
 
     try {
-      const response = await fetch('http://192.168.111.140:5137/adminlogin', {
+      const response = await fetch(`${baseUrl}/adminlogin`, { 
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

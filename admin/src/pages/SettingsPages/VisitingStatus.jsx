@@ -15,8 +15,8 @@ const VisitingStatus = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-
-  const API_URL = 'http://192.168.111.140:5137/visitingstatus';
+  const baseUrl = import.meta.env.VITE_API_BASE_URL;
+  const API_URL = `${baseUrl}/visitingstatus`; 
 
   const handleLogout = () => {
     localStorage.removeItem('adminLoggedIn');

@@ -8,7 +8,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import Sidebar from '../../components/Sidebar/Sidebar';
 import axios from 'axios';
 
-const API_URL = 'http://192.168.111.140:5137/branchnames';
 
 const BranchNames = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -17,6 +16,8 @@ const BranchNames = () => {
   const [editingId, setEditingId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const baseUrl = import.meta.env.VITE_API_BASE_URL;
+  const API_URL = `${baseUrl}/branchnames`;
 
   const handleLogout = () => {
     localStorage.removeItem('adminLoggedIn');

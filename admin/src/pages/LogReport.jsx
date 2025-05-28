@@ -35,6 +35,7 @@ const LogReport = () => {
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
   const navigate = useNavigate();
+  const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
   // Fields to display (as per your requirement)
   const displayFields = [
@@ -73,8 +74,8 @@ const LogReport = () => {
       try {
         setIsLoading(true);
         const [usersResponse, logsResponse] = await Promise.all([
-          axios.get('http://192.168.111.140:5137/users'),
-          axios.get('http://192.168.111.140:5137/movement_edit_logs')
+          axios.get(`${baseUrl}/users`),
+          axios.get(`${baseUrl}/movement_edit_logs`)
         ]);
 
         setUsers(usersResponse.data.data || []);
