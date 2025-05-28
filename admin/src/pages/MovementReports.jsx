@@ -401,12 +401,12 @@ const MovementReports = () => {
                         onClick={() => requestSort('dateTime')}
                       >
                         <div className="flex items-center">
-                          Date
+                          Submitted Date/Time
                           <FaSort className="ml-1 text-gray-400" />
                         </div>
                       </th>
                       <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Submitted Time
+                        Punch Time
                       </th>
                       <th
                         scope="col"
@@ -414,7 +414,7 @@ const MovementReports = () => {
                         onClick={() => requestSort('punchTime')}
                       >
                         <div className="flex items-center">
-                          Punch Time
+                          Punch Status
                           <FaSort className="ml-1 text-gray-400" />
                         </div>
                       </th>
@@ -424,7 +424,7 @@ const MovementReports = () => {
                         onClick={() => requestSort('visitingStatus')}
                       >
                         <div className="flex items-center">
-                          Punch Status
+                          Visit Status
                           <FaSort className="ml-1 text-gray-400" />
                         </div>
                       </th>
