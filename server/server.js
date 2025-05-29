@@ -11,18 +11,7 @@ const { Server } = require('socket.io');
 const app = express();
 const port = 5137;
 
-const server = http.createServer(app);
-const io = new Server(server, {
-  cors: {
-    origin: [
-      'http://localhost:5173',
-      'http://localhost:5174',
-      'http://192.168.111.140:5173',
-      'http://192.168.111.140:5174',
-    ],
-    credentials: true,
-  },
-});
+
 
 
 // Middleware
@@ -57,123 +46,77 @@ db.connect((err) => {
 });
 
 
-
-// Socket.io setup
-// Socket.IO logic
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: [
+      'http://localhost:5173',
+      'http://localhost:5174',
+      'http://192.168.111.140:5173',
+      'http://192.168.111.140:5174',
+    ],
+    credentials: true,
+  },
+});
 
 io.on('connection', (socket) => {
-  console.log('User connected:', socket.id);
+  console.log('A user connected');
 
-  socket.on('join_team', async ({ user_id, team_id }) => {
-    console.log('JOIN_TEAM called with:', { user_id, team_id });
-
-    const verifyQuery = `
-      SELECT * FROM team_assignments 
-      WHERE team_id = ? AND (team_leader_id = ? OR team_member_id = ?) LIMIT 1`;
-
-    db.query(verifyQuery, [team_id, user_id, user_id], (err, rows) => {
-      if (err) {
-        console.error('DB error verifying team:', err);
-        socket.emit('join_error', 'DB error verifying team');
-        return;
-      }
-
-      if (rows.length === 0) {
-        socket.emit('join_error', 'You are not part of this team');
-        return;
-      }
-
-      socket.join(`team_${team_id}`);
-      console.log(`User ${user_id} joined team_${team_id}`);
-
-      const loadMsgQuery = `
-        SELECT cm.id, cm.sender_id, cm.message, cm.timestamp, u.name as sender_name
-        FROM chat_messages cm
-        LEFT JOIN users u ON cm.sender_id = u.id
-        WHERE cm.team_id = ? ORDER BY cm.timestamp ASC`;
-
-      db.query(loadMsgQuery, [team_id], (err, messages) => {
-        if (err) {
-          console.error('Error loading messages:', err);
-          socket.emit('load_messages_error', 'Error loading messages');
-          return;
-        }
-        console.log('Sending load_messages:', messages);
-        socket.emit('load_messages', messages);
-      });
-    });
+  socket.on('joinTeam', (teamId) => {
+    socket.join(`team_${teamId}`);
   });
 
-  socket.on('send_message', ({ sender_id, message, team_id }) => {
-    if (!sender_id || !message || !team_id) {
-      console.error('Missing fields');
-      return;
-    }
+  socket.on('sendMessage', (data) => {
+    const { team_id, sender_name, message } = data;
 
-    const insertQuery = `INSERT INTO chat_messages (sender_id, message, team_id) VALUES (?, ?, ?)`;
-    db.query(insertQuery, [sender_id, message, team_id], (err, result) => {
-      if (err) {
-        console.error('Error saving message:', err);
-        return;
+    // Save message to DB
+    db.query(
+      'INSERT INTO team_messages (team_id, sender_name, message) VALUES (?, ?, ?)',
+      [team_id, sender_name, message],
+      (err, result) => {
+        if (!err) {
+          const newMessage = {
+            id: result.insertId,
+            team_id,
+            sender_name,
+            message,
+            created_at: new Date()
+          };
+          // Broadcast to team room
+          io.to(`team_${team_id}`).emit('receiveMessage', newMessage);
+        }
       }
-
-      const newMessage = {
-        id: result.insertId,
-        sender_id,
-        message,
-        team_id,
-        timestamp: new Date(),
-      };
-
-      io.to(`team_${team_id}`).emit('receive_message', newMessage);
-    });
+    );
   });
 
   socket.on('disconnect', () => {
-    console.log('User disconnected:', socket.id);
+    console.log('User disconnected');
   });
 });
 
 
-
-// GET /team-assignment/:userID
-app.get('/team-assignment/:userID', async (req, res) => {
-  const userID = req.params.userID;
-  try {
-    const [rows] = await db.promise().query(
-      `SELECT id, team_id FROM team_assignments 
-       WHERE team_member_id = ? OR team_leader_id = ? LIMIT 1`,
-      [userID, userID]
-    );
-    if (rows.length === 0) return res.status(404).json({ error: 'Team assignment not found' });
-    res.json(rows[0]);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Server error' });
-  }
+app.post('/messages', (req, res) => {
+  const { team_id, sender_name, message } = req.body;
+  db.query(
+    'INSERT INTO team_messages (team_id, sender_name, message) VALUES (?, ?, ?)',
+    [team_id, sender_name, message],
+    (err, result) => {
+      if (err) return res.status(500).json({ error: 'Failed to insert message' });
+      res.status(201).json({ id: result.insertId, team_id, sender_name, message });
+    }
+  );
 });
 
-// GET /team_assignments?user_id=xxx
-app.get('/team_assignments', async (req, res) => {
-  const userId = req.query.user_id;
-  if (!userId) return res.status(400).json({ error: 'user_id is required' });
-
-  try {
-    const [rows] = await db.promise().query(
-      `SELECT id FROM team_assignments 
-       WHERE team_member_id = ? OR team_leader_id = ? LIMIT 1`,
-      [userId, userId]
-    );
-
-    if (rows.length === 0) {
-      return res.status(404).json({ error: 'Team assignment not found' });
+app.get('/messages/:teamId', (req, res) => {
+  const { teamId } = req.params;
+  db.query(
+    'SELECT * FROM team_messages WHERE team_id = ? ORDER BY created_at ASC',
+    [teamId],
+    (err, results) => {
+      if (err) return res.status(500).json({ error: 'Database error' });
+      res.json(results);
     }
-
-    res.json({ id: rows[0].id });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Database error' });
-  }
+  );
 });
 
 
