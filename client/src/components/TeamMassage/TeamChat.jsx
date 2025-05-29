@@ -1,12 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
 import axios from 'axios';
+import { toast } from 'react-toastify';
+import { FaPaperPlane, FaUser } from 'react-icons/fa';
+import { BsThreeDotsVertical } from 'react-icons/bs';
+import { format } from 'date-fns';
+import { TailSpin } from 'react-loader-spinner';
 
 const socket = io(import.meta.env.VITE_API_BASE_URL);
 
 const TeamChat = ({ selectedTeam, user }) => {
   const [messages, setMessages] = useState([]);
   const [messageText, setMessageText] = useState('');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!selectedTeam) return;
@@ -15,13 +21,28 @@ const TeamChat = ({ selectedTeam, user }) => {
     socket.emit('joinTeam', selectedTeam.team_id);
 
     // Fetch previous messages
+    setLoading(true);
     axios.get(`${import.meta.env.VITE_API_BASE_URL}/messages/${selectedTeam.team_id}`)
-      .then(res => setMessages(res.data))
-      .catch(err => console.error(err));
+      .then(res => {
+        setMessages(res.data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error(err);
+        toast.error('Failed to load messages');
+        setLoading(false);
+      });
 
     // Listen for new messages
     socket.on('receiveMessage', (message) => {
       setMessages((prev) => [...prev, message]);
+      // Auto-scroll to bottom
+      setTimeout(() => {
+        const chatContainer = document.getElementById('chat-messages');
+        if (chatContainer) {
+          chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+      }, 100);
     });
 
     return () => {
@@ -30,36 +51,97 @@ const TeamChat = ({ selectedTeam, user }) => {
   }, [selectedTeam]);
 
   const sendMessage = () => {
-    if (messageText.trim() === '') return;
+    if (messageText.trim() === '') {
+      toast.warning('Message cannot be empty');
+      return;
+    }
 
     const newMessage = {
       team_id: selectedTeam.team_id,
       sender_name: user.name,
-      message: messageText
+      message: messageText,
+      timestamp: new Date().toISOString()
     };
 
     socket.emit('sendMessage', newMessage);
     setMessageText('');
   };
 
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  };
+
   return (
-    <div style={{ marginTop: '1rem' }}>
-      <h4>Team Chat</h4>
-      <div style={{ border: '1px solid #ccc', padding: '10px', maxHeight: '300px', overflowY: 'auto' }}>
-        {messages.map(msg => (
-          <div key={msg.id} style={{ margin: '5px 0' }}>
-            <strong>{msg.sender_name}:</strong> {msg.message}
-          </div>
-        ))}
+    <div className="border rounded-lg overflow-hidden shadow-sm">
+      <div className="bg-blue-600 text-white px-4 py-3 flex justify-between items-center">
+        <h4 className="font-semibold text-lg">Team Chat</h4>
+        <button className="text-white hover:text-blue-200">
+          <BsThreeDotsVertical />
+        </button>
       </div>
-      <div style={{ marginTop: '10px' }}>
-        <input
-          type="text"
-          value={messageText}
-          onChange={(e) => setMessageText(e.target.value)}
-          placeholder="Type a message..."
-        />
-        <button onClick={sendMessage}>Send</button>
+
+      {loading ? (
+        <div className="flex justify-center items-center h-40">
+          <TailSpin color="#3B82F6" height={40} width={40} />
+        </div>
+      ) : (
+        <div 
+          id="chat-messages"
+          className="h-64 overflow-y-auto p-4 bg-gray-50"
+        >
+          {messages.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-full text-gray-500">
+              <p>No messages yet</p>
+              <p className="text-sm">Start the conversation!</p>
+            </div>
+          ) : (
+            messages.map((msg, index) => (
+              <div 
+                key={index} 
+                className={`mb-4 flex ${msg.sender_name === user.name ? 'justify-end' : 'justify-start'}`}
+              >
+                <div 
+                  className={`max-w-xs md:max-w-md rounded-lg px-4 py-2 ${msg.sender_name === user.name 
+                    ? 'bg-blue-500 text-white rounded-br-none' 
+                    : 'bg-white border border-gray-200 rounded-bl-none'}`}
+                >
+                  <div className="flex items-center mb-1">
+                    <FaUser className="text-xs mr-2" />
+                    <span className="font-semibold text-xs">{msg.sender_name}</span>
+                  </div>
+                  <p className="text-sm">{msg.message}</p>
+                  <div className="text-right mt-1">
+                    <span className="text-xs opacity-70">
+                      {msg.timestamp ? format(new Date(msg.timestamp), 'hh:mm a') : ''}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      )}
+
+      <div className="border-t border-gray-200 p-3 bg-white">
+        <div className="flex items-center">
+          <input
+            type="text"
+            value={messageText}
+            onChange={(e) => setMessageText(e.target.value)}
+            onKeyPress={handleKeyPress}
+            placeholder="Type your message here..."
+            className="flex-1 border border-gray-300 rounded-l-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+          <button
+            onClick={sendMessage}
+            className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-r-lg transition duration-200"
+          >
+            <FaPaperPlane />
+          </button>
+        </div>
       </div>
     </div>
   );
