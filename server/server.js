@@ -60,8 +60,6 @@ const io = new Server(server, {
 });
 
 io.on('connection', (socket) => {
-  console.log('A user connected');
-
   socket.on('joinTeam', (teamId) => {
     socket.join(`team_${teamId}`);
   });

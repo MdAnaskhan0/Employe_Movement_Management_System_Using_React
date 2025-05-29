@@ -1,30 +1,32 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { FaPaperPlane, FaUser } from 'react-icons/fa';
-import { BsThreeDotsVertical } from 'react-icons/bs';
 import { format } from 'date-fns';
 import { TailSpin } from 'react-loader-spinner';
 
 const socket = io(import.meta.env.VITE_API_BASE_URL);
 
-const TeamChat = ({ selectedTeam, user }) => {
+const TeamChat = ({ selectedTeam, user, updateUnreadCount }) => {
   const [messages, setMessages] = useState([]);
   const [messageText, setMessageText] = useState('');
   const [loading, setLoading] = useState(true);
+  const [lastSeenMessageId, setLastSeenMessageId] = useState(null);
+  const messagesEndRef = useRef(null);
 
   useEffect(() => {
     if (!selectedTeam) return;
 
-    // Join Socket.IO room
     socket.emit('joinTeam', selectedTeam.team_id);
 
-    // Fetch previous messages
     setLoading(true);
     axios.get(`${import.meta.env.VITE_API_BASE_URL}/messages/${selectedTeam.team_id}`)
       .then(res => {
         setMessages(res.data);
+        if (res.data.length > 0) {
+          setLastSeenMessageId(res.data[res.data.length - 1].id);
+        }
         setLoading(false);
       })
       .catch(err => {
@@ -33,22 +35,31 @@ const TeamChat = ({ selectedTeam, user }) => {
         setLoading(false);
       });
 
-    // Listen for new messages
-    socket.on('receiveMessage', (message) => {
-      setMessages((prev) => [...prev, message]);
-      // Auto-scroll to bottom
-      setTimeout(() => {
-        const chatContainer = document.getElementById('chat-messages');
-        if (chatContainer) {
-          chatContainer.scrollTop = chatContainer.scrollHeight;
-        }
-      }, 100);
-    });
+    const handleNewMessage = (message) => {
+      setMessages(prev => [...prev, message]);
+      
+      if (message.team_id === selectedTeam.team_id) {
+        setLastSeenMessageId(message.id);
+      } else {
+        const newMessages = messages.filter(m => m.id > lastSeenMessageId);
+        updateUnreadCount(message.team_id, newMessages.length);
+      }
+    };
+
+    socket.on('receiveMessage', handleNewMessage);
 
     return () => {
-      socket.off('receiveMessage');
+      socket.off('receiveMessage', handleNewMessage);
     };
   }, [selectedTeam]);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   const sendMessage = () => {
     if (messageText.trim() === '') {
@@ -76,11 +87,8 @@ const TeamChat = ({ selectedTeam, user }) => {
 
   return (
     <div className="border rounded-lg overflow-hidden shadow-sm">
-      <div className="bg-blue-600 text-white px-4 py-3 flex justify-between items-center">
+      <div className="bg-blue-600 text-white px-4 py-3">
         <h4 className="font-semibold text-lg">Team Chat</h4>
-        <button className="text-white hover:text-blue-200">
-          <BsThreeDotsVertical />
-        </button>
       </div>
 
       {loading ? (
@@ -89,8 +97,8 @@ const TeamChat = ({ selectedTeam, user }) => {
         </div>
       ) : (
         <div 
+          className="h-96 overflow-y-auto p-4 bg-gray-50"
           id="chat-messages"
-          className="h-64 overflow-y-auto p-4 bg-gray-50"
         >
           {messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-gray-500">
@@ -122,6 +130,7 @@ const TeamChat = ({ selectedTeam, user }) => {
               </div>
             ))
           )}
+          <div ref={messagesEndRef} />
         </div>
       )}
 
