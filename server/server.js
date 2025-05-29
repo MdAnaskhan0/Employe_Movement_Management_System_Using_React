@@ -64,52 +64,53 @@ db.connect((err) => {
 io.on('connection', (socket) => {
   console.log('User connected:', socket.id);
 
-  // Join a team room
   socket.on('join_team', async ({ user_id, team_id }) => {
-    // Optional: verify if user_id belongs to team_id before joining
+    console.log('JOIN_TEAM called with:', { user_id, team_id });
+
     const verifyQuery = `
       SELECT * FROM team_assignments 
       WHERE team_id = ? AND (team_leader_id = ? OR team_member_id = ?) LIMIT 1`;
+
     db.query(verifyQuery, [team_id, user_id, user_id], (err, rows) => {
       if (err) {
-        console.error('DB error verifying team membership:', err);
-        socket.emit('join_error', 'Server error while verifying team membership');
+        console.error('DB error verifying team:', err);
+        socket.emit('join_error', 'DB error verifying team');
         return;
       }
-      if (rows.length === 0) {
-        socket.emit('join_error', 'User is not a member of this team');
-        return;
-      }
-      
-      socket.join(`team_${team_id}`);
-      console.log(`User ${user_id} joined room team_${team_id}`);
 
-      // Load previous messages for this team
+      if (rows.length === 0) {
+        socket.emit('join_error', 'You are not part of this team');
+        return;
+      }
+
+      socket.join(`team_${team_id}`);
+      console.log(`User ${user_id} joined team_${team_id}`);
+
       const loadMsgQuery = `
         SELECT cm.id, cm.sender_id, cm.message, cm.timestamp, u.name as sender_name
         FROM chat_messages cm
         LEFT JOIN users u ON cm.sender_id = u.id
         WHERE cm.team_id = ? ORDER BY cm.timestamp ASC`;
-      
+
       db.query(loadMsgQuery, [team_id], (err, messages) => {
         if (err) {
           console.error('Error loading messages:', err);
-          socket.emit('load_messages_error', 'Failed to load messages');
+          socket.emit('load_messages_error', 'Error loading messages');
           return;
         }
+        console.log('Sending load_messages:', messages);
         socket.emit('load_messages', messages);
       });
     });
   });
 
-  // Listen for new messages in a team room
   socket.on('send_message', ({ sender_id, message, team_id }) => {
     if (!sender_id || !message || !team_id) {
-      console.error('Missing sender_id, message, or team_id');
+      console.error('Missing fields');
       return;
     }
 
-    const insertQuery = 'INSERT INTO chat_messages (sender_id, message, team_id) VALUES (?, ?, ?)';
+    const insertQuery = `INSERT INTO chat_messages (sender_id, message, team_id) VALUES (?, ?, ?)`;
     db.query(insertQuery, [sender_id, message, team_id], (err, result) => {
       if (err) {
         console.error('Error saving message:', err);
@@ -124,7 +125,6 @@ io.on('connection', (socket) => {
         timestamp: new Date(),
       };
 
-      // Emit to all clients in the specific team room
       io.to(`team_${team_id}`).emit('receive_message', newMessage);
     });
   });
@@ -133,47 +133,6 @@ io.on('connection', (socket) => {
     console.log('User disconnected:', socket.id);
   });
 });
-
-
-// io.on('connection', (socket) => {
-//   console.log('User connected:', socket.id);
-
-//   // Replace this block with the new code:
-//   socket.on('send_message', (data) => {
-//     console.log('Message received:', data);
-
-//     const { sender_id, message, team_id } = data;
-
-//     if (!sender_id || !message || !team_id) {
-//       console.error('Missing sender_id, message, or team_id');
-//       return;
-//     }
-
-//     // Optional: verify sender is a member of the team before saving
-
-//     const query = 'INSERT INTO chat_messages (sender_id, message, team_id) VALUES (?, ?, ?)';
-//     db.query(query, [sender_id, message, team_id], (err, result) => {
-//       if (err) {
-//         console.error('Error saving message:', err);
-//         return;
-//       }
-
-//       io.emit('receive_message', {
-//         id: result.insertId,
-//         sender_id,
-//         message,
-//         team_id,
-//         timestamp: new Date(),
-//       });
-//     });
-//   });
-
-//   socket.on('disconnect', () => {
-//     console.log('User disconnected:', socket.id);
-//   });
-// });
-
-
 
 
 
@@ -216,6 +175,46 @@ app.get('/team_assignments', async (req, res) => {
     res.status(500).json({ error: 'Database error' });
   }
 });
+
+
+// io.on('connection', (socket) => {
+//   console.log('User connected:', socket.id);
+
+//   // Replace this block with the new code:
+//   socket.on('send_message', (data) => {
+//     console.log('Message received:', data);
+
+//     const { sender_id, message, team_id } = data;
+
+//     if (!sender_id || !message || !team_id) {
+//       console.error('Missing sender_id, message, or team_id');
+//       return;
+//     }
+
+//     // Optional: verify sender is a member of the team before saving
+
+//     const query = 'INSERT INTO chat_messages (sender_id, message, team_id) VALUES (?, ?, ?)';
+//     db.query(query, [sender_id, message, team_id], (err, result) => {
+//       if (err) {
+//         console.error('Error saving message:', err);
+//         return;
+//       }
+
+//       io.emit('receive_message', {
+//         id: result.insertId,
+//         sender_id,
+//         message,
+//         team_id,
+//         timestamp: new Date(),
+//       });
+//     });
+//   });
+
+//   socket.on('disconnect', () => {
+//     console.log('User disconnected:', socket.id);
+//   });
+// });
+
 
 
 // Admin login
