@@ -52,7 +52,7 @@ const TeamMassage = () => {
   const handleTeamSelect = (team) => {
     setSelectedTeam(team);
     setShowTeamDetails(false);
-    toast.success(`Switched to ${team.team_name}`);
+    // toast.success(`Switched to ${team.team_name}`);
     
     setUnreadCounts(prev => ({
       ...prev,
