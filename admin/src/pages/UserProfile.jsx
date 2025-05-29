@@ -61,7 +61,7 @@ const UserProfile = () => {
                 const userRes = await axios.get(`${baseUrl}/users/${userID}`);
                 setUserData(userRes.data.data);
 
-                const responseRoles = await axios.get('${baseUrl}/roles');
+                const responseRoles = await axios.get(`${baseUrl}/roles`);
                 const responseDesignations = await axios.get(`${baseUrl}/designations`);
                 const responseDepartments = await axios.get(`${baseUrl}/departments`);
                 const responseCompanyNames = await axios.get(`${baseUrl}/companynames`);
