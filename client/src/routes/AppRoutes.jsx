@@ -22,6 +22,9 @@ import TeamReport from '../pages/roles/teamLeader/TeamReport';
 import UploadReportUser from '../pages/roles/user/UploadReportUser';
 import UserReport from '../pages/roles/user/UserReport';
 
+// Team
+import TeamMassage from '../components/TeamMassage/TeamMassage';
+
 export default function AppRoutes() {
   return (
     <>
@@ -54,10 +57,12 @@ export default function AppRoutes() {
                       {/* Team Leader */}
                       <Route path="team/manage-team" element={<ManageTeam />}/>
                       <Route path="team/team-report" element={<TeamReport />}/>
+                      <Route path="team/team-massage" element={<TeamMassage />}/>
 
                       {/* User */}
                       <Route path="/user/upload-report" element={<UploadReportUser />} />
                       <Route path="/user/UserReport" element={<UserReport />} />
+                      <Route path="/user/team-massage" element={<TeamMassage />} />
 
                       {/* Not Found */}
                       <Route path="*" element={<NotFound />} />

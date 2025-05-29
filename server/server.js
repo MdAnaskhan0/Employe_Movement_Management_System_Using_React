@@ -1,12 +1,29 @@
 const express = require('express');
-const mysql = require('mysql');
+const mysql = require('mysql2');
 const cors = require('cors');
 const path = require('path');
 const multer = require('multer');
 const util = require('util');
+const http = require('http');
+const {Server} = require('socket.io');
+
 
 const app = express();
 const port = 5137;
+
+const server = http.createServer(app);
+const io = new Server(server,{
+  cors:{
+    origin: [
+      'http://localhost:5173',
+      'http://localhost:5174',
+      'http://192.168.111.140:5173',  
+      'http://192.168.111.140:5174'
+    ],
+    credentials: true
+  }
+})
+
 
 // Middleware
 app.use(express.static(path.join(__dirname, 'public')));
@@ -37,6 +54,37 @@ db.connect((err) => {
     return;
   }
   console.log('Connected to the database');
+});
+
+
+// Socket.IO logic
+io.on('connection', (socket) => {
+  console.log('User connected:', socket.id);
+
+  socket.on('send_message', (data) => {
+    const { sender_id, receiver_id, message, team_id } = data;
+
+    const query = 'INSERT INTO chat_messages (sender_id, receiver_id, message, team_id) VALUES (?, ?, ?, ?)';
+    db.query(query, [sender_id, receiver_id, message, team_id], (err, result) => {
+      if (err) {
+        console.error('Error saving message:', err);
+        return;
+      }
+
+      io.emit('receive_message', {
+        id: result.insertId,
+        sender_id,
+        receiver_id,
+        message,
+        team_id,
+        timestamp: new Date()
+      });
+    });
+  });
+
+  socket.on('disconnect', () => {
+    console.log('User disconnected:', socket.id);
+  });
 });
 
 

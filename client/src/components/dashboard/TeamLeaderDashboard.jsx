@@ -22,7 +22,6 @@ const TeamLeaderDashboard = ({movementData}) => {
       try {
         setLoading(true);
         const res = await axios.get(`${baseUrl}/users/${user.userID}`);
-        console.log("res value", res.data.data);
         setUserData(res.data.data);
       } catch (error) {
         console.error('Error fetching user data:', error);

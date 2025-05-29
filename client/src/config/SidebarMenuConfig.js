@@ -62,7 +62,8 @@ export const sidebarMenu = {
       path: '/team/team',
       submenu: [
         { name: 'Manage Team', path: '/team/manage-team' },
-        { name: 'View Report', path: '/team/team-report' }
+        { name: 'View Report', path: '/team/team-report' },
+        { name: 'Team Massage', path: '/team/team-massage' },
       ]
     }
   ],
@@ -70,5 +71,12 @@ export const sidebarMenu = {
     { name: 'Dashboard', path: '/dashboard' },
     { name: 'Movement Status', path: '/user/upload-report' },
     { name: 'Movement Report', path: '/user/UserReport' },
+    {
+      name: 'Team',
+      path: '/user/team',
+      submenu: [
+        { name: 'Team Massage', path: '/user/team-massage' },
+      ]
+    }    
   ],
 };
