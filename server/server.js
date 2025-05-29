@@ -5,24 +5,24 @@ const path = require('path');
 const multer = require('multer');
 const util = require('util');
 const http = require('http');
-const {Server} = require('socket.io');
+const { Server } = require('socket.io');
 
 
 const app = express();
 const port = 5137;
 
 const server = http.createServer(app);
-const io = new Server(server,{
-  cors:{
+const io = new Server(server, {
+  cors: {
     origin: [
       'http://localhost:5173',
       'http://localhost:5174',
-      'http://192.168.111.140:5173',  
-      'http://192.168.111.140:5174'
+      'http://192.168.111.140:5173',
+      'http://192.168.111.140:5174',
     ],
-    credentials: true
-  }
-})
+    credentials: true,
+  },
+});
 
 
 // Middleware
@@ -57,34 +57,164 @@ db.connect((err) => {
 });
 
 
+
+// Socket.io setup
 // Socket.IO logic
+
 io.on('connection', (socket) => {
   console.log('User connected:', socket.id);
 
-  socket.on('send_message', (data) => {
-    const { sender_id, receiver_id, message, team_id } = data;
+  // Join a team room
+  socket.on('join_team', async ({ user_id, team_id }) => {
+    // Optional: verify if user_id belongs to team_id before joining
+    const verifyQuery = `
+      SELECT * FROM team_assignments 
+      WHERE team_id = ? AND (team_leader_id = ? OR team_member_id = ?) LIMIT 1`;
+    db.query(verifyQuery, [team_id, user_id, user_id], (err, rows) => {
+      if (err) {
+        console.error('DB error verifying team membership:', err);
+        socket.emit('join_error', 'Server error while verifying team membership');
+        return;
+      }
+      if (rows.length === 0) {
+        socket.emit('join_error', 'User is not a member of this team');
+        return;
+      }
+      
+      socket.join(`team_${team_id}`);
+      console.log(`User ${user_id} joined room team_${team_id}`);
 
-    const query = 'INSERT INTO chat_messages (sender_id, receiver_id, message, team_id) VALUES (?, ?, ?, ?)';
-    db.query(query, [sender_id, receiver_id, message, team_id], (err, result) => {
+      // Load previous messages for this team
+      const loadMsgQuery = `
+        SELECT cm.id, cm.sender_id, cm.message, cm.timestamp, u.name as sender_name
+        FROM chat_messages cm
+        LEFT JOIN users u ON cm.sender_id = u.id
+        WHERE cm.team_id = ? ORDER BY cm.timestamp ASC`;
+      
+      db.query(loadMsgQuery, [team_id], (err, messages) => {
+        if (err) {
+          console.error('Error loading messages:', err);
+          socket.emit('load_messages_error', 'Failed to load messages');
+          return;
+        }
+        socket.emit('load_messages', messages);
+      });
+    });
+  });
+
+  // Listen for new messages in a team room
+  socket.on('send_message', ({ sender_id, message, team_id }) => {
+    if (!sender_id || !message || !team_id) {
+      console.error('Missing sender_id, message, or team_id');
+      return;
+    }
+
+    const insertQuery = 'INSERT INTO chat_messages (sender_id, message, team_id) VALUES (?, ?, ?)';
+    db.query(insertQuery, [sender_id, message, team_id], (err, result) => {
       if (err) {
         console.error('Error saving message:', err);
         return;
       }
 
-      io.emit('receive_message', {
+      const newMessage = {
         id: result.insertId,
         sender_id,
-        receiver_id,
         message,
         team_id,
-        timestamp: new Date()
-      });
+        timestamp: new Date(),
+      };
+
+      // Emit to all clients in the specific team room
+      io.to(`team_${team_id}`).emit('receive_message', newMessage);
     });
   });
 
   socket.on('disconnect', () => {
     console.log('User disconnected:', socket.id);
   });
+});
+
+
+// io.on('connection', (socket) => {
+//   console.log('User connected:', socket.id);
+
+//   // Replace this block with the new code:
+//   socket.on('send_message', (data) => {
+//     console.log('Message received:', data);
+
+//     const { sender_id, message, team_id } = data;
+
+//     if (!sender_id || !message || !team_id) {
+//       console.error('Missing sender_id, message, or team_id');
+//       return;
+//     }
+
+//     // Optional: verify sender is a member of the team before saving
+
+//     const query = 'INSERT INTO chat_messages (sender_id, message, team_id) VALUES (?, ?, ?)';
+//     db.query(query, [sender_id, message, team_id], (err, result) => {
+//       if (err) {
+//         console.error('Error saving message:', err);
+//         return;
+//       }
+
+//       io.emit('receive_message', {
+//         id: result.insertId,
+//         sender_id,
+//         message,
+//         team_id,
+//         timestamp: new Date(),
+//       });
+//     });
+//   });
+
+//   socket.on('disconnect', () => {
+//     console.log('User disconnected:', socket.id);
+//   });
+// });
+
+
+
+
+
+// GET /team-assignment/:userID
+app.get('/team-assignment/:userID', async (req, res) => {
+  const userID = req.params.userID;
+  try {
+    const [rows] = await db.promise().query(
+      `SELECT id, team_id FROM team_assignments 
+       WHERE team_member_id = ? OR team_leader_id = ? LIMIT 1`,
+      [userID, userID]
+    );
+    if (rows.length === 0) return res.status(404).json({ error: 'Team assignment not found' });
+    res.json(rows[0]);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// GET /team_assignments?user_id=xxx
+app.get('/team_assignments', async (req, res) => {
+  const userId = req.query.user_id;
+  if (!userId) return res.status(400).json({ error: 'user_id is required' });
+
+  try {
+    const [rows] = await db.promise().query(
+      `SELECT id FROM team_assignments 
+       WHERE team_member_id = ? OR team_leader_id = ? LIMIT 1`,
+      [userId, userId]
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({ error: 'Team assignment not found' });
+    }
+
+    res.json({ id: rows[0].id });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Database error' });
+  }
 });
 
 
@@ -1401,6 +1531,6 @@ app.patch('/teams/:id/remove-member', (req, res) => {
 
 
 // App listerner
-app.listen(port, '0.0.0.0', () => {
+server.listen(port, '0.0.0.0', () => {
   console.log(`Server is running on http://0.0.0.0:${port}`);
 });
