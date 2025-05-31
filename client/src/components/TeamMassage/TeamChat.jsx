@@ -2,9 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { FaPaperPlane, FaUser } from 'react-icons/fa';
+import { FaPaperPlane, FaUser, FaSmile } from 'react-icons/fa';
 import { format } from 'date-fns';
 import { TailSpin } from 'react-loader-spinner';
+import EmojiPicker from 'emoji-picker-react';
 
 const socket = io(import.meta.env.VITE_API_BASE_URL);
 
@@ -13,6 +14,7 @@ const TeamChat = ({ selectedTeam, user, updateUnreadCount }) => {
   const [messageText, setMessageText] = useState('');
   const [loading, setLoading] = useState(true);
   const [lastSeenMessageId, setLastSeenMessageId] = useState(null);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
@@ -76,6 +78,7 @@ const TeamChat = ({ selectedTeam, user, updateUnreadCount }) => {
 
     socket.emit('sendMessage', newMessage);
     setMessageText('');
+    setShowEmojiPicker(false);
   };
 
   const handleKeyPress = (e) => {
@@ -85,8 +88,12 @@ const TeamChat = ({ selectedTeam, user, updateUnreadCount }) => {
     }
   };
 
+  const onEmojiClick = (emojiData) => {
+    setMessageText(prev => prev + emojiData.emoji);
+  };
+
   return (
-    <div className="border rounded-lg overflow-hidden shadow-sm">
+    <div className="rounded-lg overflow-hidden shadow-sm">
       <div className="bg-blue-600 text-white px-4 py-3">
         <h4 className="font-semibold text-lg">Team Chat</h4>
       </div>
@@ -97,7 +104,7 @@ const TeamChat = ({ selectedTeam, user, updateUnreadCount }) => {
         </div>
       ) : (
         <div 
-          className="h-96 overflow-y-auto p-4 bg-gray-50"
+          className="h-64 md:h-96 overflow-y-auto p-4 bg-gray-50"
           id="chat-messages"
         >
           {messages.length === 0 ? (
@@ -120,7 +127,7 @@ const TeamChat = ({ selectedTeam, user, updateUnreadCount }) => {
                     <FaUser className="text-xs mr-2" />
                     <span className="font-semibold text-xs">{msg.sender_name}</span>
                   </div>
-                  <p className="text-sm">{msg.message}</p>
+                  <p className="text-sm whitespace-pre-wrap">{msg.message}</p>
                   <div className="text-right mt-1">
                     <span className="text-xs opacity-70">
                       {msg.timestamp ? format(new Date(msg.timestamp), 'hh:mm a') : ''}
@@ -134,8 +141,23 @@ const TeamChat = ({ selectedTeam, user, updateUnreadCount }) => {
         </div>
       )}
 
-      <div className="border-t border-gray-200 p-3 bg-white">
+      <div className=" border-gray-200 p-3 bg-white relative">
+        {showEmojiPicker && (
+          <div className="absolute bottom-16 right-4 z-10">
+            <EmojiPicker 
+              onEmojiClick={onEmojiClick}
+              width={300}
+              height={350}
+            />
+          </div>
+        )}
         <div className="flex items-center">
+          <button
+            onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+            className="p-2 text-gray-500 hover:text-blue-600 rounded-lg mr-1"
+          >
+            <FaSmile className="text-xl" />
+          </button>
           <input
             type="text"
             value={messageText}
@@ -146,7 +168,7 @@ const TeamChat = ({ selectedTeam, user, updateUnreadCount }) => {
           />
           <button
             onClick={sendMessage}
-            className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-r-lg transition duration-200"
+            className="bg-blue-600 hover:bg-blue-700 text-white py-3.5 px-4 rounded-r-lg transition duration-200"
           >
             <FaPaperPlane />
           </button>

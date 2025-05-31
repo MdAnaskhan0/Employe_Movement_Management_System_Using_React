@@ -14,6 +14,7 @@ const TeamMassage = () => {
   const [selectedTeam, setSelectedTeam] = useState(null);
   const [unreadCounts, setUnreadCounts] = useState({});
   const [showTeamDetails, setShowTeamDetails] = useState(false);
+  const [showTeamList, setShowTeamList] = useState(false);
 
   useEffect(() => {
     const fetchTeams = async () => {
@@ -52,7 +53,7 @@ const TeamMassage = () => {
   const handleTeamSelect = (team) => {
     setSelectedTeam(team);
     setShowTeamDetails(false);
-    // toast.success(`Switched to ${team.team_name}`);
+    setShowTeamList(false);
     
     setUnreadCounts(prev => ({
       ...prev,
@@ -73,6 +74,10 @@ const TeamMassage = () => {
     setShowTeamDetails(!showTeamDetails);
   };
 
+  const toggleTeamList = () => {
+    setShowTeamList(!showTeamList);
+  };
+
   if (loading) return (
     <div className="flex justify-center items-center h-64">
       <TailSpin color="#3B82F6" height={50} width={50} />
@@ -88,15 +93,15 @@ const TeamMassage = () => {
   );
 
   return (
-    <div className="max-w-6xl mx-auto p-4 bg-white rounded-lg shadow-md flex">
-      {/* Team List Sidebar */}
-      <div className="w-1/4 border-r border-gray-200 pr-4">
+    <div className="max-w-6xl mx-auto p-4 bg-white rounded-lg shadow-md flex flex-col md:flex-row">
+      {/* Team List Sidebar - Hidden on mobile unless toggled */}
+      <div className={`${showTeamList ? 'block' : 'hidden'} md:block w-full md:w-1/4 border-r border-gray-200 pr-0 md:pr-4 mb-4 md:mb-0`}>
         <div className="flex items-center mb-6">
           <FaUsers className="text-blue-500 text-2xl mr-3" />
           <h3 className="text-xl font-bold text-gray-800">Your Teams</h3>
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-2 max-h-96 overflow-y-auto">
           {teams.map(team => (
             <div
               key={team.team_id}
@@ -121,11 +126,25 @@ const TeamMassage = () => {
       </div>
 
       {/* Main Content Area */}
-      <div className="w-3/4 pl-6">
+      <div className="w-full md:w-3/4 pl-0 md:pl-6">
+        {/* Mobile header with team list toggle */}
+        <div className="md:hidden flex justify-between items-center mb-4">
+          <button 
+            onClick={toggleTeamList}
+            className="text-blue-600 p-2 rounded-lg hover:bg-blue-50"
+          >
+            <FaUsers className="text-xl" />
+          </button>
+          <h3 className="text-xl font-bold text-gray-800">
+            {selectedTeam ? selectedTeam.team_name : 'Select a Team'}
+          </h3>
+          <div className="w-8"></div> {/* Spacer for alignment */}
+        </div>
+
         {selectedTeam ? (
           <>
             <div className="flex justify-between items-center mb-6">
-              <h3 className="text-xl font-bold text-gray-800">
+              <h3 className="hidden md:block text-xl font-bold text-gray-800">
                 {selectedTeam.team_name} Chat
               </h3>
               <button 

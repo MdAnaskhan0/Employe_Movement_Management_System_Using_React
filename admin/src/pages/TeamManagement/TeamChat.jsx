@@ -282,7 +282,7 @@ const TeamChat = () => {
                       </h1>
                       <div className="flex items-center text-xs text-gray-500">
                         <FaUsers className="mr-1" />
-                        <span>{selectedTeamMembers.length} members</span>
+                        {/* <span>{selectedTeamMembers.length} members</span> */}
                       </div>
                     </div>
                   </div>
