@@ -302,7 +302,7 @@ const LogReport = () => {
                 >
                   <option value="">Select User</option>
                   {users.map((user) => (
-                    <option key={user.userID} value={user.userID}>
+                    <option key={user.userID} value={user.userID} className='capitalize'>
                       {user.username}
                     </option>
                   ))}
