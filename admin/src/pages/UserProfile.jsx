@@ -62,6 +62,11 @@ const UserProfile = () => {
                 console.log('Department API response:', resDepartment.data);
                 console.log('Designation API response:', resDesignation.data);
                 console.log('Role API response:', resRole.data);
+
+                setCompany(resCompany.data.data);
+                setDepartment(resDepartment.data);
+                setDesignation(resDesignation.data);
+                setRole(resRole.data);
             } catch (error) {
                 console.error('Error fetching dropdown data:', error);
             }
@@ -238,14 +243,11 @@ const UserProfile = () => {
                                                 className="w-full border px-2 py-1 rounded"
                                             >
                                                 <option value="">Select Department</option>
-                                                {
-                                                    department.map((d, index)=>{
-                                                        <option key={d.departmentID} value={d.departmentID}>
-                                                            {d.departmentName}
-                                                        </option>
-                                                    })
-                                                }
-
+                                                {department.map((d) => (
+                                                    <option key={d.departmentID} value={d.departmentName}>
+                                                        {d.departmentName}
+                                                    </option>
+                                                ))}
                                             </select>
                                         </div>
 
@@ -258,14 +260,11 @@ const UserProfile = () => {
                                                 className="w-full border px-2 py-1 rounded"
                                             >
                                                 <option value="">Select Designation</option>
-                                                {
-                                                    designation.map((des, index)=>{
-                                                        <option key={des.designationID} value={des.designationID}>
-                                                            {des.designationName}
-                                                        </option>
-                                                    })
-                                                }
-
+                                                {designation.map((des) => (
+                                                    <option key={des.designationID} value={des.designationName}>
+                                                        {des.designationName}
+                                                    </option>
+                                                ))}
                                             </select>
                                         </div>
 
@@ -278,14 +277,11 @@ const UserProfile = () => {
                                                 className="w-full border px-2 py-1 rounded"
                                             >
                                                 <option value="">Select Company</option>
-                                                {
-                                                    company.map((c, index)=>{
-                                                        <option key={c.companynameID} value={c.companynameID}>
-                                                            {c.companyname}
-                                                        </option>
-                                                    })
-                                                }
-
+                                                {company.map((c) => (
+                                                    <option key={c.companynameID} value={c.companyname}>
+                                                        {c.companyname}
+                                                    </option>
+                                                ))}
                                             </select>
                                         </div>
 
@@ -298,14 +294,11 @@ const UserProfile = () => {
                                                 className="w-full border px-2 py-1 rounded"
                                             >
                                                 <option value="">Select Role</option>
-                                                {
-                                                    role.map((r, index)=>{
-                                                        <option key={r.roleID} value={r.roleID}>
-                                                            {r.rolename}
-                                                        </option>
-                                                    })
-                                                }
-
+                                                {role.map((r) => (
+                                                    <option key={r.roleID} value={r.rolename}>
+                                                        {r.rolename}
+                                                    </option>
+                                                ))}
                                             </select>
                                         </div>
 
