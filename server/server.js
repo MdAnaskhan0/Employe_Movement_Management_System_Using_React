@@ -6,6 +6,8 @@ const multer = require('multer');
 const util = require('util');
 const http = require('http');
 const { Server } = require('socket.io');
+const fs = require('fs');
+const upload = multer({ dest: 'uploads/' });
 
 
 const app = express();
@@ -21,7 +23,9 @@ app.use(cors({
     'http://localhost:5173',
     'http://localhost:5174',
     'http://192.168.0.103:5173',
-    'http://192.168.0.103:5174'
+    'http://192.168.0.103:5174',
+    'http://192.168.111.140:5173',
+    'http://192.168.111.140:5174',
   ],
   credentials: true
 }));
@@ -54,6 +58,8 @@ const io = new Server(server, {
       'http://localhost:5174',
       'http://192.168.0.103:5173',
       'http://192.168.0.103:5174',
+      'http://192.168.111.140:5173',
+      'http://192.168.111.140:5174',
     ],
     credentials: true,
   },
@@ -116,46 +122,6 @@ app.get('/messages/:teamId', (req, res) => {
     }
   );
 });
-
-
-// io.on('connection', (socket) => {
-//   console.log('User connected:', socket.id);
-
-//   // Replace this block with the new code:
-//   socket.on('send_message', (data) => {
-//     console.log('Message received:', data);
-
-//     const { sender_id, message, team_id } = data;
-
-//     if (!sender_id || !message || !team_id) {
-//       console.error('Missing sender_id, message, or team_id');
-//       return;
-//     }
-
-//     // Optional: verify sender is a member of the team before saving
-
-//     const query = 'INSERT INTO chat_messages (sender_id, message, team_id) VALUES (?, ?, ?)';
-//     db.query(query, [sender_id, message, team_id], (err, result) => {
-//       if (err) {
-//         console.error('Error saving message:', err);
-//         return;
-//       }
-
-//       io.emit('receive_message', {
-//         id: result.insertId,
-//         sender_id,
-//         message,
-//         team_id,
-//         timestamp: new Date(),
-//       });
-//     });
-//   });
-
-//   socket.on('disconnect', () => {
-//     console.log('User disconnected:', socket.id);
-//   });
-// });
-
 
 
 // Admin login
@@ -443,6 +409,125 @@ app.get('/users/:id', (req, res) => {
 });
 
 
+// 👉 Upload profile image
+// Create profile_images table if not exists
+const createProfileImagesTable = `CREATE TABLE IF NOT EXISTS profile_images (
+  imageID INT AUTO_INCREMENT PRIMARY KEY,
+  userID INT NOT NULL,
+  imagePath VARCHAR(255) NOT NULL,
+  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (userID) REFERENCES users(userID) ON DELETE CASCADE
+)`;
+
+db.query(createProfileImagesTable, (err) => {
+  if (err) console.error('Error creating profile_images table:', err);
+  else console.log('Profile images table ready');
+});
+
+// Ensure uploads directory exists
+if (!fs.existsSync('uploads')) {
+  fs.mkdirSync('uploads');
+}
+
+// Profile Image Routes
+// Upload or Update profile image
+app.post('/profile-image/:userID', upload.single('image'), (req, res) => {
+  const { userID } = req.params;
+  if (!req.file) {
+    return res.status(400).send({ error: 'No file uploaded' });
+  }
+
+  // First check if user exists
+  db.query('SELECT 1 FROM users WHERE userID = ?', [userID], (err, userResult) => {
+    if (err) return res.status(500).send({ error: err.message });
+    if (userResult.length === 0) return res.status(404).send({ error: 'User not found' });
+
+    // Check if user already has a profile image
+    db.query('SELECT imagePath FROM profile_images WHERE userID = ?', [userID], (err, result) => {
+      if (err) return res.status(500).send({ error: err.message });
+
+      const imagePath = req.file.path;
+      
+      if (result.length > 0) {
+        // Update existing image
+        const oldImagePath = result[0].imagePath;
+        // Delete old file
+        fs.unlink(oldImagePath, (err) => {
+          if (err) console.error('Error deleting old image:', err);
+        });
+
+        db.query(
+          'UPDATE profile_images SET imagePath = ? WHERE userID = ?',
+          [imagePath, userID],
+          (err) => {
+            if (err) return res.status(500).send({ error: err.message });
+            res.send({ message: 'Profile image updated successfully', imagePath });
+          }
+        );
+      } else {
+        // Insert new image
+        db.query(
+          'INSERT INTO profile_images (userID, imagePath) VALUES (?, ?)',
+          [userID, imagePath],
+          (err) => {
+            if (err) return res.status(500).send({ error: err.message });
+            res.send({ message: 'Profile image uploaded successfully', imagePath });
+          }
+        );
+      }
+    });
+  });
+});
+
+// Get profile image
+app.get('/profile-image/:userID', (req, res) => {
+  const { userID } = req.params;
+  
+  db.query(
+    'SELECT imagePath FROM profile_images WHERE userID = ?',
+    [userID],
+    (err, result) => {
+      if (err) return res.status(500).send({ error: err.message });
+      if (result.length === 0) return res.status(404).send({ error: 'No profile image found' });
+
+      const imagePath = result[0].imagePath;
+      res.sendFile(path.join(__dirname, imagePath));
+    }
+  );
+});
+
+// Delete profile image
+app.delete('/profile-image/:userID', (req, res) => {
+  const { userID } = req.params;
+  
+  db.query(
+    'SELECT imagePath FROM profile_images WHERE userID = ?',
+    [userID],
+    (err, result) => {
+      if (err) return res.status(500).send({ error: err.message });
+      if (result.length === 0) return res.status(404).send({ error: 'No profile image found' });
+
+      const imagePath = result[0].imagePath;
+      
+      // Delete file from filesystem
+      fs.unlink(imagePath, (err) => {
+        if (err) console.error('Error deleting image file:', err);
+        
+        // Delete record from database
+        db.query(
+          'DELETE FROM profile_images WHERE userID = ?',
+          [userID],
+          (err) => {
+            if (err) return res.status(500).send({ error: err.message });
+            res.send({ message: 'Profile image deleted successfully' });
+          }
+        );
+      });
+    }
+  );
+});
+
+
 
 // Movement data save
 // Assuming you have your express app and db connection initialized above this
@@ -589,16 +674,16 @@ app.get('/movement_edit_logs', async (req, res) => {
 // create a new company name
 // Multer setup (store image in memory, not on disk)
 const storage = multer.memoryStorage();
-const upload = multer({
-  storage: storage,
-  limits: { fileSize: 1 * 1024 * 1024 }, // 1MB limit
-  fileFilter: (req, file, cb) => {
-    if (!file.mimetype.startsWith('image/')) {
-      return cb(new Error('Only image files are allowed!'));
-    }
-    cb(null, true);
-  }
-});
+// const upload = multer({
+//   storage: storage,
+//   limits: { fileSize: 1 * 1024 * 1024 }, // 1MB limit
+//   fileFilter: (req, file, cb) => {
+//     if (!file.mimetype.startsWith('image/')) {
+//       return cb(new Error('Only image files are allowed!'));
+//     }
+//     cb(null, true);
+//   }
+// });
 
 
 // Company Names API
