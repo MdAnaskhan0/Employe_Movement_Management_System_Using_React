@@ -143,6 +143,13 @@ const Sidebar = ({ sidebarOpen, handleLogout }) => {
             >
               <FaUserFriends className='mr-2' /> Manage Team
             </Link>
+
+            <Link
+              to="/dashboard/all-team-chat" // ✅ Corrected route
+              className="flex items-center py-2 px-4 rounded hover:bg-gray-700 transition text-gray-300 hover:text-white text-sm"
+            >
+              <FaUserFriends className='mr-2' /> Team Chat
+            </Link>
           </div>
         )}
 

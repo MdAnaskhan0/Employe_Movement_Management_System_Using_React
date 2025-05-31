@@ -36,7 +36,7 @@ const CreateUser = () => {
         setLoading(true);
         setError('');
         try {
-            const res = await axios.get(`${baseUrl}/roles`); 
+            const res = await axios.get(`${baseUrl}/roles`);
             setRoles(res.data);
         } catch (err) {
             setError('Failed to fetch roles');
@@ -51,7 +51,7 @@ const CreateUser = () => {
         setLoading(true);
         setError('');
         try {
-            const res = await axios.get(`${baseUrl}/designations`); 
+            const res = await axios.get(`${baseUrl}/designations`);
             setDesignation(res.data);
         } catch (err) {
             setError('Failed to fetch designations');
@@ -66,7 +66,7 @@ const CreateUser = () => {
         setLoading(true);
         setError('');
         try {
-            const res = await axios.get(`${baseUrl}/departments`); 
+            const res = await axios.get(`${baseUrl}/departments`);
             setDepartment(res.data);
         } catch (err) {
             setError('Failed to fetch departments');
@@ -81,7 +81,7 @@ const CreateUser = () => {
         setLoading(true);
         setError('');
         try {
-            const res = await axios.get(`${baseUrl}/companynames`); 
+            const res = await axios.get(`${baseUrl}/companynames`);
             setCompany(res.data.data);
         } catch (err) {
             setError('Failed to fetch company names');
@@ -120,7 +120,7 @@ const CreateUser = () => {
         e.preventDefault();
         setLoading(true);
         try {
-            const response = await axios.post(`${baseUrl}/users`, formData); 
+            const response = await axios.post(`${baseUrl}/users`, formData);
 
             if (response.data.status === 'ok') {
                 toast.success('User created successfully!');
@@ -270,28 +270,6 @@ const CreateUser = () => {
                                     </div>
 
                                     <div className="space-y-2">
-                                        <label htmlFor="designation" className="block text-sm font-medium text-gray-700 flex items-center">
-                                            <FaUserTie className="mr-2 text-gray-600" />
-                                            Designation <span className='text-red-500'>&nbsp;*</span>
-                                        </label>
-                                        <select
-                                            id="designation"
-                                            name="designation"
-                                            value={formData.designation}
-                                            onChange={handleChange}
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-                                            required
-                                        >
-                                            <option value="">Select Designation</option>
-                                            {designation.map((designationItem) => (
-                                                <option key={designationItem.designationID} value={designationItem.designationName}>
-                                                    {designationItem.designationName}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
-
-                                    <div className="space-y-2">
                                         <label htmlFor="department" className="block text-sm font-medium text-gray-700 flex items-center">
                                             <MdDepartureBoard className="mr-2 text-gray-600" />
                                             Department <span className='text-red-500'>&nbsp;*</span>
@@ -308,6 +286,28 @@ const CreateUser = () => {
                                             {department.map((departmentItem) => (
                                                 <option key={departmentItem.departmentID} value={departmentItem.departmentName}>
                                                     {departmentItem.departmentName}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <label htmlFor="designation" className="block text-sm font-medium text-gray-700 flex items-center">
+                                            <FaUserTie className="mr-2 text-gray-600" />
+                                            Designation <span className='text-red-500'>&nbsp;*</span>
+                                        </label>
+                                        <select
+                                            id="designation"
+                                            name="designation"
+                                            value={formData.designation}
+                                            onChange={handleChange}
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                                            required
+                                        >
+                                            <option value="">Select Designation</option>
+                                            {designation.map((designationItem) => (
+                                                <option key={designationItem.designationID} value={designationItem.designationName}>
+                                                    {designationItem.designationName}
                                                 </option>
                                             ))}
                                         </select>

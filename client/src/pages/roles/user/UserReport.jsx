@@ -22,383 +22,9 @@ import {
     FiChevronsLeft,
     FiChevronsRight
 } from 'react-icons/fi';
-import styled from 'styled-components';
 import { Skeleton } from '@mui/material';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-
-// Styled Components
-const Container = styled.div`
-  padding: 2rem;
-  max-width: 1400px;
-  margin: 0 auto;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-`;
-
-const Header = styled.h1`
-  color: #2c3e50;
-  font-weight: 600;
-  font-size: 2rem;
-  margin-bottom: 1.5rem;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-`;
-
-const ProfileSection = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 2fr;
-  gap: 2rem;
-  margin-bottom: 2.5rem;
-
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-  }
-`;
-
-const ProfileCard = styled.div`
-  background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  padding: 1.75rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-`;
-
-const Avatar = styled.div`
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #3498db, #2c3e50);
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2.5rem;
-  font-weight: 600;
-  margin-bottom: 1.5rem;
-`;
-
-const UserName = styled.h2`
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-  color: #2c3e50;
-`;
-
-const UserTitle = styled.p`
-  color: #7f8c8d;
-  font-size: 0.9rem;
-  margin-bottom: 1.5rem;
-`;
-
-const UserDetails = styled.div`
-  background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  padding: 1.75rem;
-`;
-
-const DetailItem = styled.div`
-  display: flex;
-  align-items: center;
-  margin-bottom: 1rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid #f0f0f0;
-
-  &:last-child {
-    border-bottom: none;
-    margin-bottom: 0;
-    padding-bottom: 0;
-  }
-`;
-
-const DetailIcon = styled.div`
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
-  background-color: #f0f7ff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 1rem;
-  color: #3498db;
-`;
-
-const DetailContent = styled.div`
-  flex: 1;
-`;
-
-const DetailLabel = styled.div`
-  font-size: 0.8rem;
-  color: #7f8c8d;
-  margin-bottom: 0.2rem;
-`;
-
-const DetailValue = styled.div`
-  font-size: 1rem;
-  font-weight: 500;
-  color: #2c3e50;
-`;
-
-const SectionTitle = styled.h2`
-  color: #2c3e50;
-  font-weight: 600;
-  font-size: 1.5rem;
-  margin-bottom: 1.5rem;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-`;
-
-const TableContainer = styled.div`
-  overflow-x: auto;
-  background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  margin-bottom: 2rem;
-`;
-
-const StyledTable = styled.table`
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.9rem;
-`;
-
-const TableHeader = styled.thead`
-  background-color: #000000;
-`;
-
-const TableRow = styled.tr`
-  &:nth-child(even) {
-    background-color: #f8f9fa;
-  }
-  &:hover {
-    background-color: #f0f7ff;
-  }
-`;
-
-const TableCell = styled.td`
-  padding: 15px;
-  border-bottom: 1px solid #f0f0f0;
-  text-align: left;
-  color: #4a5568;
-`;
-
-const TableHeaderCell = styled.th`
-  padding: 15px;
-  text-align: left;
-  font-weight: 600;
-  color: #ffffff;
-  text-transform: uppercase;
-  font-size: 0.75rem;
-  letter-spacing: 0.5px;
-`;
-
-const InputField = styled.input`
-  padding: 8px 12px;
-  border: 1px solid #e2e8f0;
-  border-radius: 6px;
-  width: 100%;
-  font-family: inherit;
-  font-size: 0.9rem;
-  transition: all 0.2s;
-
-  &:focus {
-    outline: none;
-    border-color: #3498db;
-    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
-  }
-`;
-
-const ActionButton = styled.button`
-  padding: 8px 12px;
-  border: none;
-  border-radius: 6px;
-  background-color: ${props => props.primary ? '#3498db' : '#f8f9fa'};
-  color: ${props => props.primary ? 'white' : '#495057'};
-  cursor: pointer;
-  font-size: 0.85rem;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  transition: all 0.2s;
-  font-weight: 500;
-
-  &:hover {
-    background-color: ${props => props.primary ? '#2980b9' : '#e9ecef'};
-    transform: translateY(-1px);
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
-`;
-
-const PaginationContainer = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 1rem;
-`;
-
-const PaginationInfo = styled.div`
-  font-size: 0.85rem;
-  color: #718096;
-`;
-
-const PaginationButtons = styled.div`
-  display: flex;
-  gap: 0.5rem;
-`;
-
-const PaginationButton = styled.button`
-  padding: 8px 12px;
-  border: 1px solid #e2e8f0;
-  border-radius: 6px;
-  background-color: ${props => props.active ? '#3498db' : 'white'};
-  color: ${props => props.active ? 'white' : '#4a5568'};
-  cursor: pointer;
-  font-size: 0.85rem;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  transition: all 0.2s;
-  min-width: 36px;
-  justify-content: center;
-
-  &:hover {
-    background-color: ${props => props.active ? '#2980b9' : '#f8f9fa'};
-    border-color: #cbd5e0;
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-`;
-
-const StatusBadge = styled.span`
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 0.75rem;
-  font-weight: 500;
-  background-color: ${props =>
-        props.status === 'In' ? '#e3f9e5' :
-            props.status === 'Out' ? '#ffe3e3' : '#f0f7ff'};
-  color: ${props =>
-        props.status === 'In' ? '#1b7052' :
-            props.status === 'Out' ? '#c92a2a' : '#1864ab'};
-`;
-
-const SkeletonRow = styled.tr`
-  td {
-    padding: 15px;
-  }
-`;
-
-const FilterContainer = styled.div`
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-  flex-wrap: wrap;
-  align-items: center;
-`;
-
-const SearchInput = styled.div`
-  position: relative;
-  flex: 1;
-  min-width: 250px;
-
-  input {
-    padding: 8px 12px 8px 35px;
-    border: 1px solid #e2e8f0;
-    border-radius: 6px;
-    width: 100%;
-    font-family: inherit;
-    font-size: 0.9rem;
-    transition: all 0.2s;
-
-    &:focus {
-      outline: none;
-      border-color: #3498db;
-      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
-    }
-  }
-
-  svg {
-    position: absolute;
-    left: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #7f8c8d;
-  }
-`;
-
-const DateFilterContainer = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  background: white;
-  padding: 8px 12px;
-  border-radius: 6px;
-  border: 1px solid #e2e8f0;
-
-  .react-datepicker-wrapper {
-    width: 120px;
-  }
-
-  .react-datepicker__input-container input {
-    border: none;
-    width: 100%;
-    font-size: 0.9rem;
-    color: #4a5568;
-  }
-`;
-
-const DownloadButton = styled.button`
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  background-color: #3498db;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 8px 12px;
-  font-size: 0.85rem;
-  cursor: pointer;
-  transition: all 0.2s;
-
-  &:hover {
-    background-color: #2980b9;
-  }
-`;
-
-const DropdownWrapper = styled.div`
-  .dropdown__control {
-    color: #4a5568;
-    font-size: 0.9rem;
-    border: 1px solid #e2e8f0;
-    border-radius: 6px;
-    background-color: white;
-    padding: 2px 4px;
-    min-height: 38px;
-    transition: all 0.2s;
-  }
-
-  .dropdown__control--is-focused {
-    border-color: #3498db;
-    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
-  }
-
-  .dropdown__menu {
-    z-index: 9999;
-  }
-`;
-
-
 
 const UserReport = () => {
     const { user } = useAuth();
@@ -416,8 +42,8 @@ const UserReport = () => {
         startDate: null,
         endDate: null
     });
+    const [userImage, setUserImage] = useState(null);
     const baseUrl = import.meta.env.VITE_API_BASE_URL;
-    
 
     useEffect(() => {
         const fetchData = async () => {
@@ -425,22 +51,51 @@ const UserReport = () => {
             setIsLoading(true);
             try {
                 const userRes = await axios.get(`${baseUrl}/users/${user.userID}`);
-                const movementRes = await axios.get(`${baseUrl}/get_movement/${user.userID}`);
-
                 setUserData(userRes.data.data);
-                const movement = movementRes.data;
-                const dataArray = Array.isArray(movement) ? movement : [movement];
-                setMovementData(dataArray);
-                setFilteredData(dataArray);
+                
+                try {
+                    const movementRes = await axios.get(`${baseUrl}/get_movement/${user.userID}`);
+                    const movement = movementRes.data;
+                    const dataArray = Array.isArray(movement) ? movement : [movement];
+                    setMovementData(dataArray);
+                    setFilteredData(dataArray);
+                } catch (movementErr) {
+                    console.error('Error fetching movement data:', movementErr);
+                    setMovementData([]);
+                    setFilteredData([]);
+                    // toast.info('No movement data available for this user.');
+                }
             } catch (err) {
-                console.error('Error fetching user or movement data:', err);
-                toast.error('Failed to load data. Please try again.');
+                console.error('Error fetching user data:', err);
+                toast.error('Failed to load user data. Please try again.');
             } finally {
                 setIsLoading(false);
             }
         };
 
         fetchData();
+    }, [user]);
+
+    // Get User Image from API
+    useEffect(() => {
+        const fetchImage = async () => {
+            try {
+                const response = await axios.get(`${baseUrl}/profile-image/${user.userID}`, {
+                    responseType: 'blob'
+                });
+
+                if (response.data) {
+                    const imageUrl = URL.createObjectURL(response.data);
+                    setUserImage(imageUrl);
+                }
+            } catch (err) {
+                console.error('Error fetching user image:', err);
+            }
+        };
+
+        if (user?.userID) {
+            fetchImage();
+        }
     }, [user]);
 
     // Apply filters whenever search term or date range changes
@@ -455,7 +110,6 @@ const UserReport = () => {
                 (item.partyName && item.partyName.toLowerCase().includes(term)) ||
                 (item.purpose && item.purpose.toLowerCase().includes(term)) ||
                 (item.punchTime && item.punchTime.toLowerCase().includes(term))
-
             );
         }
 
@@ -510,7 +164,6 @@ const UserReport = () => {
         });
     };
 
-
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setEditFormData((prev) => ({ ...prev, [name]: value }));
@@ -545,7 +198,6 @@ const UserReport = () => {
         }
     };
 
-
     const handleCancelClick = () => {
         setEditRowId(null);
     };
@@ -567,6 +219,11 @@ const UserReport = () => {
     ];
 
     const downloadCSV = () => {
+        if (filteredData.length === 0) {
+            toast.info('No data available to download');
+            return;
+        }
+
         // Prepare CSV header
         const headers = [
             'Date',
@@ -613,406 +270,487 @@ const UserReport = () => {
 
     if (isLoading && !userData) {
         return (
-            <Container>
-                <Header>User Report</Header>
-                <ProfileSection>
-                    <ProfileCard>
+            <div className="container mx-auto px-4 py-6">
+                <h1 className="text-2xl font-bold mb-6">User Report</h1>
+                <div className="flex flex-col md:flex-row gap-6 mb-8">
+                    <div className="bg-white rounded-lg shadow p-6 w-full md:w-1/3 flex flex-col items-center">
                         <Skeleton variant="circular" width={100} height={100} />
-                        <Skeleton variant="text" width={120} height={30} style={{ marginBottom: '0.5rem' }} />
+                        <Skeleton variant="text" width={120} height={30} className="mt-4 mb-2" />
                         <Skeleton variant="text" width={80} height={20} />
-                    </ProfileCard>
-                    <UserDetails>
+                    </div>
+                    <div className="bg-white rounded-lg shadow p-6 w-full md:w-2/3">
                         {[...Array(5)].map((_, i) => (
-                            <DetailItem key={i}>
-                                <Skeleton variant="rectangular" width={40} height={40} style={{ marginRight: '1rem' }} />
-                                <DetailContent>
-                                    <Skeleton variant="text" width={80} height={15} style={{ marginBottom: '0.2rem' }} />
+                            <div key={i} className="flex items-center mb-4">
+                                <Skeleton variant="rectangular" width={40} height={40} className="mr-4" />
+                                <div>
+                                    <Skeleton variant="text" width={80} height={15} className="mb-1" />
                                     <Skeleton variant="text" width={120} height={20} />
-                                </DetailContent>
-                            </DetailItem>
+                                </div>
+                            </div>
                         ))}
-                    </UserDetails>
-                </ProfileSection>
-                <SectionTitle>Movement Data</SectionTitle>
-                <TableContainer>
-                    <StyledTable>
-                        <TableHeader>
+                    </div>
+                </div>
+                <h2 className="text-xl font-semibold mb-4">Movement Data</h2>
+                <div className="bg-white rounded-lg shadow overflow-hidden">
+                    <table className="min-w-full divide-y divide-gray-200">
+                        <thead className="bg-gray-50">
                             <tr>
                                 {[...Array(8)].map((_, i) => (
-                                    <TableHeaderCell key={i}>
+                                    <th key={i} scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         <Skeleton variant="text" width={80} height={15} />
-                                    </TableHeaderCell>
+                                    </th>
                                 ))}
                             </tr>
-                        </TableHeader>
-                        <tbody>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-200">
                             {[...Array(5)].map((_, i) => (
-                                <SkeletonRow key={i}>
+                                <tr key={i}>
                                     {[...Array(8)].map((_, j) => (
-                                        <TableCell key={j}>
+                                        <td key={j} className="px-6 py-4 whitespace-nowrap">
                                             <Skeleton variant="text" width="80%" height={20} />
-                                        </TableCell>
+                                        </td>
                                     ))}
-                                </SkeletonRow>
+                                </tr>
                             ))}
                         </tbody>
-                    </StyledTable>
-                </TableContainer>
-            </Container>
+                    </table>
+                </div>
+            </div>
         );
     }
 
     if (!user || !userData) {
         return (
-            <Container>
-                <Header>User Report</Header>
-                <div>No user data available.</div>
-            </Container>
+            <div className="container mx-auto px-4 py-6">
+                <h1 className="text-2xl font-bold mb-6">User Report</h1>
+                <div className="bg-white rounded-lg shadow p-6">No user data available.</div>
+            </div>
         );
     }
 
     return (
-        <Container>
+        <div className="container mx-auto px-4 py-6">
             <ToastContainer position="top-right" autoClose={3000} />
-            <Header>Movement Reports</Header>
+            <h1 className="text-2xl font-bold mb-6">Movement Reports</h1>
 
-            <ProfileSection>
-                <ProfileCard>
-                    <Avatar>{getInitials(userData.Name)}</Avatar>
-                    <UserName>{userData.Name}</UserName>
-                    <UserTitle>{userData.Designation}</UserTitle>
-                </ProfileCard>
+            <div className="flex flex-col md:flex-row gap-6 mb-8">
+                <div className="bg-white rounded-lg shadow p-6 w-full md:w-1/3 flex flex-col items-center">
+                    <div className="w-24 h-24 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 text-2xl font-bold mb-4">
+                        {userImage ? (
+                            <img
+                                src={userImage}
+                                alt="User Profile"
+                                className="rounded-full w-24 h-24 object-cover"
+                                onError={(e) => {
+                                    e.target.onerror = null;
+                                    e.target.src = 'https://via.placeholder.com/150';
+                                }}
+                            />
+                        ) : (
+                            <span>{getInitials(userData?.Name)}</span>
+                        )}
+                    </div>
+                    <h2 className="text-xl font-semibold">{userData.Name}</h2>
+                    <p className="text-gray-500">{userData.Designation}</p>
+                </div>
 
-                <UserDetails>
-                    <DetailItem>
-                        <DetailIcon>
-                            <FiBriefcase size={18} />
-                        </DetailIcon>
-                        <DetailContent>
-                            <DetailLabel>Designation</DetailLabel>
-                            <DetailValue>{userData.Designation}</DetailValue>
-                        </DetailContent>
-                    </DetailItem>
-                    <DetailItem>
-                        <DetailIcon>
-                            <FiHome size={18} />
-                        </DetailIcon>
-                        <DetailContent>
-                            <DetailLabel>Department</DetailLabel>
-                            <DetailValue>{userData.Department}</DetailValue>
-                        </DetailContent>
-                    </DetailItem>
-                    <DetailItem>
-                        <DetailIcon>
-                            <FiBriefcase size={18} />
-                        </DetailIcon>
-                        <DetailContent>
-                            <DetailLabel>Company</DetailLabel>
-                            <DetailValue>{userData.Company_name}</DetailValue>
-                        </DetailContent>
-                    </DetailItem>
-                    <DetailItem>
-                        <DetailIcon>
-                            <FiPhone size={18} />
-                        </DetailIcon>
-                        <DetailContent>
-                            <DetailLabel>Phone</DetailLabel>
-                            <DetailValue>{userData.Phone}</DetailValue>
-                        </DetailContent>
-                    </DetailItem>
-                </UserDetails>
-            </ProfileSection>
+                <div className="bg-white rounded-lg shadow p-6 w-full md:w-2/3">
+                    <div className="space-y-4">
+                        <div className="flex items-center">
+                            <div className="p-2 rounded-full bg-indigo-100 text-indigo-600 mr-4">
+                                <FiBriefcase size={18} />
+                            </div>
+                            <div>
+                                <p className="text-sm text-gray-500">Department</p>
+                                <p className="font-medium">{userData.Department}</p>
+                            </div>
+                        </div>
+                        <div className="flex items-center">
+                            <div className="p-2 rounded-full bg-indigo-100 text-indigo-600 mr-4">
+                                <FiHome size={18} />
+                            </div>
+                            <div>
+                                <p className="text-sm text-gray-500">Designation</p>
+                                <p className="font-medium">{userData.Designation}</p>
+                            </div>
+                        </div>
+                        <div className="flex items-center">
+                            <div className="p-2 rounded-full bg-indigo-100 text-indigo-600 mr-4">
+                                <FiBriefcase size={18} />
+                            </div>
+                            <div>
+                                <p className="text-sm text-gray-500">Company</p>
+                                <p className="font-medium">{userData.Company_name}</p>
+                            </div>
+                        </div>
+                        <div className="flex items-center">
+                            <div className="p-2 rounded-full bg-indigo-100 text-indigo-600 mr-4">
+                                <FiPhone size={18} />
+                            </div>
+                            <div>
+                                <p className="text-sm text-gray-500">Phone</p>
+                                <p className="font-medium">{userData.Phone}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-            <SectionTitle>
-                <FiClock size={20} />
-                Movement History
-            </SectionTitle>
+            <div className="flex items-center mb-4">
+                <FiClock size={20} className="mr-2" />
+                <h2 className="text-xl font-semibold">Movement History</h2>
+            </div>
 
-            <FilterContainer>
-                <SearchInput>
-                    <FiSearch size={18} />
-                    <input
-                        type="text"
-                        placeholder="Search by place, party, purpose..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                </SearchInput>
-
-                {/* Sort by Status */}
-                <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="px-2 py-2.5 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                    <option value="">Punch Status</option>
-                    <option value="Punch In">Punch In</option>
-                    <option value="Punch Out">Punch Out</option>
-                </select>
-
-                <DateFilterContainer>
-                    <FiCalendar size={16} />
-                    <span>From:</span>
-                    <DatePicker
-                        selected={dateFilter.startDate}
-                        onChange={(date) => setDateFilter({ ...dateFilter, startDate: date })}
-                        selectsStart
-                        startDate={dateFilter.startDate}
-                        endDate={dateFilter.endDate}
-                        placeholderText="Start date"
-                        dateFormat="dd MMM yyyy"
-                        isClearable
-                    />
-                    <span>To:</span>
-                    <DatePicker
-                        selected={dateFilter.endDate}
-                        onChange={(date) => setDateFilter({ ...dateFilter, endDate: date })}
-                        selectsEnd
-                        startDate={dateFilter.startDate}
-                        endDate={dateFilter.endDate}
-                        minDate={dateFilter.startDate}
-                        placeholderText="End date"
-                        dateFormat="dd MMM yyyy"
-                        isClearable
-                    />
-                    {(dateFilter.startDate || dateFilter.endDate) && (
-                        <ActionButton onClick={clearDateFilters} style={{ marginLeft: '0.5rem' }}>
-                            Clear
-                        </ActionButton>
-                    )}
-                </DateFilterContainer>
-
-                <DownloadButton onClick={downloadCSV}>
-                    <FiDownload size={16} />
-                    Download CSV ({filteredData.length} records)
-                </DownloadButton>
-            </FilterContainer>
-
-            {filteredData.length === 0 ? (
-                <TableContainer style={{ padding: '2rem', textAlign: 'center' }}>
-                    {isLoading ? 'Loading...' : 'No movement data found matching your criteria.'}
-                </TableContainer>
+            {movementData.length === 0 ? (
+                <div className="bg-white rounded-lg shadow p-8 text-center">
+                    No movement data available for this user.
+                </div>
             ) : (
                 <>
-                    <TableContainer>
-                        <StyledTable>
-                            <TableHeader className='bg-gray-600'>
-                                <tr>
-                                    <TableHeaderCell>Date</TableHeaderCell>
-                                    <TableHeaderCell>Punch Time</TableHeaderCell>
-                                    <TableHeaderCell>Punch Status</TableHeaderCell>
-                                    <TableHeaderCell>Visit Status</TableHeaderCell>
-                                    <TableHeaderCell>Place</TableHeaderCell>
-                                    <TableHeaderCell>Party</TableHeaderCell>
-                                    <TableHeaderCell>Purpose</TableHeaderCell>
-                                    <TableHeaderCell>Remarks</TableHeaderCell>
-                                    <TableHeaderCell>Actions</TableHeaderCell>
-                                </tr>
-                            </TableHeader>
-                            <tbody>
-                                {currentRows.map((mv) => (
-                                    <TableRow key={mv.movementID}>
-                                        <TableCell>
-                                            {new Date(mv.dateTime).toLocaleDateString('en-US', {
-                                                year: 'numeric',
-                                                month: 'short',
-                                                day: 'numeric'
-                                            })}
-                                        </TableCell>
-                                        <TableCell>
-                                            {editRowId === mv.movementID ? (
-                                                <InputField
-                                                    type="time"
-                                                    name="punchingTime"
-                                                    value={editFormData.punchingTime}
-                                                    onChange={handleInputChange}
-                                                />
-                                            ) : (
-                                                mv.punchingTime
-                                                    ? new Date(`1970-01-01T${mv.punchingTime}`).toLocaleTimeString('en-US', {
-                                                        hour: 'numeric',
-                                                        minute: 'numeric',
-                                                        hour12: true,
-                                                    })
-                                                    : 'N/A'
-                                            )}
-                                        </TableCell>
-
-                                        <TableCell>
-                                            {editRowId === mv.movementID ? (
-                                                <select name="punchTime" value={editFormData.punchTime} onChange={handleInputChange}>
-                                                    <option value="">Select</option>
-                                                    <option value="Punch In">Punch In</option>
-                                                    <option value="Punch Out">Punch Out</option>
-                                                </select>
-                                            ) : (
-                                                mv.punchTime || 'N/A'
-                                            )}
-                                        </TableCell>
-
-                                        <TableCell>
-                                            {editRowId === mv.movementID ? (
-                                                <input
-                                                    name="visitingStatus"
-                                                    type="text"
-                                                    value={editFormData.visitingStatus}
-                                                    onChange={handleInputChange}
-                                                />
-                                            ) : (
-                                                mv.visitingStatus
-                                            )}
-                                        </TableCell>
-
-                                        <TableCell>
-                                            {editRowId === mv.movementID ? (
-                                                <input
-                                                    name="placeName"
-                                                    type="text"
-                                                    value={editFormData.placeName}
-                                                    onChange={handleInputChange}
-                                                />
-                                            ) : (
-                                                mv.placeName
-                                            )}
-                                        </TableCell>
-
-                                        <TableCell>
-                                            {editRowId === mv.movementID ? (
-                                                <input
-                                                    name="partyName"
-                                                    type="text"
-                                                    value={editFormData.partyName}
-                                                    onChange={handleInputChange}
-                                                />
-                                            ) : (
-                                                mv.partyName
-                                            )}
-                                        </TableCell>
-
-                                        <TableCell>
-                                            {editRowId === mv.movementID ? (
-                                                <InputField
-                                                    type="text"
-                                                    name="purpose"
-                                                    value={editFormData.purpose}
-                                                    onChange={handleInputChange}
-                                                />
-                                            ) : (
-                                                mv.purpose || '-'
-                                            )}
-                                        </TableCell>
-                                        <TableCell>
-                                            {editRowId === mv.movementID ? (
-                                                <InputField
-                                                    type="text"
-                                                    name="remark"
-                                                    value={editFormData.remark}
-                                                    onChange={handleInputChange}
-                                                />
-                                            ) : (
-                                                mv.remark || '-'
-                                            )}
-                                        </TableCell>
-                                        <TableCell>
-                                            {(() => {
-                                                if (!mv.dateTime) return null; // no dateTime, no edit
-
-                                                const submittedTime = new Date(mv.dateTime);
-                                                const now = new Date();
-                                                const diffMinutes = (now - submittedTime) / 1000 / 60; // difference in minutes
-
-                                                if (diffMinutes <= 10) {
-                                                    // Allow editing within 10 minutes
-                                                    return editRowId === mv.movementID ? (
-                                                        <div style={{ display: 'flex', gap: '5px' }}>
-                                                            <ActionButton primary onClick={handleSaveClick}>
-                                                                <FiSave size={14} /> Save
-                                                            </ActionButton>
-                                                            <ActionButton onClick={handleCancelClick}>Cancel</ActionButton>
-                                                        </div>
-                                                    ) : (
-                                                        <ActionButton onClick={() => handleEditClick(mv)}>
-                                                            <FiEdit size={14} /> Edit
-                                                        </ActionButton>
-                                                    );
-                                                } else {
-                                                    // After 10 minutes, show Done
-                                                    return <span className="text-gray-500 font-semibold">Done</span>;
-                                                }
-                                            })()}
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </tbody>
-                        </StyledTable>
-                    </TableContainer>
-
-                    <PaginationContainer>
-                        <DropdownWrapper>
-                            <Select
-                                options={pageSizeOptions}
-                                onChange={(e) => setRowsPerPage(e.value)}
-                                value={pageSizeOptions.find(opt => opt.value === rowsPerPage)}
-                                placeholder="Rows per page"
-                                classNamePrefix="dropdown"
-                                menuPlacement="auto" // ensures it opens upward if needed
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+                        <div className="relative flex-1">
+                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <FiSearch className="text-gray-400" />
+                            </div>
+                            <input
+                                type="text"
+                                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                placeholder="Search by place, party, purpose..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
                             />
-                        </DropdownWrapper>
+                        </div>
 
+                        <select
+                            value={statusFilter}
+                            onChange={(e) => setStatusFilter(e.target.value)}
+                            className="px-2 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        >
+                            <option value="">Punch Status</option>
+                            <option value="Punch In">Punch In</option>
+                            <option value="Punch Out">Punch Out</option>
+                        </select>
 
-                        <PaginationInfo>
-                            Showing {indexOfFirstRow + 1} to {Math.min(indexOfLastRow, filteredData.length)} of {filteredData.length} entries
-                        </PaginationInfo>
-                        <PaginationButtons>
-                            <PaginationButton
-                                onClick={() => paginate(1)}
-                                disabled={currentPage === 1}
-                            >
-                                <FiChevronsLeft size={16} />
-                            </PaginationButton>
-                            <PaginationButton
-                                onClick={() => paginate(currentPage - 1)}
-                                disabled={currentPage === 1}
-                            >
-                                <FiChevronLeft size={16} />
-                            </PaginationButton>
+                        <div className="flex items-center space-x-2">
+                            <FiCalendar className="text-gray-400" />
+                            <span className="text-sm text-gray-500">From:</span>
+                            <DatePicker
+                                selected={dateFilter.startDate}
+                                onChange={(date) => setDateFilter({ ...dateFilter, startDate: date })}
+                                selectsStart
+                                startDate={dateFilter.startDate}
+                                endDate={dateFilter.endDate}
+                                placeholderText="Start date"
+                                dateFormat="dd MMM yyyy"
+                                isClearable
+                                className="px-2 py-1.5 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            />
+                            <span className="text-sm text-gray-500">To:</span>
+                            <DatePicker
+                                selected={dateFilter.endDate}
+                                onChange={(date) => setDateFilter({ ...dateFilter, endDate: date })}
+                                selectsEnd
+                                startDate={dateFilter.startDate}
+                                endDate={dateFilter.endDate}
+                                minDate={dateFilter.startDate}
+                                placeholderText="End date"
+                                dateFormat="dd MMM yyyy"
+                                isClearable
+                                className="px-2 py-1.5 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            />
+                            {(dateFilter.startDate || dateFilter.endDate) && (
+                                <button
+                                    onClick={clearDateFilters}
+                                    className="px-3 py-1.5 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                                >
+                                    Clear
+                                </button>
+                            )}
+                        </div>
 
-                            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                                let pageNum;
-                                if (totalPages <= 5) {
-                                    pageNum = i + 1;
-                                } else if (currentPage <= 3) {
-                                    pageNum = i + 1;
-                                } else if (currentPage >= totalPages - 2) {
-                                    pageNum = totalPages - 4 + i;
-                                } else {
-                                    pageNum = currentPage - 2 + i;
-                                }
+                        <button
+                            onClick={downloadCSV}
+                            disabled={filteredData.length === 0}
+                            className={`flex items-center px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 text-sm ${
+                                filteredData.length === 0 
+                                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
+                                    : 'bg-indigo-600 text-white hover:bg-indigo-700'
+                            }`}
+                        >
+                            <FiDownload className="mr-2" />
+                            Download CSV ({filteredData.length} records)
+                        </button>
+                    </div>
 
-                                return (
-                                    <PaginationButton
-                                        key={pageNum}
-                                        onClick={() => paginate(pageNum)}
-                                        active={currentPage === pageNum}
+                    {filteredData.length === 0 ? (
+                        <div className="bg-white rounded-lg shadow p-8 text-center">
+                            No movement data found matching your criteria.
+                        </div>
+                    ) : (
+                        <>
+                            <div className="bg-white rounded-lg shadow overflow-hidden mb-6">
+                                <div className="overflow-x-auto">
+                                    <table className="min-w-full divide-y divide-gray-200">
+                                        <thead className="bg-gray-50">
+                                            <tr>
+                                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    Date
+                                                </th>
+                                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    Punch Time
+                                                </th>
+                                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    Punch Status
+                                                </th>
+                                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    Visit Status
+                                                </th>
+                                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    Place
+                                                </th>
+                                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    Party
+                                                </th>
+                                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    Purpose
+                                                </th>
+                                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    Remarks
+                                                </th>
+                                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    Actions
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="bg-white divide-y divide-gray-200">
+                                            {currentRows.map((mv) => (
+                                                <tr key={mv.movementID}>
+                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                        {new Date(mv.dateTime).toLocaleDateString('en-US', {
+                                                            year: 'numeric',
+                                                            month: 'short',
+                                                            day: 'numeric'
+                                                        })}
+                                                    </td>
+                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                        {editRowId === mv.movementID ? (
+                                                            <input
+                                                                type="time"
+                                                                name="punchingTime"
+                                                                value={editFormData.punchingTime}
+                                                                onChange={handleInputChange}
+                                                                className="border border-gray-300 rounded px-2 py-1 text-sm"
+                                                            />
+                                                        ) : (
+                                                            mv.punchingTime
+                                                                ? new Date(`1970-01-01T${mv.punchingTime}`).toLocaleTimeString('en-US', {
+                                                                    hour: 'numeric',
+                                                                    minute: 'numeric',
+                                                                    hour12: true,
+                                                                })
+                                                                : 'N/A'
+                                                        )}
+                                                    </td>
+                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                        {editRowId === mv.movementID ? (
+                                                            <select
+                                                                name="punchTime"
+                                                                value={editFormData.punchTime}
+                                                                onChange={handleInputChange}
+                                                                className="border border-gray-300 rounded px-2 py-1 text-sm"
+                                                            >
+                                                                <option value="">Select</option>
+                                                                <option value="Punch In">Punch In</option>
+                                                                <option value="Punch Out">Punch Out</option>
+                                                            </select>
+                                                        ) : (
+                                                            mv.punchTime || 'N/A'
+                                                        )}
+                                                    </td>
+                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                        {editRowId === mv.movementID ? (
+                                                            <input
+                                                                name="visitingStatus"
+                                                                type="text"
+                                                                value={editFormData.visitingStatus}
+                                                                onChange={handleInputChange}
+                                                                className="border border-gray-300 rounded px-2 py-1 text-sm"
+                                                            />
+                                                        ) : (
+                                                            mv.visitingStatus
+                                                        )}
+                                                    </td>
+                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                        {editRowId === mv.movementID ? (
+                                                            <input
+                                                                name="placeName"
+                                                                type="text"
+                                                                value={editFormData.placeName}
+                                                                onChange={handleInputChange}
+                                                                className="border border-gray-300 rounded px-2 py-1 text-sm"
+                                                            />
+                                                        ) : (
+                                                            mv.placeName
+                                                        )}
+                                                    </td>
+                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                        {editRowId === mv.movementID ? (
+                                                            <input
+                                                                name="partyName"
+                                                                type="text"
+                                                                value={editFormData.partyName}
+                                                                onChange={handleInputChange}
+                                                                className="border border-gray-300 rounded px-2 py-1 text-sm"
+                                                            />
+                                                        ) : (
+                                                            mv.partyName
+                                                        )}
+                                                    </td>
+                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                        {editRowId === mv.movementID ? (
+                                                            <input
+                                                                type="text"
+                                                                name="purpose"
+                                                                value={editFormData.purpose}
+                                                                onChange={handleInputChange}
+                                                                className="border border-gray-300 rounded px-2 py-1 text-sm"
+                                                            />
+                                                        ) : (
+                                                            mv.purpose || '-'
+                                                        )}
+                                                    </td>
+                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                        {editRowId === mv.movementID ? (
+                                                            <input
+                                                                type="text"
+                                                                name="remark"
+                                                                value={editFormData.remark}
+                                                                onChange={handleInputChange}
+                                                                className="border border-gray-300 rounded px-2 py-1 text-sm"
+                                                            />
+                                                        ) : (
+                                                            mv.remark || '-'
+                                                        )}
+                                                    </td>
+                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                        {(() => {
+                                                            if (!mv.dateTime) return null;
+
+                                                            const submittedTime = new Date(mv.dateTime);
+                                                            const now = new Date();
+                                                            const diffMinutes = (now - submittedTime) / 1000 / 60;
+
+                                                            if (diffMinutes <= 10) {
+                                                                return editRowId === mv.movementID ? (
+                                                                    <div className="flex space-x-1">
+                                                                        <button
+                                                                            onClick={handleSaveClick}
+                                                                            className="px-2 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-xs flex items-center"
+                                                                        >
+                                                                            <FiSave className="mr-1" size={12} /> Save
+                                                                        </button>
+                                                                        <button
+                                                                            onClick={handleCancelClick}
+                                                                            className="px-2 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 text-xs"
+                                                                        >
+                                                                            Cancel
+                                                                        </button>
+                                                                    </div>
+                                                                ) : (
+                                                                    <button
+                                                                        onClick={() => handleEditClick(mv)}
+                                                                        className="px-2 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-xs flex items-center"
+                                                                    >
+                                                                        <FiEdit className="mr-1" size={12} /> Edit
+                                                                    </button>
+                                                                );
+                                                            } else {
+                                                                return <span className="text-gray-500 font-semibold">Done</span>;
+                                                            }
+                                                        })()}
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div className="flex flex-col md:flex-row items-center justify-between px-4 py-3 bg-white rounded-lg shadow">
+                                <div className="w-full md:w-auto mb-4 md:mb-0">
+                                    <Select
+                                        options={pageSizeOptions}
+                                        onChange={(e) => setRowsPerPage(e.value)}
+                                        value={pageSizeOptions.find(opt => opt.value === rowsPerPage)}
+                                        placeholder="Rows per page"
+                                        className="w-32"
+                                        classNamePrefix="select"
+                                        menuPlacement="auto"
+                                    />
+                                </div>
+                                <div className="text-sm text-gray-700 mb-4 md:mb-0">
+                                    Showing {indexOfFirstRow + 1} to {Math.min(indexOfLastRow, filteredData.length)} of {filteredData.length} entries
+                                </div>
+                                <div className="flex items-center space-x-1">
+                                    <button
+                                        onClick={() => paginate(1)}
+                                        disabled={currentPage === 1}
+                                        className={`px-2 py-1 rounded-md ${currentPage === 1 ? 'text-gray-400 cursor-not-allowed' : 'text-gray-700 hover:bg-gray-100'}`}
                                     >
-                                        {pageNum}
-                                    </PaginationButton>
-                                );
-                            })}
+                                        <FiChevronsLeft size={16} />
+                                    </button>
+                                    <button
+                                        onClick={() => paginate(currentPage - 1)}
+                                        disabled={currentPage === 1}
+                                        className={`px-2 py-1 rounded-md ${currentPage === 1 ? 'text-gray-400 cursor-not-allowed' : 'text-gray-700 hover:bg-gray-100'}`}
+                                    >
+                                        <FiChevronLeft size={16} />
+                                    </button>
 
-                            <PaginationButton
-                                onClick={() => paginate(currentPage + 1)}
-                                disabled={currentPage === totalPages}
-                            >
-                                <FiChevronRight size={16} />
-                            </PaginationButton>
-                            <PaginationButton
-                                onClick={() => paginate(totalPages)}
-                                disabled={currentPage === totalPages}
-                            >
-                                <FiChevronsRight size={16} />
-                            </PaginationButton>
-                        </PaginationButtons>
-                    </PaginationContainer>
+                                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                                        let pageNum;
+                                        if (totalPages <= 5) {
+                                            pageNum = i + 1;
+                                        } else if (currentPage <= 3) {
+                                            pageNum = i + 1;
+                                        } else if (currentPage >= totalPages - 2) {
+                                            pageNum = totalPages - 4 + i;
+                                        } else {
+                                            pageNum = currentPage - 2 + i;
+                                        }
+
+                                        return (
+                                            <button
+                                                key={pageNum}
+                                                onClick={() => paginate(pageNum)}
+                                                className={`px-3 py-1 rounded-md ${currentPage === pageNum ? 'bg-indigo-600 text-white' : 'text-gray-700 hover:bg-gray-100'}`}
+                                            >
+                                                {pageNum}
+                                            </button>
+                                        );
+                                    })}
+
+                                    <button
+                                        onClick={() => paginate(currentPage + 1)}
+                                        disabled={currentPage === totalPages}
+                                        className={`px-2 py-1 rounded-md ${currentPage === totalPages ? 'text-gray-400 cursor-not-allowed' : 'text-gray-700 hover:bg-gray-100'}`}
+                                    >
+                                        <FiChevronRight size={16} />
+                                    </button>
+                                    <button
+                                        onClick={() => paginate(totalPages)}
+                                        disabled={currentPage === totalPages}
+                                        className={`px-2 py-1 rounded-md ${currentPage === totalPages ? 'text-gray-400 cursor-not-allowed' : 'text-gray-700 hover:bg-gray-100'}`}
+                                    >
+                                        <FiChevronsRight size={16} />
+                                    </button>
+                                </div>
+                            </div>
+                        </>
+                    )}
                 </>
             )}
-        </Container>
+        </div>
     );
 };
 

@@ -23,6 +23,7 @@ import Team from './pages/TeamManagement/TeamDetails';
 import ErrorPage from './pages/ErrorPage';
 import ActivitiesReport from './pages/ActivitiesReport';
 import LogReport from './pages/LogReport';
+import TeamChat from './pages/TeamManagement/TeamChat';
 
 const App = () => {
   return (
@@ -58,6 +59,7 @@ const App = () => {
           <Route path="createteam" element={<CreateTeams />} />
           <Route path="allteam" element={<ViewTeams />} />
           <Route path="team/:teamID" element={<Team />} />
+          <Route path="all-team-chat" element={<TeamChat />} />
           <Route path="movementreports" element={<MovementReports />} />
           <Route path="log-report" element={<LogReport />} />
           <Route path="jsonupdater" element={<JsonUpdater />} />

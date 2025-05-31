@@ -671,20 +671,8 @@ app.get('/movement_edit_logs', async (req, res) => {
 
 
 
-// create a new company name
-// Multer setup (store image in memory, not on disk)
-const storage = multer.memoryStorage();
-// const upload = multer({
-//   storage: storage,
-//   limits: { fileSize: 1 * 1024 * 1024 }, // 1MB limit
-//   fileFilter: (req, file, cb) => {
-//     if (!file.mimetype.startsWith('image/')) {
-//       return cb(new Error('Only image files are allowed!'));
-//     }
-//     cb(null, true);
-//   }
-// });
 
+const storage = multer.memoryStorage();
 
 // Company Names API
 app.post('/companynames', upload.single('companyLogo'), (req, res) => {
@@ -1301,53 +1289,6 @@ app.delete('/roles/:roleID', (req, res) => {
   });
 });
 
-
-// Team assignments  
-// // Assign team API  ******** Dont remove this code ******* 
-// app.post('/assign-team', (req, res) => {
-//   const { team_leader_id, team_member_ids, team_name } = req.body;
-
-//   if (!team_leader_id || !Array.isArray(team_member_ids) || team_member_ids.length === 0) {
-//     return res.status(400).json({ status: 'error', message: 'Invalid data' });
-//   }
-
-//   // Step 1: Check if leader is already assigned
-//   const checkLeaderQuery = 'SELECT * FROM team_assignments WHERE team_leader_id = ?';
-//   db.query(checkLeaderQuery, [team_leader_id], (err, leaderResults) => {
-//     if (err) return res.status(500).json({ status: 'error', message: err.message });
-//     if (leaderResults.length > 0) {
-//       return res.status(400).json({ status: 'error', message: 'Team leader is already assigned to a team' });
-//     }
-
-//     // Step 2: Check if any member is already assigned
-//     const placeholders = team_member_ids.map(() => '?').join(',');
-//     const checkMembersQuery = `SELECT * FROM team_assignments WHERE team_member_id IN (${placeholders})`;
-//     db.query(checkMembersQuery, team_member_ids, (err, memberResults) => {
-//       if (err) return res.status(500).json({ status: 'error', message: err.message });
-//       if (memberResults.length > 0) {
-//         return res.status(400).json({ status: 'error', message: 'One or more members are already assigned to a team' });
-//       }
-
-//       // Step 3: Get next team_id
-//       const getMaxTeamIdQuery = 'SELECT MAX(team_id) AS max_id FROM team_assignments';
-//       db.query(getMaxTeamIdQuery, (err, maxResult) => {
-//         if (err) return res.status(500).json({ status: 'error', message: err.message });
-
-//         const nextTeamId = (maxResult[0].max_id || 0) + 1;
-
-//         // Step 4: Insert records
-//         const insertQuery = 'INSERT INTO team_assignments (team_id, team_name, team_leader_id, team_member_id) VALUES ?';
-//         const values = team_member_ids.map(memberId => [nextTeamId, team_name, team_leader_id, memberId]);
-
-//         db.query(insertQuery, [values], (err, result) => {
-//           if (err) return res.status(500).json({ status: 'error', message: err.message });
-
-//           res.json({ status: 'ok', message: 'Team created successfully' });
-//         });
-//       });
-//     });
-//   });
-// });
 
 app.post('/assign-team', (req, res) => {
   const { team_leader_id, team_member_ids, team_name } = req.body;
