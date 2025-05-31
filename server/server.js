@@ -148,6 +148,14 @@ app.post('/adminlogin', (req, res) => {
   });
 });
 
+// Get all messages
+app.get('/messages', (req, res) => {
+  db.query('SELECT * FROM team_messages ORDER BY created_at ASC', (err, results) => {
+    if (err) return res.status(500).json({ error: 'Database error' });
+    res.json(results);
+  });
+});
+
 
 // Create new User
 app.post('/users', (req, res) => {
