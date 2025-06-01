@@ -3,6 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { FaBars, FaTimes } from 'react-icons/fa';
 import Sidebar from '../components/Sidebar/Sidebar';
 import axios from 'axios';
+import { FaUser, FaPersonWalkingDashedLineArrowRight, FaCodeBranch } from 'react-icons/fa6';
+import { RiTeamFill } from "react-icons/ri";
+import { FaBuilding, FaUserCog } from "react-icons/fa";
+import { MdDesignServices } from "react-icons/md";
+import { TbScanPosition } from "react-icons/tb";
+import { SiGooglecolab } from "react-icons/si";
 
 const Dashboard = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -10,11 +16,11 @@ const Dashboard = ({ children }) => {
   const [movementReports, setMovementReports] = useState([]);
   const [teams, setTeams] = useState([]);
   const [companyNames, setCompanyNames] = useState([]);
-  const [branchNames , setBranchNames] = useState([]);
+  const [branchNames, setBranchNames] = useState([]);
   const [designations, setDesignations] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [roles, setRoles] = useState([]);
-  const [partyNames , setPartyNames] = useState([]);
+  const [partyNames, setPartyNames] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
@@ -38,7 +44,7 @@ const Dashboard = ({ children }) => {
         const responseBranchNames = await axios.get(`${baseUrl}/branchnames`);
         const responseDesignations = await axios.get(`${baseUrl}/designations`);
         const responseDepartments = await axios.get(`${baseUrl}/departments`);
-        const responseRoles = await axios.get(`${baseUrl}/roles`); 
+        const responseRoles = await axios.get(`${baseUrl}/roles`);
         const responsePartyNames = await axios.get(`${baseUrl}/partynames`);
 
         setUsers(response.data.data);
@@ -49,7 +55,7 @@ const Dashboard = ({ children }) => {
         setDepartments(responseDepartments.data);
         setDesignations(responseDesignations.data);
         setPartyNames(responsePartyNames.data);
-        setRoles(responseRoles.data); 
+        setRoles(responseRoles.data);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -62,7 +68,7 @@ const Dashboard = ({ children }) => {
   return (
     <div className="flex min-h-screen bg-gray-100 overflow-hidden">
       <Sidebar sidebarOpen={sidebarOpen} handleLogout={handleLogout} />
-      
+
       {/* Overlay for mobile sidebar */}
       {sidebarOpen && (
         <div
@@ -102,48 +108,84 @@ const Dashboard = ({ children }) => {
               </p>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-white p-6 rounded-lg shadow" onClick={() => navigate('/dashboard/alluser')}>
-                  <h3 className="text-lg font-semibold mb-2">Total Users</h3>
-                  <p className="text-3xl font-bold text-blue-600">{users.length}</p>
+                <div className="bg-red-600 p-8 rounded-lg shadow cursor-pointer" onClick={() => navigate('/dashboard/users')}>
+                  <div className='flex items-center justify-between'>
+                    <div className='flex flex-col items-start gap-1'>
+                      <FaUser className='text-white text:base md:text-5xl' />
+                      <h3 className="text-lg md:text-xl font-bold text-white">Users</h3>
+                    </div>
+                    <p className="text-4xl font-bold text-gray-100">{users.length}</p>
+                  </div>
+
                 </div>
-                <div className="bg-white p-6 rounded-lg shadow" onClick={() => navigate('/dashboard/movementreports')}>
-                  <h3 className="text-lg font-semibold mb-2">Total Movement Reports</h3>
-                  <p className="text-3xl font-bold text-green-600">{movementReports.length}</p>
+                <div className="bg-red-600 p-6 rounded-lg shadow cursor-pointer" onClick={() => navigate('/dashboard/movementreports')}>
+                  <div className='flex items-center justify-between'>
+                    <div className='flex flex-col items-start gap-1'>
+                      <FaPersonWalkingDashedLineArrowRight className='text-white text:base md:text-5xl' />
+                      <h3 className="text-lg md:text-xl font-bold text-white">Movement Reports</h3>
+                    </div>
+                    <p className="text-4xl font-bold text-gray-100">{movementReports.length}</p>
+                  </div>
                 </div>
-                <div className='bg-white p-6 rounded-lg shadow' onClick={() => navigate('/dashboard/allteam')}>
-                  <h3 className='text-lg font-semibold mb-2'>Total Teams</h3>
-                  <p className="text-3xl font-bold text-red-600">{teams.length}</p>
+                <div className='bg-red-600 p-6 rounded-lg shadow cursor-pointer' onClick={() => navigate('/dashboard/allteam')}>
+                  <div className='flex items-center justify-between'>
+                    <div className='flex flex-col items-start gap-1'>
+                      <RiTeamFill className='text-white text:base md:text-5xl' />
+                      <h3 className="text-lg md:text-xl font-bold text-white">Teams</h3>
+                    </div>
+                    <p className="text-4xl font-bold text-gray-100">{teams.length}</p>
+                  </div>
+
                 </div>
-                <div className='bg-white p-6 rounded-lg shadow' onClick={() => navigate('/dashboard/companynames')}>
-                  <h3 className='text-lg font-semibold mb-2'>Total Company Names</h3>
-                  <p className="text-3xl font-bold text-red-600">{companyNames.length}</p>
+                <div className='bg-red-600 p-6 rounded-lg shadow cursor-pointer' onClick={() => navigate('/dashboard/companynames')}>
+                  <div className='flex items-center justify-between'>
+                    <div className='flex flex-col items-start gap-1'>
+                      <FaBuilding className='text-white text:base md:text-5xl' />
+                      <h3 className='text-lg md:text-xl font-bold text-white'>Company Names</h3>
+                    </div>
+                    <p className="text-4xl font-bold text-gray-100">{companyNames.length}</p>
+                  </div>
                 </div>
-                <div className='bg-white p-6 rounded-lg shadow' onClick={() => navigate('/dashboard/branchnames')}>
-                  <h3 className='text-lg font-semibold mb-2'>Total Branch Names</h3>
-                  <p className="text-3xl font-bold text-red-600">{branchNames.length}</p>
+
+                <div className='bg-red-600 p-6 rounded-lg shadow cursor-pointer' onClick={() => navigate('/dashboard/branchnames')}>
+                  <div className='flex items-center justify-between'>
+                    <div className='flex flex-col items-start gap-1'>
+                      <FaCodeBranch className='text-white text:base md:text-5xl' />
+                      <h3 className='text-lg md:text-xl font-bold text-white'>Branch Names</h3>
+                    </div>
+                    <p className="text-4xl font-bold text-gray-100">{branchNames.length}</p>
+                  </div>
                 </div>
-                <div className='bg-white p-6 rounded-lg shadow' onClick={() => navigate('/dashboard/designations')}>
-                  <h3 className='text-lg font-semibold mb-2'>Total Designations</h3>
+
+                <div className='bg-red-600 p-6 rounded-lg shadow cursor-pointer' onClick={() => navigate('/dashboard/designations')}>
+                  <div className='flex items-center justify-between'>
+                    <div className='flex flex-col items-start gap-1'></div>
+                    <h3 className='text-lg font-semibold mb-2'>Total Designations</h3>
+                  </div>
                   <p className="text-3xl font-bold text-red-600">{designations.length}</p>
                 </div>
-                <div className='bg-white p-6 rounded-lg shadow' onClick={() => navigate('/dashboard/departments')}>
-                  <h3 className='text-lg font-semibold mb-2'>Total Departments</h3>
-                  <p className="text-3xl font-bold text-red-600">{departments.length}</p>
-                </div>
-                <div className='bg-white p-6 rounded-lg shadow' onClick={() => navigate('/dashboard/partynames')}>
-                  <h3 className='text-lg font-semibold mb-2'>Total Party Names</h3>
-                  <p className="text-3xl font-bold text-red-600">{partyNames.length}</p>
-                </div>
-                <div className='bg-white p-6 rounded-lg shadow' onClick={() => navigate('/dashboard/roles')}>
-                  <h3 className='text-lg font-semibold mb-2'>Total Roles</h3>
-                  <p className="text-3xl font-bold text-red-600">{roles.length}</p>
-                </div>
               </div>
-            </>
+
+              <div className='bg-red-600 p-6 rounded-lg shadow cursor-pointer' onClick={() => navigate('/dashboard/departments')}>
+                <h3 className='text-lg font-semibold mb-2'>Total Departments</h3>
+                <p className="text-3xl font-bold text-red-600">{departments.length}</p>
+              </div>
+
+              <div className='bg-red-600 p-6 rounded-lg shadow cursor-pointer' onClick={() => navigate('/dashboard/partynames')}>
+                <h3 className='text-lg font-semibold mb-2'>Total Party Names</h3>
+                <p className="text-3xl font-bold text-red-600">{partyNames.length}</p>
+              </div>
+
+              <div className='bg-red-600 p-6 rounded-lg shadow cursor-pointer' onClick={() => navigate('/dashboard/roles')}>
+                <h3 className='text-lg font-semibold mb-2'>Total Roles</h3>
+                <p className="text-3xl font-bold text-red-600">{roles.length}</p>
+              </div>
+            </div>
+        </>
           )}
-        </main>
-      </div>
+      </main>
     </div>
+    </div >
   );
 };
 

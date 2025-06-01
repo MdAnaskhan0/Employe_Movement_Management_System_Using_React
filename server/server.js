@@ -429,7 +429,7 @@ const createProfileImagesTable = `CREATE TABLE IF NOT EXISTS profile_images (
 
 db.query(createProfileImagesTable, (err) => {
   if (err) console.error('Error creating profile_images table:', err);
-  else console.log('Profile images table ready');
+  else console.log('');
 });
 
 // Ensure uploads directory exists
