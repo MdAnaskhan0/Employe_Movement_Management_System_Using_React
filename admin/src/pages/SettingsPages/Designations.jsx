@@ -151,7 +151,7 @@ const Designations = () => {
               />
               <button
                 onClick={handleAdd}
-                className="bg-blue-800 hover:bg-blue-900 text-white px-4 py-2 rounded-lg flex items-center justify-center transition duration-200"
+                className="bg-blue-800 hover:bg-blue-900 text-white px-4 py-2 rounded-lg flex items-center justify-center transition duration-200 cursor-pointer"
               >
                 <FaPlus className="mr-2" />
                 Add Designation
@@ -207,14 +207,14 @@ const Designations = () => {
                               <>
                                 <button
                                   onClick={handleUpdate}
-                                  className="text-green-600 hover:text-green-800 p-1 rounded-full hover:bg-green-50 transition"
+                                  className="text-green-600 hover:text-green-800 p-1 rounded-full hover:bg-green-50 transition cursor-pointer"
                                   title="Save"
                                 >
                                   <FaSave />
                                 </button>
                                 <button
                                   onClick={cancelEdit}
-                                  className="text-gray-600 hover:text-gray-800 p-1 rounded-full hover:bg-gray-50 transition"
+                                  className="text-gray-600 hover:text-gray-800 p-1 rounded-full hover:bg-gray-50 transition cursor-pointer"
                                   title="Cancel"
                                 >
                                   <FaTimes />
@@ -223,7 +223,7 @@ const Designations = () => {
                             ) : (
                               <button
                                 onClick={() => handleEdit(item.designationID, item.designationName)}
-                                className="text-blue-800 hover:text-blue-900 p-1 rounded-full hover:bg-yellow-50 transition"
+                                className="text-blue-800 hover:text-blue-900 p-1 rounded-full hover:bg-yellow-50 transition cursor-pointer"
                                 title="Edit"
                               >
                                 <FaEdit />
@@ -231,7 +231,7 @@ const Designations = () => {
                             )}
                             <button
                               onClick={() => handleDelete(item.designationID)}
-                              className="text-red-600 hover:text-red-800 p-1 rounded-full hover:bg-red-50 transition"
+                              className="text-red-600 hover:text-red-800 p-1 rounded-full hover:bg-red-50 transition cursor-pointer"
                               title="Delete"
                             >
                               <FaTrash />

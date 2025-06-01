@@ -173,7 +173,7 @@ const BranchNames = () => {
               <div className="flex justify-end space-x-3 pt-2">
                 <button
                   type="submit"
-                  className="inline-flex items-center px-4 py-2 bg-blue-800 border border-transparent rounded-md font-semibold text-white hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" 
+                  className="inline-flex items-center px-4 py-2 bg-blue-800 border border-transparent rounded-md font-semibold text-white hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer" 
                 >
                   {editingId ? (
                     <>
@@ -240,14 +240,14 @@ const BranchNames = () => {
                           <div className="flex justify-end space-x-2">
                             <button
                               onClick={() => handleEdit(branch)}
-                              className="text-blue-800 hover:text-blue-900 p-1 rounded hover:bg-blue-50"
+                              className="text-blue-800 hover:text-blue-900 p-1 rounded hover:bg-blue-50 cursor-pointer"
                               title="Edit"
                             >
                               <FaEdit className="h-4 w-4" />
                             </button>
                             <button
                               onClick={() => handleDelete(branch.branchnameID)}
-                              className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50"
+                              className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50 cursor-pointer"
                               title="Delete"
                             >
                               <FaTrash className="h-4 w-4" />

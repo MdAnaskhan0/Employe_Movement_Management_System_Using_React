@@ -107,7 +107,7 @@ const Dashboard = ({ children }) => {
               </p>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-red-600 hover:bg-red-700 transition delay-150 duration-300 ease-in-out hover:-translate-y-1 hover:scale-110 p-6 rounded-lg shadow cursor-pointer" onClick={() => navigate('/dashboard/users')}>
+                <div className="bg-red-600 hover:bg-red-700 transition delay-150 duration-300 ease-in-out hover:-translate-y-1 hover:scale-110 p-6 rounded-lg shadow cursor-pointer" onClick={() => navigate('/dashboard/alluser')}>
                   <div className='flex items-center justify-between'>
                     <div className='flex flex-col items-start gap-1'>
                       <FaUser className='text-white text:base md:text-5xl' />

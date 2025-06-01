@@ -161,7 +161,7 @@ const VisitingStatus = () => {
                 />
                 <button
                   onClick={handleAdd}
-                  className="bg-blue-800 hover:bg-blue-900 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 transition-colors duration-200"
+                  className="bg-blue-800 hover:bg-blue-900 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 transition-colors duration-200 cursor-pointer"
                 >
                   <FaPlus /> Add Status
                 </button>
@@ -198,7 +198,7 @@ const VisitingStatus = () => {
                           <div className="flex gap-2">
                             <button
                               onClick={() => handleUpdate(status.visitingstatusID)}
-                              className="text-green-600 hover:text-green-800 p-2 rounded-full hover:bg-green-50 transition-colors duration-200"
+                              className="text-green-600 hover:text-green-800 p-2 rounded-full hover:bg-green-50 transition-colors duration-200 cursor-pointer"
                               title="Save"
                             >
                               <FaSave />
@@ -208,7 +208,7 @@ const VisitingStatus = () => {
                                 setEditingId(null);
                                 setEditingName('');
                               }}
-                              className="text-gray-500 hover:text-gray-700 p-2 rounded-full hover:bg-gray-100 transition-colors duration-200"
+                              className="text-gray-500 hover:text-gray-700 p-2 rounded-full hover:bg-gray-100 transition-colors duration-200 cursor-pointer"
                               title="Cancel"
                             >
                               <FaTimes />
@@ -222,7 +222,7 @@ const VisitingStatus = () => {
                           <div className="flex items-center gap-2">
                             <button
                               onClick={() => handleEdit(status.visitingstatusID, status.visitingstatusname)}
-                              className="text-blue-800 hover:text-blue-900 p-2 rounded-full hover:bg-blue-50 transition-colors duration-200"
+                              className="text-blue-800 hover:text-blue-900 p-2 rounded-full hover:bg-blue-50 transition-colors duration-200 cursor-pointer"
                               title="Edit"
                             >
                               <FaEdit />
@@ -233,7 +233,7 @@ const VisitingStatus = () => {
                                   handleDelete(status.visitingstatusID);
                                 }
                               }}
-                              className="text-red-600 hover:text-red-800 p-2 rounded-full hover:bg-red-50 transition-colors duration-200"
+                              className="text-red-600 hover:text-red-800 p-2 rounded-full hover:bg-red-50 transition-colors duration-200 cursor-pointer"
                               title="Delete"
                             >
                               <FaTrash />

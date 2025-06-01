@@ -198,7 +198,7 @@ const ViewTeams = () => {
                             <div className="flex space-x-2">
                               <button
                                 onClick={() => navigate(`/team/${team.team_id}`)}
-                                className="text-blue-800 hover:text-blue-900 flex items-center"
+                                className="text-blue-800 hover:text-blue-900 flex items-center cursor-pointer"
                                 title="View"
                               >
                                 <FaEye className="mr-1" />

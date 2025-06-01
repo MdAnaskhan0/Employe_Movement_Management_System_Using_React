@@ -183,7 +183,7 @@ const PartyNames = ({ children }) => {
                 <div className="flex justify-end">
                   <button
                     type="submit"
-                    className="flex items-center gap-2 bg-blue-800 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                    className="flex items-center gap-2 bg-blue-800 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 cursor-pointer"
                   >
                     {editId ? (
                       <>
@@ -252,14 +252,14 @@ const PartyNames = ({ children }) => {
                             <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                               <button
                                 onClick={() => handleEdit(party)}
-                                className="text-blue-800 hover:text-blue-900 mr-4"
+                                className="text-blue-800 hover:text-blue-900 mr-4 cursor-pointer"
                                 title="Edit"
                               >
                                 <FaEdit />
                               </button>
                               <button
                                 onClick={() => handleDelete(party.partynameID)}
-                                className="text-red-600 hover:text-red-900"
+                                className="text-red-600 hover:text-red-900 cursor-pointer"
                                 title="Delete"
                               >
                                 <FaTrash />

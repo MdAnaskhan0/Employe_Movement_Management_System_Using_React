@@ -288,7 +288,7 @@ const CompanyNames = () => {
                   )}
                   <button
                     type="submit"
-                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-800 hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-800 hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer"
                     disabled={loading}
                   >
                     {loading ? (
@@ -321,7 +321,7 @@ const CompanyNames = () => {
                 </h2>
                 <button
                   onClick={fetchCompanies}
-                  className="flex items-center gap-2 bg-gray-500 text-white px-3 py-1 rounded hover:bg-gray-100 hover:text-gray-800 transition"
+                  className="flex items-center gap-2 bg-gray-500 text-white px-3 py-1 rounded hover:bg-gray-100 hover:text-gray-800 transition cursor-pointer"
                   disabled={loading}
                 >
                   <FiRefreshCw className={`${loading ? 'animate-spin' : ''}`} />
@@ -400,14 +400,14 @@ const CompanyNames = () => {
                           <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                             <button
                               onClick={() => handleEdit(company)}
-                              className="text-blue-800 hover:text-blue-900 mr-4"
+                              className="text-blue-800 hover:text-blue-900 mr-4 cursor-pointer"
                               title="Edit"
                             >
                               <FaEdit />
                             </button>
                             <button
                               onClick={() => handleDelete(company.companynameID)}
-                              className="text-red-600 hover:text-red-900"
+                              className="text-red-600 hover:text-red-900 cursor-pointer"
                               title="Delete"
                             >
                               <FaTrash />

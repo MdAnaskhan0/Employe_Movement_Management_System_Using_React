@@ -263,7 +263,7 @@ const CreateTeams = ({ children }) => {
                                         className={`px-6 py-2.5 rounded-lg font-medium flex items-center ${isLoading
                                             ? 'bg-blue-400 cursor-not-allowed'
                                             : 'bg-blue-800 hover:bg-blue-900'
-                                            } text-white transition`}
+                                            } text-white transition cursor-pointer`}
                                     >
                                         {isLoading ? (
                                             <>

@@ -145,7 +145,7 @@ const Departments = ({ children }) => {
                   <button
                     type="submit"
                     disabled={isLoading}
-                    className={`flex items-center justify-center px-4 py-2 rounded-lg text-white ${editingId ? 'bg-yellow-500 hover:bg-yellow-600' : 'bg-blue-800 hover:bg-blue-900'} min-w-24`}
+                    className={`flex items-center justify-center px-4 py-2 rounded-lg text-white ${editingId ? 'bg-yellow-500 hover:bg-yellow-600' : 'bg-blue-800 hover:bg-blue-900'} min-w-24 cursor-pointer`}
                   >
                     {isLoading ? (
                       <span className="animate-spin">↻</span>

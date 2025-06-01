@@ -1,38 +1,82 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { IoMdAddCircleOutline } from "react-icons/io";
-import {
-  FaHome,
-  FaUsers,
-  FaChartBar,
-  FaUserCircle,
-  FaSignOutAlt,
-  FaChevronDown,
-  FaChevronRight,
-  FaRegBuilding,
-  FaUserFriends,
-  FaUserPlus // ✅ Added missing import
+import { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { 
+  FaHome, FaUsers, FaChartBar, FaUserFriends, 
+  FaUserPlus, FaChevronDown, FaChevronRight, 
+  FaSignOutAlt, FaRegBuilding, FaCog 
 } from 'react-icons/fa';
-import { HiUserAdd } from "react-icons/hi";
-import { TbGitBranch } from "react-icons/tb";
-import { CgIfDesign } from "react-icons/cg";
-import { FaTransgender } from "react-icons/fa6";
-import { LiaUserFriendsSolid } from "react-icons/lia";
-import { MdPeopleAlt } from "react-icons/md";
-import { MdTaskAlt } from "react-icons/md";
-import { MdEditOff } from "react-icons/md";
-import { LuSquareActivity } from "react-icons/lu";
+import { 
+  HiUserAdd, HiOutlineUserGroup, HiOutlineDocumentReport 
+} from 'react-icons/hi';
+import { 
+  TbGitBranch, TbUsers 
+} from 'react-icons/tb';
+import { 
+  CgIfDesign, CgPerformance 
+} from 'react-icons/cg';
+import { 
+  FaTransgender, FaUserShield 
+} from 'react-icons/fa6';
+import { 
+  LiaUserFriendsSolid, LiaBusinessTimeSolid 
+} from 'react-icons/lia';
+import { 
+  MdPeopleAlt, MdTaskAlt, MdEditOff, MdOutlineChat 
+} from 'react-icons/md';
+import { 
+  LuSquareActivity, LuSettings2 
+} from 'react-icons/lu';
+import { 
+  RiTeamLine 
+} from 'react-icons/ri';
 
 const Sidebar = ({ sidebarOpen, handleLogout }) => {
-  const [isSubmenuOpen, setIsSubmenuOpen] = useState(false);
-  const [isUsersOpen, setIsUsersOpen] = useState(false);
-  const [isTeamManagementOpen, setIsTeamManagementOpen] = useState(false);
-  const [isReportOpen, setIsReportOpen] = useState(false);
+  const location = useLocation();
+  const [activeMenu, setActiveMenu] = useState('');
+  const [expandedMenus, setExpandedMenus] = useState({
+    users: false,
+    reports: false,
+    team: false,
+    settings: false
+  });
 
-  const toggleSubmenu = () => setIsSubmenuOpen(!isSubmenuOpen);
-  const toggleUsers = () => setIsUsersOpen(!isUsersOpen);
-  const toggleTeamManagement = () => setIsTeamManagementOpen(!isTeamManagementOpen);
-  const toggleReport = () => setIsReportOpen(!isReportOpen);
+  // Auto-expand menu based on current route
+  useEffect(() => {
+    const path = location.pathname;
+    const menus = { ...expandedMenus };
+
+    if (path.includes('/dashboard/createuser') || path.includes('/dashboard/alluser') || path.includes('/dashboard/user-activity')) {
+      menus.users = true;
+    }
+    if (path.includes('/dashboard/movementreports') || path.includes('/dashboard/log-report')) {
+      menus.reports = true;
+    }
+    if (path.includes('/dashboard/createteam') || path.includes('/dashboard/allteam') || path.includes('/dashboard/all-team-chat')) {
+      menus.team = true;
+    }
+    if (path.includes('/dashboard/companynames') || path.includes('/dashboard/branchnames') || path.includes('/dashboard/designations') || 
+        path.includes('/dashboard/departments') || path.includes('/dashboard/partynames') || path.includes('/dashboard/visitingstatus') || 
+        path.includes('/dashboard/roles')) {
+      menus.settings = true;
+    }
+
+    setExpandedMenus(menus);
+  }, [location.pathname]);
+
+  const toggleMenu = (menu) => {
+    setExpandedMenus(prev => ({
+      ...prev,
+      [menu]: !prev[menu]
+    }));
+  };
+
+  const isActive = (path) => {
+    return location.pathname === path ? 'bg-gray-700 text-white' : 'text-gray-300 hover:text-white';
+  };
+
+  const isSubmenuActive = (path) => {
+    return location.pathname.includes(path) ? 'bg-gray-700 text-white' : 'text-gray-300 hover:text-white';
+  };
 
   return (
     <aside
@@ -40,191 +84,227 @@ const Sidebar = ({ sidebarOpen, handleLogout }) => {
         fixed inset-y-0 left-0 z-30 w-64 bg-gray-800 text-white transform
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
         md:translate-x-0 md:static md:flex-shrink-0 transition-transform duration-300 ease-in-out
+        flex flex-col border-r border-gray-700
       `}
       aria-label="Sidebar"
     >
-      <div className="flex items-center justify-center h-16 border-b border-gray-700 font-bold text-2xl bg-gray-900">
-        Admin Panel
+      {/* Logo/Header */}
+      <div className="flex items-center justify-center h-16 border-b border-gray-700 font-bold text-2xl bg-gradient-to-r from-green-700 to-green-900">
+        <span className="flex items-center">
+          <FaUserShield className="mr-2" />
+          Admin Panel
+        </span>
       </div>
-      <nav className="mt-4 flex flex-col space-y-1 px-2">
+
+      {/* Navigation */}
+      <nav className="flex-1 overflow-y-auto py-4 px-2 space-y-1">
+        {/* Dashboard */}
         <Link
           to="/dashboard"
-          className="flex items-center py-3 px-4 rounded hover:bg-gray-700 transition text-gray-300 hover:text-white"
+          className={`flex items-center py-3 px-4 rounded hover:bg-gray-700 transition cursor-pointer ${isActive('/dashboard')}`}
+          onMouseEnter={() => setActiveMenu('dashboard')}
+          onMouseLeave={() => setActiveMenu('')}
         >
           <FaHome className="w-5 h-5 mr-3" />
-          Dashboard
+          <span className="flex-1">Dashboard</span>
+          {activeMenu === 'dashboard' && (
+            <span className="text-xs bg-blue-500 px-2 py-1 rounded">Overview</span>
+          )}
         </Link>
 
-        {/* Users Submenu Button */}
-        <button
-          onClick={toggleUsers}
-          className="flex items-center justify-between w-full py-3 px-4 rounded hover:bg-gray-700 transition text-gray-300 hover:text-white"
-        >
-          <div className="flex items-center">
-            <FaUsers className="w-5 h-5 mr-3" />
-            Users
-          </div>
-          {isUsersOpen ? <FaChevronDown className="w-4 h-4" /> : <FaChevronRight className="w-4 h-4" />}
-        </button>
+        {/* Users Menu */}
+        <div className="space-y-1">
+          <button
+            onClick={() => toggleMenu('users')}
+            className={`flex items-center justify-between w-full py-3 px-4 rounded hover:bg-gray-700 transition cursor-pointer ${isActive('/dashboard/createuser') || isActive('/dashboard/alluser') || isActive('/dashboard/user-activity') ? 'bg-gray-700 text-white' : 'text-gray-300 hover:text-white'}`}
+          >
+            <div className="flex items-center">
+              <TbUsers className="w-5 h-5 mr-3" />
+              <span>User Management</span>
+            </div>
+            {expandedMenus.users ? (
+              <FaChevronDown className="text-sm" />
+            ) : (
+              <FaChevronRight className="text-sm" />
+            )}
+          </button>
 
-        {isUsersOpen && (
-          <div className="flex flex-col space-y-1 pl-12">
-            <Link
-              to="/dashboard/createuser"
-              className="flex items-center py-2 px-4 rounded hover:bg-gray-700 transition text-gray-300 hover:text-white text-sm"
-            >
-              <HiUserAdd className='mr-2' /> Create User
-            </Link>
-            <Link
-              to="/dashboard/alluser"
-              className="flex items-center py-2 px-4 rounded hover:bg-gray-700 transition text-gray-300 hover:text-white text-sm"
-            >
-              <FaUsers className='mr-2' /> All Users
-            </Link>
-            <Link
-              to="/dashboard/user-activity"
-              className="flex items-center py-2 px-4 rounded hover:bg-gray-700 transition text-gray-300 hover:text-white text-sm"
-            >
-              <LuSquareActivity className='mr-2' /> User Activity
-            </Link>
-          </div>
-        )}
+          {expandedMenus.users && (
+            <div className="space-y-1 pl-12">
+              <Link 
+                to="/dashboard/createuser" 
+                className={`flex items-center py-2 px-4 rounded text-sm transition ${isSubmenuActive('/dashboard/createuser')}`}
+              >
+                <HiUserAdd className="mr-2" /> Create User
+              </Link>
+              <Link 
+                to="/dashboard/alluser" 
+                className={`flex items-center py-2 px-4 rounded text-sm transition ${isSubmenuActive('/dashboard/alluser')}`}
+              >
+                <FaUsers className="mr-2" /> All Users
+              </Link>
+              <Link 
+                to="/dashboard/user-activity" 
+                className={`flex items-center py-2 px-4 rounded text-sm transition ${isSubmenuActive('/dashboard/user-activity')}`}
+              >
+                <CgPerformance className="mr-2" /> User Activity
+              </Link>
+            </div>
+          )}
+        </div>
 
-        {/* Report */}
-        <button
-          onClick={toggleReport}
-          className="flex items-center justify-between w-full py-3 px-4 rounded hover:bg-gray-700 transition text-gray-300 hover:text-white"
-        >
-          <div className="flex items-center">
-            <FaChartBar className="w-5 h-5 mr-3" />
-            Report
-          </div>
-          {isReportOpen ? <FaChevronDown className="w-4 h-4" /> : <FaChevronRight className="w-4 h-4" />}
-        </button>
+        {/* Reports Menu */}
+        <div className="space-y-1">
+          <button
+            onClick={() => toggleMenu('reports')}
+            className={`flex items-center justify-between w-full py-3 px-4 rounded hover:bg-gray-700 transition cursor-pointer ${isActive('/dashboard/movementreports') || isActive('/dashboard/log-report') ? 'bg-gray-700 text-white' : 'text-gray-300 hover:text-white'}`}
+          >
+            <div className="flex items-center">
+              <HiOutlineDocumentReport className="w-5 h-5 mr-3" />
+              <span>Reports</span>
+            </div>
+            {expandedMenus.reports ? (
+              <FaChevronDown className="text-sm" />
+            ) : (
+              <FaChevronRight className="text-sm" />
+            )}
+          </button>
 
-        {isReportOpen && (
-          <div className="flex flex-col space-y-1 pl-12">
-            <Link
-              to="/dashboard/movementreports"
-              className="flex items-center py-2 px-4 rounded hover:bg-gray-700 transition text-gray-300 hover:text-white text-sm"
-            >
-              <FaChartBar className='mr-2' /> Movement Reports
-            </Link>
+          {expandedMenus.reports && (
+            <div className="space-y-1 pl-12">
+              <Link 
+                to="/dashboard/movementreports" 
+                className={`flex items-center py-2 px-4 rounded text-sm transition ${isSubmenuActive('/dashboard/movementreports')}`}
+              >
+                <FaChartBar className="mr-2" /> Movement Reports
+              </Link>
+              <Link 
+                to="/dashboard/log-report" 
+                className={`flex items-center py-2 px-4 rounded text-sm transition ${isSubmenuActive('/dashboard/log-report')}`}
+              >
+                <MdEditOff className="mr-2" /> Log Reports
+              </Link>
+            </div>
+          )}
+        </div>
 
-            <Link to={"/dashboard/log-report"} className='flex items-center py-2 px-4 rounded hover:bg-gray-700 transition text-gray-300 hover:text-white text-sm'>
-              <MdEditOff className='mr-2' /> Log Reports
-            </Link>
-          </div>
-        )}
+        {/* Team Management Menu */}
+        <div className="space-y-1">
+          <button
+            onClick={() => toggleMenu('team')}
+            className={`flex items-center justify-between w-full py-3 px-4 rounded hover:bg-gray-700 transition cursor-pointer ${isActive('/dashboard/createteam') || isActive('/dashboard/allteam') || isActive('/dashboard/all-team-chat') ? 'bg-gray-700 text-white' : 'text-gray-300 hover:text-white'}`}
+          >
+            <div className="flex items-center">
+              <RiTeamLine className="w-5 h-5 mr-3" />
+              <span>Team Management</span>
+            </div>
+            {expandedMenus.team ? (
+              <FaChevronDown className="text-sm" />
+            ) : (
+              <FaChevronRight className="text-sm" />
+            )}
+          </button>
 
-        {/* Team Management */}
-        <button
-          onClick={toggleTeamManagement}
-          className="flex items-center justify-between w-full py-3 px-4 rounded hover:bg-gray-700 transition text-gray-300 hover:text-white"
-        >
-          <div className="flex items-center">
-            <FaUserFriends className="w-5 h-5 mr-3" />
-            Team Management
-          </div>
-          {isTeamManagementOpen ? <FaChevronDown className="w-4 h-4" /> : <FaChevronRight className="w-4 h-4" />}
-        </button>
+          {expandedMenus.team && (
+            <div className="space-y-1 pl-12">
+              <Link 
+                to="/dashboard/createteam" 
+                className={`flex items-center py-2 px-4 rounded text-sm transition ${isSubmenuActive('/dashboard/createteam')}`}
+              >
+                <FaUserPlus className="mr-2" /> Create Team
+              </Link>
+              <Link 
+                to="/dashboard/allteam" 
+                className={`flex items-center py-2 px-4 rounded text-sm transition ${isSubmenuActive('/dashboard/allteam')}`}
+              >
+                <HiOutlineUserGroup className="mr-2" /> Manage Team
+              </Link>
+              <Link 
+                to="/dashboard/all-team-chat" 
+                className={`flex items-center py-2 px-4 rounded text-sm transition ${isSubmenuActive('/dashboard/all-team-chat')}`}
+              >
+                <MdOutlineChat className="mr-2" /> Team Chat
+              </Link>
+            </div>
+          )}
+        </div>
 
-        {isTeamManagementOpen && (
-          <div className="flex flex-col space-y-1 pl-12">
-            <Link
-              to="/dashboard/createteam"
-              className="flex items-center py-2 px-4 rounded hover:bg-gray-700 transition text-gray-300 hover:text-white text-sm"
-            >
-              <FaUserPlus className='mr-2' /> Create Team
-            </Link>
-            <Link
-              to="/dashboard/allteam" // ✅ Corrected route
-              className="flex items-center py-2 px-4 rounded hover:bg-gray-700 transition text-gray-300 hover:text-white text-sm"
-            >
-              <FaUserFriends className='mr-2' /> Manage Team
-            </Link>
+        {/* Settings Menu */}
+        <div className="space-y-1">
+          <button
+            onClick={() => toggleMenu('settings')}
+            className={`flex items-center justify-between w-full py-3 px-4 rounded hover:bg-gray-700 transition cursor-pointer ${isActive('/dashboard/companynames') || isActive('/dashboard/branchnames') || isActive('/dashboard/designations') || isActive('/dashboard/departments') || isActive('/dashboard/partynames') || isActive('/dashboard/visitingstatus') || isActive('/dashboard/roles') ? 'bg-gray-700 text-white' : 'text-gray-300 hover:text-white'}`}
+          >
+            <div className="flex items-center">
+              <LuSettings2 className="w-5 h-5 mr-3" />
+              <span>System Settings</span>
+            </div>
+            {expandedMenus.settings ? (
+              <FaChevronDown className="text-sm" />
+            ) : (
+              <FaChevronRight className="text-sm" />
+            )}
+          </button>
 
-            <Link
-              to="/dashboard/all-team-chat" // ✅ Corrected route
-              className="flex items-center py-2 px-4 rounded hover:bg-gray-700 transition text-gray-300 hover:text-white text-sm"
-            >
-              <FaUserFriends className='mr-2' /> Team Chat
-            </Link>
-          </div>
-        )}
+          {expandedMenus.settings && (
+            <div className="grid grid-cols-1 gap-1 pl-12">
+              <Link 
+                to="/dashboard/companynames" 
+                className={`flex items-center py-2 px-4 rounded text-sm transition ${isSubmenuActive('/dashboard/companynames')}`}
+              >
+                <FaRegBuilding className="mr-2" /> Company
+              </Link>
+              <Link 
+                to="/dashboard/branchnames" 
+                className={`flex items-center py-2 px-4 rounded text-sm transition ${isSubmenuActive('/dashboard/branchnames')}`}
+              >
+                <TbGitBranch className="mr-2" /> Branches
+              </Link>
+              <Link 
+                to="/dashboard/designations" 
+                className={`flex items-center py-2 px-4 rounded text-sm transition ${isSubmenuActive('/dashboard/designations')}`}
+              >
+                <CgIfDesign className="mr-2" /> Designations
+              </Link>
+              <Link 
+                to="/dashboard/departments" 
+                className={`flex items-center py-2 px-4 rounded text-sm transition ${isSubmenuActive('/dashboard/departments')}`}
+              >
+                <FaTransgender className="mr-2" /> Departments
+              </Link>
+              <Link 
+                to="/dashboard/partynames" 
+                className={`flex items-center py-2 px-4 rounded text-sm transition ${isSubmenuActive('/dashboard/partynames')}`}
+              >
+                <LiaBusinessTimeSolid className="mr-2" /> Parties
+              </Link>
+              <Link 
+                to="/dashboard/visitingstatus" 
+                className={`flex items-center py-2 px-4 rounded text-sm transition ${isSubmenuActive('/dashboard/visitingstatus')}`}
+              >
+                <MdPeopleAlt className="mr-2" /> Visit Status
+              </Link>
+              <Link 
+                to="/dashboard/roles" 
+                className={`flex items-center py-2 px-4 rounded text-sm transition ${isSubmenuActive('/dashboard/roles')}`}
+              >
+                <MdTaskAlt className="mr-2" /> Roles
+              </Link>
+            </div>
+          )}
+        </div>
+      </nav>
 
-        {/* Report */}
-        {
-          
-        }
-
-        {/* Settings */}
-        <button
-          onClick={toggleSubmenu}
-          className="flex items-center justify-between w-full py-3 px-4 rounded hover:bg-gray-700 transition text-gray-300 hover:text-white"
-        >
-          <div className="flex items-center">
-            <IoMdAddCircleOutline className="w-5 h-5 mr-3" />
-            Settings
-          </div>
-          {isSubmenuOpen ? <FaChevronDown className="w-4 h-4" /> : <FaChevronRight className="w-4 h-4" />}
-        </button>
-
-        {isSubmenuOpen && (
-          <div className="flex flex-col space-y-1 pl-12">
-            <Link
-              to="/dashboard/companynames"
-              className="flex items-center py-2 px-4 rounded hover:bg-gray-700 transition text-gray-300 hover:text-white text-sm"
-            >
-              <FaRegBuilding className='mr-2' /> Company Name
-            </Link>
-            <Link
-              to="/dashboard/branchnames"
-              className="flex items-center py-2 px-4 rounded hover:bg-gray-700 transition text-gray-300 hover:text-white text-sm"
-            >
-              <TbGitBranch className='mr-2' /> Branch Name
-            </Link>
-            <Link
-              to="/dashboard/designations"
-              className="flex items-center py-2 px-4 rounded hover:bg-gray-700 transition text-gray-300 hover:text-white text-sm"
-            >
-              <CgIfDesign className='mr-2' /> Designation
-            </Link>
-            <Link
-              to="/dashboard/departments"
-              className="flex items-center py-2 px-4 rounded hover:bg-gray-700 transition text-gray-300 hover:text-white text-sm"
-            >
-              <FaTransgender className='mr-2' /> Department
-            </Link>
-            <Link
-              to="/dashboard/partynames"
-              className="flex items-center py-2 px-4 rounded hover:bg-gray-700 transition text-gray-300 hover:text-white text-sm"
-            >
-              <LiaUserFriendsSolid className='mr-2' /> Party Name
-            </Link>
-            <Link
-              to="/dashboard/visitingstatus"
-              className="flex items-center py-2 px-4 rounded hover:bg-gray-700 transition text-gray-300 hover:text-white text-sm"
-            >
-              <MdPeopleAlt className='mr-2' /> Visiting Status
-            </Link>
-            <Link
-              to="/dashboard/roles"
-              className="flex items-center py-2 px-4 rounded hover:bg-gray-700 transition text-gray-300 hover:text-white text-sm"
-            >
-              <MdTaskAlt className='mr-2' /> Role Details
-            </Link>
-          </div>
-        )}
-
+      {/* Footer/Logout */}
+      <div className="border-t border-gray-700 p-4">
         <button
           onClick={handleLogout}
-          className="flex items-center w-full py-3 px-4 rounded hover:bg-gray-700 transition text-gray-300 hover:text-white text-left"
+          className="flex items-center justify-center w-full py-2 px-4 rounded bg-gradient-to-r from-red-600 to-red-800 text-white hover:from-red-700 hover:to-red-900 transition cursor-pointer shadow-md hover:shadow-lg"
         >
           <FaSignOutAlt className="w-5 h-5 mr-3" />
           Logout
         </button>
-      </nav>
+      </div>
     </aside>
   );
 };
