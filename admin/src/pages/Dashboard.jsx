@@ -220,7 +220,7 @@ const Dashboard = ({ children }) => {
                   </div>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                   {statCards.map((card, index) => (
                     <div 
                       key={index} 
@@ -231,17 +231,13 @@ const Dashboard = ({ children }) => {
                         <div className={`${card.color} p-3 rounded-lg text-white`}>
                           {card.icon}
                         </div>
-                        <IoIosArrowForward className="text-gray-400 group-hover:text-gray-600 transition-colors" />
+                        <div className='flex items-center'>
+                          <p className='text-sm text-gray-500'>View details</p><IoIosArrowForward className="text-gray-400 group-hover:text-gray-600 transition-colors" />
+                        </div>
                       </div>
-                      <div className="mt-4">
-                        <p className="text-sm font-medium text-gray-500">{card.title}</p>
+                      <div className="mt-1 flex items-center justify-between">
+                        <p className="text-md font-medium text-gray-500">{card.title}</p>
                         <p className="text-2xl font-semibold text-gray-800 mt-1">{card.count}</p>
-                      </div>
-                      <div className="mt-4 pt-4 border-t border-gray-100">
-                        <p className="text-xs text-gray-500 group-hover:text-blue-600 transition-colors flex items-center">
-                          View details
-                          <IoIosArrowForward className="ml-1" />
-                        </p>
                       </div>
                     </div>
                   ))}

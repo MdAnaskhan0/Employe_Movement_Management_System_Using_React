@@ -10,12 +10,8 @@ import {
   FaUser,
   FaCalendarAlt
 } from 'react-icons/fa';
-import {
-  MdOutlineDataUsage
-} from 'react-icons/md';
-import {
-  FiRefreshCw
-} from 'react-icons/fi';
+import { MdOutlineDataUsage } from 'react-icons/md';
+import { FiRefreshCw } from 'react-icons/fi';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Sidebar from '../components/Sidebar/Sidebar';
@@ -37,16 +33,16 @@ const LogReport = () => {
   const navigate = useNavigate();
   const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
-  // Fields to display (as per your requirement)
+  // Fields to display with their display names
   const displayFields = [
-    'dateTime',
-    'visitingStatus',
-    'placeName',
-    'partyName',
-    'purpose',
-    'remark',
-    'punchTime',
-    'punchingTime'
+    { key: 'dateTime', label: 'Date Time' },
+    { key: 'visitingStatus', label: 'Visiting Status' },
+    { key: 'placeName', label: 'Place Name' },
+    { key: 'partyName', label: 'Party Name' },
+    { key: 'purpose', label: 'Purpose' },
+    { key: 'remark', label: 'Remark' },
+    { key: 'punchTime', label: 'Punch Time' },
+    { key: 'punchingTime', label: 'Punching Time' }
   ];
 
   // Pagination state
@@ -138,6 +134,16 @@ const LogReport = () => {
     setCurrentPage(0);
   };
 
+  // Format date for display
+  const formatDateDisplay = (dateString) => {
+    if (!dateString) return '-';
+    try {
+      return format(parseISO(dateString), 'PPpp');
+    } catch {
+      return dateString;
+    }
+  };
+
   const prepareCSVData = () => {
     const headers = [
       { label: 'No', key: 'index' },
@@ -148,8 +154,8 @@ const LogReport = () => {
     // Add original and updated field columns
     displayFields.forEach(field => {
       headers.push(
-        { label: `${field} (Original)`, key: `original_${field}` },
-        { label: `${field} (Updated)`, key: `updated_${field}` }
+        { label: `${field.label} (Original)`, key: `original_${field.key}` },
+        { label: `${field.label} (Updated)`, key: `updated_${field.key}` }
       );
     });
 
@@ -158,7 +164,7 @@ const LogReport = () => {
       const row = {
         index: index + 1,
         username: user ? user.username : 'Unknown',
-        editTime: format(parseISO(log.editTime), 'PPpp')
+        editTime: formatDateDisplay(log.editTime)
       };
 
       try {
@@ -166,8 +172,12 @@ const LogReport = () => {
         const updated = JSON.parse(log.updatedData);
 
         displayFields.forEach(field => {
-          row[`original_${field}`] = original[field] || '-';
-          row[`updated_${field}`] = updated[field] || '-';
+          row[`original_${field.key}`] = field.key.includes('Time') || field.key.includes('date')
+            ? formatDateDisplay(original[field.key])
+            : original[field.key] || '-';
+          row[`updated_${field.key}`] = field.key.includes('Time') || field.key.includes('date')
+            ? formatDateDisplay(updated[field.key])
+            : updated[field.key] || '-';
         });
       } catch (e) {
         console.error('Error parsing log data:', e);
@@ -195,13 +205,18 @@ const LogReport = () => {
             {user ? user.username : 'Unknown'}
           </td>
           <td className="sticky left-32 bg-white px-6 py-4 whitespace-nowrap text-sm text-gray-500 z-10">
-            {format(parseISO(log.editTime), 'PPpp')}
+            {formatDateDisplay(log.editTime)}
           </td>
           
           {/* Original Data Columns */}
           {displayFields.map(field => (
-            <td key={`original_${field}`} className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-              {original[field] || '-'}
+            <td 
+              key={`original_${field.key}`} 
+              className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+            >
+              {field.key.includes('Time') || field.key.includes('date')
+                ? formatDateDisplay(original[field.key])
+                : original[field.key] || '-'}
             </td>
           ))}
           
@@ -211,17 +226,20 @@ const LogReport = () => {
           {/* Updated Data Columns */}
           {displayFields.map(field => (
             <td 
-              key={`updated_${field}`} 
+              key={`updated_${field.key}`} 
               className={`px-6 py-4 whitespace-nowrap text-sm ${
-                original[field] !== updated[field] ? 'bg-green-50 text-green-700' : 'text-gray-500'
+                original[field.key] !== updated[field.key] ? 'bg-green-50 text-green-700' : 'text-gray-500'
               }`}
             >
-              {updated[field] || '-'}
+              {field.key.includes('Time') || field.key.includes('date')
+                ? formatDateDisplay(updated[field.key])
+                : updated[field.key] || '-'}
             </td>
           ))}
         </tr>
       );
     } catch (e) {
+      console.error('Error rendering log row:', e);
       return (
         <tr key={log.id} className="hover:bg-gray-50">
           <td colSpan={3 + displayFields.length * 2} className="px-6 py-4 text-sm text-red-500">
@@ -407,14 +425,20 @@ const LogReport = () => {
                           <tr>
                             {/* Original Data Field Headers */}
                             {displayFields.map(field => (
-                              <th key={`original_header_${field}`} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r-2 border-gray-200">
-                                {field}
+                              <th 
+                                key={`original_header_${field.key}`} 
+                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r-2 border-gray-200"
+                              >
+                                {field.label}
                               </th>
                             ))}
                             {/* Updated Data Field Headers */}
                             {displayFields.map(field => (
-                              <th key={`updated_header_${field}`} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                {field}
+                              <th 
+                                key={`updated_header_${field.key}`} 
+                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                              >
+                                {field.label}
                               </th>
                             ))}
                           </tr>

@@ -24,55 +24,58 @@ import ErrorPage from './pages/ErrorPage';
 import ActivitiesReport from './pages/ActivitiesReport';
 import LogReport from './pages/LogReport';
 import TeamChat from './pages/TeamManagement/TeamChat';
+import InactivityHandeler from './components/Private/InactivityHandler';
 
 const App = () => {
   return (
     <BrowserRouter>
-      <Header />
-      <Routes>
-        {/* Public Route */}
-        <Route path="/" element={<Home />} />
-        <Route path="*" element={<ErrorPage />} />
-        <Route
-          path="/team/:teamID"
-          element={
-            <ProtectedRoute>
-              <Team />
-            </ProtectedRoute>
-          }
-        />
+      <InactivityHandeler>
+        <Header />
+        <Routes>
+          {/* Public Route */}
+          <Route path="/" element={<Home />} />
+          <Route path="*" element={<ErrorPage />} />
+          <Route
+            path="/team/:teamID"
+            element={
+              <ProtectedRoute>
+                <Team />
+              </ProtectedRoute>
+            }
+          />
 
-        {/* Protected Routes Under /dashboard */}
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <Outlet />
-            </ProtectedRoute>
-          }
-        >
-          <Route index element={<Dashboard />} />
-          <Route path="createuser" element={<CreateUser />} />
-          <Route path="alluser" element={<AllUser />} />
-          <Route path="user-activity" element={<ActivitiesReport />} />
-          <Route path="userprofile/:userID" element={<UserProfile />} />
-          <Route path="createteam" element={<CreateTeams />} />
-          <Route path="allteam" element={<ViewTeams />} />
-          <Route path="team/:teamID" element={<Team />} />
-          <Route path="all-team-chat" element={<TeamChat />} />
-          <Route path="movementreports" element={<MovementReports />} />
-          <Route path="log-report" element={<LogReport />} />
-          <Route path="jsonupdater" element={<JsonUpdater />} />
-          <Route path="companynames" element={<CompanyNames />} />
-          <Route path="branchnames" element={<BranchNames />} />
-          <Route path="designations" element={<Designations />} />
-          <Route path="departments" element={<Departments />} />
-          <Route path="partynames" element={<PartyNames />} />
-          <Route path="visitingstatus" element={<VisitingStatus />} />
-          <Route path="roles" element={<Roles />} />
-        </Route>
-      </Routes>
-      <Footer />
+          {/* Protected Routes Under /dashboard */}
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Outlet />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<Dashboard />} />
+            <Route path="createuser" element={<CreateUser />} />
+            <Route path="alluser" element={<AllUser />} />
+            <Route path="user-activity" element={<ActivitiesReport />} />
+            <Route path="userprofile/:userID" element={<UserProfile />} />
+            <Route path="createteam" element={<CreateTeams />} />
+            <Route path="allteam" element={<ViewTeams />} />
+            <Route path="team/:teamID" element={<Team />} />
+            <Route path="all-team-chat" element={<TeamChat />} />
+            <Route path="movementreports" element={<MovementReports />} />
+            <Route path="log-report" element={<LogReport />} />
+            <Route path="jsonupdater" element={<JsonUpdater />} />
+            <Route path="companynames" element={<CompanyNames />} />
+            <Route path="branchnames" element={<BranchNames />} />
+            <Route path="designations" element={<Designations />} />
+            <Route path="departments" element={<Departments />} />
+            <Route path="partynames" element={<PartyNames />} />
+            <Route path="visitingstatus" element={<VisitingStatus />} />
+            <Route path="roles" element={<Roles />} />
+          </Route>
+        </Routes>
+        <Footer />
+      </InactivityHandeler>
     </BrowserRouter>
   );
 };
