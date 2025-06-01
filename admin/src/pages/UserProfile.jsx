@@ -276,7 +276,7 @@ const UserProfile = () => {
 
     const renderInfoItem = (icon, label, value) => (
         <div className="flex items-start mb-4">
-            <div className="text-blue-500 mr-3 mt-1">{icon}</div>
+            <div className="text-blue-800 mr-3 mt-1">{icon}</div>
             <div>
                 <p className="text-sm text-gray-500">{label}</p>
                 <p className="font-medium">{value || '-'}</p>
@@ -389,7 +389,7 @@ const UserProfile = () => {
                                             {!editMode && (
                                                 <button
                                                     onClick={() => setEditMode(true)}
-                                                    className="text-blue-500 hover:text-blue-700 flex items-center"
+                                                    className="text-blue-800 hover:text-blue-900 flex items-center"
                                                 >
                                                     <FaUserEdit className="mr-1" /> Edit Profile
                                                 </button>
@@ -550,10 +550,10 @@ const UserProfile = () => {
                                                 {renderInfoItem(<FaEnvelope />, "Email", userData?.email)}
                                             </div>
                                             <div>
+                                                {renderInfoItem(<FaIdBadge />, "EID", userData?.E_ID)}
+                                                {renderInfoItem(<FaBuilding />, "Company", userData?.Company_name)}
                                                 {renderInfoItem(<FaUsers />, "Department", userData?.Department)}
                                                 {renderInfoItem(<FaUserShield />, "Designation", userData?.Designation)}
-                                                {renderInfoItem(<FaBuilding />, "Company", userData?.Company_name)}
-                                                {renderInfoItem(<FaIdBadge />, "EID", userData?.E_ID)}
                                             </div>
                                         </div>
                                     )}

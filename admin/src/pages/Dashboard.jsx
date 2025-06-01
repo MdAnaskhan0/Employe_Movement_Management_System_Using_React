@@ -104,11 +104,10 @@ const Dashboard = ({ children }) => {
             <>
               <h2 className="text-3xl font-bold mb-6">Welcome, Admin!</h2>
               <p className="mb-8 text-gray-700">
-                Here is the overview of your admin panel.
               </p>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-red-600 p-8 rounded-lg shadow cursor-pointer" onClick={() => navigate('/dashboard/users')}>
+                <div className="bg-red-600 hover:bg-red-700 transition delay-150 duration-300 ease-in-out hover:-translate-y-1 hover:scale-110 p-6 rounded-lg shadow cursor-pointer" onClick={() => navigate('/dashboard/users')}>
                   <div className='flex items-center justify-between'>
                     <div className='flex flex-col items-start gap-1'>
                       <FaUser className='text-white text:base md:text-5xl' />
@@ -118,7 +117,7 @@ const Dashboard = ({ children }) => {
                   </div>
 
                 </div>
-                <div className="bg-red-600 p-6 rounded-lg shadow cursor-pointer" onClick={() => navigate('/dashboard/movementreports')}>
+                <div className="bg-red-600 hover:bg-red-700 transition delay-150 duration-300 ease-in-out hover:-translate-y-1 hover:scale-110 p-6 rounded-lg shadow cursor-pointer" onClick={() => navigate('/dashboard/movementreports')}>
                   <div className='flex items-center justify-between'>
                     <div className='flex flex-col items-start gap-1'>
                       <FaPersonWalkingDashedLineArrowRight className='text-white text:base md:text-5xl' />
@@ -127,7 +126,7 @@ const Dashboard = ({ children }) => {
                     <p className="text-4xl font-bold text-gray-100">{movementReports.length}</p>
                   </div>
                 </div>
-                <div className='bg-red-600 p-6 rounded-lg shadow cursor-pointer' onClick={() => navigate('/dashboard/allteam')}>
+                <div className='bg-red-600 hover:bg-red-700 transition delay-150 duration-300 ease-in-out hover:-translate-y-1 hover:scale-110 p-6 rounded-lg shadow cursor-pointer' onClick={() => navigate('/dashboard/allteam')}>
                   <div className='flex items-center justify-between'>
                     <div className='flex flex-col items-start gap-1'>
                       <RiTeamFill className='text-white text:base md:text-5xl' />
@@ -137,7 +136,7 @@ const Dashboard = ({ children }) => {
                   </div>
 
                 </div>
-                <div className='bg-red-600 p-6 rounded-lg shadow cursor-pointer' onClick={() => navigate('/dashboard/companynames')}>
+                <div className='bg-red-600 hover:bg-red-700 transition delay-150 duration-300 ease-in-out hover:-translate-y-1 hover:scale-110 p-6 rounded-lg shadow cursor-pointer' onClick={() => navigate('/dashboard/companynames')}>
                   <div className='flex items-center justify-between'>
                     <div className='flex flex-col items-start gap-1'>
                       <FaBuilding className='text-white text:base md:text-5xl' />
@@ -147,7 +146,7 @@ const Dashboard = ({ children }) => {
                   </div>
                 </div>
 
-                <div className='bg-red-600 p-6 rounded-lg shadow cursor-pointer' onClick={() => navigate('/dashboard/branchnames')}>
+                <div className='bg-red-600 hover:bg-red-700 transition delay-150 duration-300 ease-in-out hover:-translate-y-1 hover:scale-110 p-6 rounded-lg shadow cursor-pointer' onClick={() => navigate('/dashboard/branchnames')}>
                   <div className='flex items-center justify-between'>
                     <div className='flex flex-col items-start gap-1'>
                       <FaCodeBranch className='text-white text:base md:text-5xl' />
@@ -157,35 +156,52 @@ const Dashboard = ({ children }) => {
                   </div>
                 </div>
 
-                <div className='bg-red-600 p-6 rounded-lg shadow cursor-pointer' onClick={() => navigate('/dashboard/designations')}>
+
+                <div className='bg-red-600 hover:bg-red-700 transition delay-150 duration-300 ease-in-out hover:-translate-y-1 hover:scale-110 p-6 rounded-lg shadow cursor-pointer' onClick={() => navigate('/dashboard/departments')}>
                   <div className='flex items-center justify-between'>
-                    <div className='flex flex-col items-start gap-1'></div>
-                    <h3 className='text-lg font-semibold mb-2'>Total Designations</h3>
+                    <div className='flex flex-col items-start gap-1'>
+                      <TbScanPosition className='text-white text:base md:text-5xl' />
+                      <h3 className='text-lg md:text-xl font-bold text-white'>Departments</h3>
+                    </div>
+                    <p className="text-4xl font-bold text-gray-100">{departments.length}</p>
                   </div>
-                  <p className="text-3xl font-bold text-red-600">{designations.length}</p>
+                </div>
+
+                <div className='bg-red-600 hover:bg-red-700 transition delay-150 duration-300 ease-in-out hover:-translate-y-1 hover:scale-110 p-6 rounded-lg shadow cursor-pointer' onClick={() => navigate('/dashboard/designations')}>
+                  <div className='flex items-center justify-between'>
+                    <div className='flex flex-col items-start gap-1'>
+                      <MdDesignServices className='text-white text:base md:text-5xl' />
+                      <h3 className='text-lg md:text-xl font-bold text-white'>Designations</h3>
+                    </div>
+                    <p className="text-4xl font-bold text-gray-100">{designations.length}</p>
+                  </div>
+                </div>
+
+                <div className='bg-red-600 hover:bg-red-700 transition delay-150 duration-300 ease-in-out hover:-translate-y-1 hover:scale-110 p-6 rounded-lg shadow cursor-pointer' onClick={() => navigate('/dashboard/partynames')}>
+                  <div className='flex items-center justify-between'>
+                    <div className='flex flex-col items-start gap-1'>
+                      <SiGooglecolab className='text-white text:base md:text-5xl' />
+                      <h3 className='text-lg md:text-xl font-bold text-white'>Party Names</h3>
+                    </div>
+                    <p className="text-4xl font-bold text-gray-100">{partyNames.length}</p>
+                  </div>
+                </div>
+
+                <div className='bg-red-600 hover:bg-red-700 transition delay-150 duration-300 ease-in-out hover:-translate-y-1 hover:scale-110 p-6 rounded-lg shadow cursor-pointer' onClick={() => navigate('/dashboard/roles')}>
+                  <div className='flex items-center justify-between'>
+                    <div className='flex flex-col items-start gap-1'>
+                      <FaUserCog className='text-white text:base md:text-5xl' />
+                      <h3 className='text-lg md:text-xl font-bold text-white'>Roles</h3>
+                    </div>
+                    <p className="text-4xl font-bold text-gray-100">{roles.length}</p>
+                  </div>
                 </div>
               </div>
-
-              <div className='bg-red-600 p-6 rounded-lg shadow cursor-pointer' onClick={() => navigate('/dashboard/departments')}>
-                <h3 className='text-lg font-semibold mb-2'>Total Departments</h3>
-                <p className="text-3xl font-bold text-red-600">{departments.length}</p>
-              </div>
-
-              <div className='bg-red-600 p-6 rounded-lg shadow cursor-pointer' onClick={() => navigate('/dashboard/partynames')}>
-                <h3 className='text-lg font-semibold mb-2'>Total Party Names</h3>
-                <p className="text-3xl font-bold text-red-600">{partyNames.length}</p>
-              </div>
-
-              <div className='bg-red-600 p-6 rounded-lg shadow cursor-pointer' onClick={() => navigate('/dashboard/roles')}>
-                <h3 className='text-lg font-semibold mb-2'>Total Roles</h3>
-                <p className="text-3xl font-bold text-red-600">{roles.length}</p>
-              </div>
-            </div>
-        </>
+            </>
           )}
-      </main>
+        </main>
+      </div>
     </div>
-    </div >
   );
 };
 

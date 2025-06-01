@@ -186,7 +186,7 @@ const ActivitiesReport = () => {
             <button
               onClick={handleSearch}
               disabled={loading}
-              className="mt-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded flex items-center"
+              className="mt-2 bg-blue-800 hover:bg-blue-900 text-white px-4 py-2 rounded flex items-center"
             >
               <FaSearch className="mr-2" />
               {loading ? 'Searching...' : 'Search'}

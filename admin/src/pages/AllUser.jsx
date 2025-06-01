@@ -190,6 +190,7 @@ const AllUser = () => {
               <table className="w-full table-auto">
                 <thead className="bg-gray-800">
                   <tr>
+                    <th className='px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider'>No.</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Username</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Email</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">E-ID</th>
@@ -202,8 +203,11 @@ const AllUser = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {paginatedUsers.map((user) => (
+                  {paginatedUsers.map((user, index) => (
                     <tr key={user.userID}>
+                      <td className="px-4 py-4 text-sm text-gray-900 font-medium">
+                        {index + 1}
+                      </td>
                       <td className="px-4 py-4 text-sm text-gray-900">
                         {editingId === user.userID ? (
                           <input name="username" value={editData.username} onChange={handleEditChange} className="w-full px-2 py-1 border rounded text-sm" />
@@ -248,7 +252,7 @@ const AllUser = () => {
                         <div className="flex space-x-2">
                           <button
                             onClick={() => navigate(`/dashboard/userprofile/${user.userID}`)}
-                            className="flex items-center justify-center px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors text-xs"
+                            className="flex items-center justify-center px-3 py-1 bg-blue-800 text-white rounded hover:bg-blue-900  text-xs cursor-pointer transition duration-300"
                           >
                             <FaUser className="mr-1" /> View Profile
                           </button>
@@ -275,7 +279,7 @@ const AllUser = () => {
                 <button
                   key={i}
                   onClick={() => handlePageClick(i + 1)}
-                  className={`px-3 py-1 rounded ${currentPage === i + 1 ? 'bg-blue-500 text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
+                  className={`px-3 py-1 rounded ${currentPage === i + 1 ? 'bg-blue-800 text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
                 >
                   {i + 1}
                 </button>
