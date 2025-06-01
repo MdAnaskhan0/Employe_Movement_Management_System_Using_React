@@ -135,7 +135,7 @@ const UploadReportUser = () => {
         className="max-w-3xl mx-auto"
       >
         <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
-          <div className="bg-gradient-to-r from-emerald-600 to-teal-500 py-5 px-6">
+          <div className="bg-gradient-to-r from-red-600 to-red-700 py-5 px-6"> 
             <h2 className="text-lg md:text-2xl font-semibold text-white flex items-center space-x-3">
               <FiClock className="text-white" />
               <span>Movement Status Report</span>
@@ -148,7 +148,7 @@ const UploadReportUser = () => {
               {/* Punch Status */}
               <div className="space-y-1">
                 <label htmlFor="punchTime" className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
-                  <FiClock className="mr-2 text-emerald-600" />
+                  <FiClock className="mr-2 text-red-600" />
                   Punch Status
                 </label>
                 <select
@@ -157,7 +157,7 @@ const UploadReportUser = () => {
                   value={formData.punchTime}
                   onChange={handleChange}
                   required
-                  className="mt-1 block w-full pl-9 pr-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 shadow-sm"
+                  className="mt-1 block w-full pl-9 pr-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 shadow-sm ring-blue-700"
                 >
                   <option value="">Select Status</option>
                   <option value="Punch In">Punch In</option>
@@ -177,14 +177,14 @@ const UploadReportUser = () => {
                   value={formData.punchingTime}
                   onChange={handleChange}
                   required
-                  className="mt-1 block w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 shadow-sm"
+                  className="mt-1 block w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 shadow-sm"
                 />
               </div>
 
               {/* Visiting Status */}
               <div className="space-y-1">
                 <label htmlFor="visitingStatus" className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
-                  <FiMapPin className="mr-2 text-emerald-600" />
+                  <FiMapPin className="mr-2 text-red-600" />
                   Visiting Status
                 </label>
                 <select
@@ -193,7 +193,7 @@ const UploadReportUser = () => {
                   value={formData.visitingStatus}
                   onChange={handleChange}
                   required
-                  className="mt-1 block w-full pl-9 pr-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 shadow-sm"
+                  className="mt-1 block w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 shadow-sm ring-blue-700"
                 >
                   <option value="">Select Status</option>
                   {visitingStatuses.map(status => (
@@ -207,7 +207,7 @@ const UploadReportUser = () => {
               {/* Place Name with Suggestions */}
               <div className="relative">
                 <label htmlFor="placeName" className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
-                  <FiMapPin className="mr-2 text-emerald-600" />
+                  <FiMapPin className="mr-2 text-red-600" />
                   Place Name
                 </label>
                 <input
@@ -217,7 +217,7 @@ const UploadReportUser = () => {
                   onChange={handleChange}
                   required
                   autoComplete="off"
-                  className="mt-1 block w-full pl-3 pr-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 shadow-sm"
+                  className="mt-1 block w-full pl-3 pr-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 shadow-sm"
                 />
                 {filteredPlaces.length > 0 && (
                   <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded-b-lg max-h-40 overflow-y-auto shadow-lg">
@@ -237,7 +237,7 @@ const UploadReportUser = () => {
               {/* Party Name with Suggestions */}
               <div className="relative">
                 <label htmlFor="partyName" className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
-                  <FiBriefcase className="mr-2 text-emerald-600" />
+                  <FiBriefcase className="mr-2 text-red-600" />
                   Party Name
                 </label>
                 <input
@@ -247,7 +247,7 @@ const UploadReportUser = () => {
                   onChange={handleChange}
                   required
                   autoComplete="off"
-                  className="mt-1 block w-full pl-3 pr-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 shadow-sm"
+                  className="mt-1 block w-full pl-3 pr-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 shadow-sm"
                 />
                 {filteredParties.length > 0 && (
                   <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded-b-lg max-h-40 overflow-y-auto shadow-lg">
@@ -267,7 +267,7 @@ const UploadReportUser = () => {
               {/* Purpose */}
               <div className="space-y-1">
                 <label htmlFor="purpose" className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
-                  <FiFileText className="mr-2 text-emerald-600" />
+                  <FiFileText className="mr-2 text-red-600" />
                   Purpose
                 </label>
                 <input
@@ -277,7 +277,7 @@ const UploadReportUser = () => {
                   value={formData.purpose}
                   onChange={handleChange}
                   required
-                  className="mt-1 block w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 shadow-sm"
+                  className="mt-1 block w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 shadow-sm"
                 />
               </div>
             </div>
@@ -285,7 +285,7 @@ const UploadReportUser = () => {
             {/* Remarks */}
             <div className="space-y-1">
               <label htmlFor="remark" className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
-                <FiEdit2 className="mr-2 text-emerald-600" />
+                <FiEdit2 className="mr-2 text-red-600" />
                 Remarks
               </label>
               <textarea
@@ -293,7 +293,7 @@ const UploadReportUser = () => {
                 name="remark"
                 value={formData.remark}
                 onChange={handleChange}
-                className="mt-1 block w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 shadow-sm"
+                className="mt-1 block w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 shadow-sm"
                 rows="4"
                 placeholder="Additional notes..."
               ></textarea>
@@ -305,7 +305,7 @@ const UploadReportUser = () => {
                 disabled={isSubmitting}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className={`w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-700 hover:to-teal-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-all duration-200 ${isSubmitting ? 'opacity-80 cursor-not-allowed' : ''}`}
+                className={`w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-gradient-to-r from-red-600 to-red-500 hover:from-red-700 hover:to-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all duration-200 ${isSubmitting ? 'opacity-80 cursor-not-allowed' : ''}`}
               >
                 <FiSend className="mr-2" />
                 {isSubmitting ? 'Processing...' : 'Submit Report'}
