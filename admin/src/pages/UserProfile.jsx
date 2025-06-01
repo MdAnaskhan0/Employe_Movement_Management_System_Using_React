@@ -331,7 +331,7 @@ const UserProfile = () => {
                         <div className="max-w-4xl mx-auto">
                             <div className="bg-white rounded-lg shadow-md overflow-hidden">
                                 {/* Profile Header */}
-                                <div className="bg-gradient-to-r from-red-800 to-red-600 p-6 text-white">
+                                <div className="bg-gradient-to-r from-gray-600 to-gray-500 p-6 text-white">  
                                     <div className="flex flex-col md:flex-row items-center">
                                         <div className="relative mb-4 md:mb-0 md:mr-6">
                                             {preview ? (

@@ -24,11 +24,11 @@ const Home = () => {
       {/* Left Content - Text + Video (shown on all screens) */}
       <div className="w-full lg:w-1/2 flex flex-col items-center justify-center p-4 lg:p-12 mb-8 lg:mb-0">
         <div className="w-full max-w-full">
-          <h1 className="text-3xl lg:text-4xl font-bold text-gray-800 mb-4 text-center lg:text-left">
-            Welcome to <span className="text-indigo-600">Our Platform</span>
+          <h1 className="text-2xl lg:text-3xl font-bold text-gray-800 mb-4 text-center lg:text-left">
+            Welcome to <span className="text-indigo-600">Fashion Group Ltd.</span>Employee Portal
           </h1>
-          <p className="text-gray-600 mb-8 text-center lg:text-left">
-            Streamline your workflow with our powerful suite of tools designed for professionals.
+          <p className="text-gray-400 mb-8 text-center lg:text-left">
+            Monitor and optimize workforce movement with our dedicated tracking platform.
           </p>
           
           <div className="bg-white p-2 rounded-xl shadow-xl">

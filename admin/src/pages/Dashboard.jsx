@@ -34,11 +34,14 @@ const Dashboard = ({ children }) => {
   const navigate = useNavigate();
   const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
+
+  
   const handleLogout = () => {
     localStorage.removeItem('adminLoggedIn');
     localStorage.removeItem('adminUsername');
     navigate('/');
   };
+
 
   // Fetch all data from API
   useEffect(() => {

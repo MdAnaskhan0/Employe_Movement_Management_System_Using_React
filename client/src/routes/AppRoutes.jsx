@@ -10,7 +10,6 @@ import Home from '../pages/Home';
 import NotFound from '../pages/NotFound';
 import Dashboard from '../pages/Dashboard';
 // Admin
-import MovementReports from '../pages/roles/admin/MovementReports';
 import UserProfile from '../pages/roles/admin/UserProfile';
 import Users from '../pages/roles/admin/Users';
 // Manager
@@ -47,7 +46,7 @@ export default function AppRoutes() {
                       <Route path="/unauthorized" element={<div>Unauthorized</div>} />
 
                       {/* Admin */}
-                      <Route path="/admin/MovementReports" element={<MovementReports />} />
+                      <Route path="/admin/movement-reports" element={<AllMovementReports />} />
                       <Route path="/admin/UserProfile" element={<UserProfile />} />
                       <Route path="/admin/Users" element={<Users />} />
 

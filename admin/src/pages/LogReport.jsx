@@ -221,14 +221,14 @@ const LogReport = () => {
           ))}
           
           {/* Vertical separator */}
-          <td className="border-l-2 border-gray-200 bg-gray-50"></td>
+          {/* <td className="border-l-2 border-gray-200 bg-gray-50"></td> */}
           
           {/* Updated Data Columns */}
           {displayFields.map(field => (
             <td 
               key={`updated_${field.key}`} 
               className={`px-6 py-4 whitespace-nowrap text-sm ${
-                original[field.key] !== updated[field.key] ? 'bg-green-50 text-green-700' : 'text-gray-500'
+                original[field.key] !== updated[field.key] ? 'bg-green-100 text-green-700 font-semibold' : 'text-gray-500' 
               }`}
             >
               {field.key.includes('Time') || field.key.includes('date')

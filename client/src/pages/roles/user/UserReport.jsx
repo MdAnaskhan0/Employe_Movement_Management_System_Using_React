@@ -43,6 +43,8 @@ const UserReport = () => {
         endDate: null
     });
     const [userImage, setUserImage] = useState(null);
+    const [isUploading, setIsUploading] = useState(false);
+    const [fileInputKey, setFileInputKey] = useState(Date.now());
     const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
     useEffect(() => {
@@ -63,7 +65,6 @@ const UserReport = () => {
                     console.error('Error fetching movement data:', movementErr);
                     setMovementData([]);
                     setFilteredData([]);
-                    // toast.info('No movement data available for this user.');
                 }
             } catch (err) {
                 console.error('Error fetching user data:', err);
@@ -90,13 +91,14 @@ const UserReport = () => {
                 }
             } catch (err) {
                 console.error('Error fetching user image:', err);
+                setUserImage(null);
             }
         };
 
         if (user?.userID) {
             fetchImage();
         }
-    }, [user]);
+    }, [user, fileInputKey]);
 
     // Apply filters whenever search term or date range changes
     useEffect(() => {
@@ -268,6 +270,107 @@ const UserReport = () => {
         setDateFilter({ startDate: null, endDate: null });
     };
 
+    const resizeImage = (file) => {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            const reader = new FileReader();
+
+            reader.onload = (e) => {
+                img.src = e.target.result;
+            };
+
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const MAX_WIDTH = 300;
+                const MAX_HEIGHT = 300;
+                let width = img.width;
+                let height = img.height;
+
+                if (width > height) {
+                    if (width > MAX_WIDTH) {
+                        height *= MAX_WIDTH / width;
+                        width = MAX_WIDTH;
+                    }
+                } else {
+                    if (height > MAX_HEIGHT) {
+                        width *= MAX_HEIGHT / height;
+                        height = MAX_HEIGHT;
+                    }
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+
+                canvas.toBlob(
+                    (blob) => {
+                        if (!blob) {
+                            reject(new Error('Canvas is empty'));
+                            return;
+                        }
+                        if (blob.size > 1024 * 1024) {
+                            reject(new Error('File size exceeds 1MB after resizing'));
+                            return;
+                        }
+                        resolve(blob);
+                    },
+                    'image/jpeg',
+                    0.9
+                );
+            };
+
+            reader.onerror = (error) => reject(error);
+            reader.readAsDataURL(file);
+        });
+    };
+
+    const handleUpload = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        if (!file.type.match('image.*')) {
+            toast.error('Please select an image file');
+            return;
+        }
+
+        setIsUploading(true);
+        try {
+            const resizedBlob = await resizeImage(file);
+
+            const formData = new FormData();
+            formData.append('image', resizedBlob, file.name);
+
+            await axios.post(`${baseUrl}/profile-image/${user.userID}`, formData, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+            });
+
+            // Refresh the image by updating the file input key
+            setFileInputKey(Date.now());
+            toast.success('Profile image updated successfully');
+        } catch (err) {
+            console.error('Error uploading image:', err);
+            toast.error(err.message || 'Upload failed. Please try again.');
+        } finally {
+            setIsUploading(false);
+        }
+    };
+
+    const handleDelete = async () => {
+        if (!window.confirm('Are you sure you want to delete your profile picture?')) return;
+
+        try {
+            await axios.delete(`${baseUrl}/profile-image/${user.userID}`);
+            setUserImage(null);
+            setFileInputKey(Date.now());
+            toast.success('Profile image deleted successfully');
+        } catch (err) {
+            console.error('Error deleting image:', err);
+            toast.error('Failed to delete profile image');
+        }
+    };
+
     if (isLoading && !userData) {
         return (
             <div className="container mx-auto px-4 py-6">
@@ -335,7 +438,7 @@ const UserReport = () => {
 
             <div className="flex flex-col md:flex-row gap-6 mb-8">
                 <div className="bg-white rounded-lg shadow p-6 w-full md:w-1/3 flex flex-col items-center">
-                    <div className="w-24 h-24 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 text-2xl font-bold mb-4">
+                    <div className="w-24 h-24 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 text-2xl font-bold mb-4 overflow-hidden">
                         {userImage ? (
                             <img
                                 src={userImage}
@@ -352,6 +455,39 @@ const UserReport = () => {
                     </div>
                     <h2 className="text-xl font-semibold">{userData.Name}</h2>
                     <p className="text-gray-500">{userData.Designation}</p>
+
+                    <div className="flex space-x-2 mt-4">
+                        <label 
+                            htmlFor="profile-upload" 
+                            className={`px-3 py-1 text-sm rounded-md cursor-pointer ${
+                                isUploading 
+                                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
+                                    : 'bg-blue-600 text-white hover:bg-blue-700'
+                            }`}
+                        >
+                            {isUploading ? 'Uploading...' : 'Change Image'}
+                            <input
+                                id="profile-upload"
+                                type="file"
+                                accept="image/*"
+                                onChange={handleUpload}
+                                disabled={isUploading}
+                                className="hidden"
+                                key={fileInputKey}
+                            />
+                        </label>
+                        <button
+                            onClick={handleDelete}
+                            disabled={!userImage || isUploading}
+                            className={`px-3 py-1 text-sm rounded-md ${
+                                !userImage || isUploading
+                                    ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                                    : 'bg-red-600 text-white hover:bg-red-700'
+                            }`}
+                        >
+                            Remove Image
+                        </button>
+                    </div>
                 </div>
 
                 <div className="bg-white rounded-lg shadow p-6 w-full md:w-2/3">

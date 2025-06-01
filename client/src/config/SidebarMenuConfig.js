@@ -23,7 +23,7 @@ export const sidebarMenu = {
       name: 'Reports',
       path: '/admin/reports',
       submenu: [
-        { name: 'Movement Reports', path: '/admin/MovementReports' },
+        { name: 'Movement Reports', path: '/admin/movement-reports' },
         { name: 'Leader Reports', path: '/admin/LeaderReports' }
       ]
     },
