@@ -361,6 +361,15 @@ const UserReport = () => {
                                 <FiBriefcase size={18} />
                             </div>
                             <div>
+                                <p className="text-sm text-gray-500">Company</p>
+                                <p className="font-medium">{userData.Company_name}</p>
+                            </div>
+                        </div>
+                        <div className="flex items-center">
+                            <div className="p-2 rounded-full bg-indigo-100 text-indigo-600 mr-4">
+                                <FiBriefcase size={18} />
+                            </div>
+                            <div>
                                 <p className="text-sm text-gray-500">Department</p>
                                 <p className="font-medium">{userData.Department}</p>
                             </div>
@@ -372,15 +381,6 @@ const UserReport = () => {
                             <div>
                                 <p className="text-sm text-gray-500">Designation</p>
                                 <p className="font-medium">{userData.Designation}</p>
-                            </div>
-                        </div>
-                        <div className="flex items-center">
-                            <div className="p-2 rounded-full bg-indigo-100 text-indigo-600 mr-4">
-                                <FiBriefcase size={18} />
-                            </div>
-                            <div>
-                                <p className="text-sm text-gray-500">Company</p>
-                                <p className="font-medium">{userData.Company_name}</p>
                             </div>
                         </div>
                         <div className="flex items-center">
@@ -431,7 +431,7 @@ const UserReport = () => {
                             <option value="Punch Out">Punch Out</option>
                         </select>
 
-                        <div className="flex items-center space-x-2">
+                        <div className="flex flex-col md:flex-row items-start md:items-center space-x-2"> 
                             <FiCalendar className="text-gray-400" />
                             <span className="text-sm text-gray-500">From:</span>
                             <DatePicker

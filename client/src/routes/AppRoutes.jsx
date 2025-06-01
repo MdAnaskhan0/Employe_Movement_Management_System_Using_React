@@ -41,7 +41,7 @@ export default function AppRoutes() {
               <>
                 <div className="flex">
                   <Sidebar />
-                  <main className="flex-1 p-4 min-h-[80vh] bg-white">
+                  <main className="flex-1 p-4 min-h-[80vh] bg-white overflow-hidden">
                     <Routes>
                       <Route path="/dashboard" element={<Dashboard />} />
                       <Route path="/unauthorized" element={<div>Unauthorized</div>} />

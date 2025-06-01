@@ -1,31 +1,38 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaBars, FaTimes } from 'react-icons/fa';
+import { FaBars, FaTimes, FaChartLine } from 'react-icons/fa';
 import Sidebar from '../components/Sidebar/Sidebar';
 import axios from 'axios';
-import { FaUser, FaPersonWalkingDashedLineArrowRight, FaCodeBranch } from 'react-icons/fa6';
+import { 
+  FaUser, 
+  FaWalking, 
+  FaCodeBranch,
+  FaUserCog,
+  FaBuilding
+} from 'react-icons/fa';
 import { RiTeamFill } from "react-icons/ri";
-import { FaBuilding, FaUserCog } from "react-icons/fa";
 import { MdDesignServices } from "react-icons/md";
-import { TbScanPosition } from "react-icons/tb";
+import { TbHierarchy } from "react-icons/tb";
 import { SiGooglecolab } from "react-icons/si";
+import { IoIosArrowForward } from "react-icons/io";
 
 const Dashboard = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [users, setUsers] = useState([]);
-  const [movementReports, setMovementReports] = useState([]);
-  const [teams, setTeams] = useState([]);
-  const [companyNames, setCompanyNames] = useState([]);
-  const [branchNames, setBranchNames] = useState([]);
-  const [designations, setDesignations] = useState([]);
-  const [departments, setDepartments] = useState([]);
-  const [roles, setRoles] = useState([]);
-  const [partyNames, setPartyNames] = useState([]);
+  const [stats, setStats] = useState({
+    users: 0,
+    movementReports: 0,
+    teams: 0,
+    companyNames: 0,
+    branchNames: 0,
+    designations: 0,
+    departments: 0,
+    roles: 0,
+    partyNames: 0
+  });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const baseUrl = import.meta.env.VITE_API_BASE_URL;
-
 
   const handleLogout = () => {
     localStorage.removeItem('adminLoggedIn');
@@ -33,40 +40,120 @@ const Dashboard = ({ children }) => {
     navigate('/');
   };
 
-  // Fetch users from API
+  // Fetch all data from API
   useEffect(() => {
-    const fetchUsers = async () => {
+    const fetchData = async () => {
       try {
-        const response = await axios.get(`${baseUrl}/users`);
-        const responseMovementReports = await axios.get(`${baseUrl}/get_all_movement`);
-        const responseTeams = await axios.get(`${baseUrl}/teams`);
-        const responseCompanyNames = await axios.get(`${baseUrl}/companynames`);
-        const responseBranchNames = await axios.get(`${baseUrl}/branchnames`);
-        const responseDesignations = await axios.get(`${baseUrl}/designations`);
-        const responseDepartments = await axios.get(`${baseUrl}/departments`);
-        const responseRoles = await axios.get(`${baseUrl}/roles`);
-        const responsePartyNames = await axios.get(`${baseUrl}/partynames`);
+        const [
+          usersRes,
+          movementReportsRes,
+          teamsRes,
+          companyNamesRes,
+          branchNamesRes,
+          designationsRes,
+          departmentsRes,
+          rolesRes,
+          partyNamesRes
+        ] = await Promise.all([
+          axios.get(`${baseUrl}/users`),
+          axios.get(`${baseUrl}/get_all_movement`),
+          axios.get(`${baseUrl}/teams`),
+          axios.get(`${baseUrl}/companynames`),
+          axios.get(`${baseUrl}/branchnames`),
+          axios.get(`${baseUrl}/designations`),
+          axios.get(`${baseUrl}/departments`),
+          axios.get(`${baseUrl}/roles`),
+          axios.get(`${baseUrl}/partynames`)
+        ]);
 
-        setUsers(response.data.data);
-        setMovementReports(responseMovementReports.data);
-        setTeams(responseTeams.data.data);
-        setCompanyNames(responseCompanyNames.data.data);
-        setBranchNames(responseBranchNames.data);
-        setDepartments(responseDepartments.data);
-        setDesignations(responseDesignations.data);
-        setPartyNames(responsePartyNames.data);
-        setRoles(responseRoles.data);
+        setStats({
+          users: usersRes.data.data.length,
+          movementReports: movementReportsRes.data.length,
+          teams: teamsRes.data.data.length,
+          companyNames: companyNamesRes.data.data.length,
+          branchNames: branchNamesRes.data.length,
+          designations: designationsRes.data.length,
+          departments: departmentsRes.data.length,
+          roles: rolesRes.data.length,
+          partyNames: partyNamesRes.data.length
+        });
       } catch (err) {
         setError(err.message);
       } finally {
         setIsLoading(false);
       }
     };
-    fetchUsers();
+    fetchData();
   }, []);
 
+  const statCards = [
+    { 
+      title: 'Users', 
+      count: stats.users, 
+      icon: <FaUser className="text-2xl" />,
+      color: 'bg-blue-600',
+      path: '/dashboard/alluser'
+    },
+    { 
+      title: 'Movement Reports', 
+      count: stats.movementReports, 
+      icon: <FaWalking className="text-2xl" />,
+      color: 'bg-green-600',
+      path: '/dashboard/movementreports'
+    },
+    { 
+      title: 'Teams', 
+      count: stats.teams, 
+      icon: <RiTeamFill className="text-2xl" />,
+      color: 'bg-purple-600',
+      path: '/dashboard/allteam'
+    },
+    { 
+      title: 'Companies', 
+      count: stats.companyNames, 
+      icon: <FaBuilding className="text-2xl" />,
+      color: 'bg-amber-600',
+      path: '/dashboard/companynames'
+    },
+    { 
+      title: 'Branches', 
+      count: stats.branchNames, 
+      icon: <FaCodeBranch className="text-2xl" />,
+      color: 'bg-red-600',
+      path: '/dashboard/branchnames'
+    },
+    { 
+      title: 'Departments', 
+      count: stats.departments, 
+      icon: <TbHierarchy className="text-2xl" />,
+      color: 'bg-indigo-600',
+      path: '/dashboard/departments'
+    },
+    { 
+      title: 'Designations', 
+      count: stats.designations, 
+      icon: <MdDesignServices className="text-2xl" />,
+      color: 'bg-pink-600',
+      path: '/dashboard/designations'
+    },
+    { 
+      title: 'Party Names', 
+      count: stats.partyNames, 
+      icon: <SiGooglecolab className="text-2xl" />,
+      color: 'bg-teal-600',
+      path: '/dashboard/partynames'
+    },
+    { 
+      title: 'Roles', 
+      count: stats.roles, 
+      icon: <FaUserCog className="text-2xl" />,
+      color: 'bg-cyan-600',
+      path: '/dashboard/roles'
+    }
+  ];
+
   return (
-    <div className="flex min-h-screen bg-gray-100 overflow-hidden">
+    <div className="flex min-h-screen bg-gray-50 overflow-hidden">
       <Sidebar sidebarOpen={sidebarOpen} handleLogout={handleLogout} />
 
       {/* Overlay for mobile sidebar */}
@@ -81,11 +168,11 @@ const Dashboard = ({ children }) => {
       {/* Main content */}
       <div className="flex flex-col flex-1 w-full">
         {/* Header */}
-        <header className="flex items-center justify-between bg-white shadow p-4">
+        <header className="flex items-center justify-between bg-white shadow-sm p-4 border-b">
           {/* Mobile menu button */}
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="text-gray-800 focus:outline-none md:hidden"
+            className="text-gray-600 hover:text-gray-900 focus:outline-none md:hidden"
             aria-label="Toggle sidebar"
           >
             {sidebarOpen ? (
@@ -95,108 +182,71 @@ const Dashboard = ({ children }) => {
             )}
           </button>
 
-          <h1 className="text-xl font-semibold text-gray-800">Dashboard</h1>
+          <div className="flex items-center space-x-4">
+            <FaChartLine className="text-blue-600 text-xl" />
+            <h1 className="text-xl font-semibold text-gray-800">Admin Dashboard</h1>
+          </div>
         </header>
 
         {/* Content */}
-        <main className="flex-grow overflow-auto p-6 bg-gray-50">
+        <main className="flex-grow overflow-auto p-6">
           {children || (
             <>
-              <h2 className="text-3xl font-bold mb-6">Welcome, Admin!</h2>
-              <p className="mb-8 text-gray-700">
-              </p>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-red-600 hover:bg-red-700 transition delay-150 duration-300 ease-in-out hover:-translate-y-1 hover:scale-110 p-6 rounded-lg shadow cursor-pointer" onClick={() => navigate('/dashboard/alluser')}>
-                  <div className='flex items-center justify-between'>
-                    <div className='flex flex-col items-start gap-1'>
-                      <FaUser className='text-white text:base md:text-5xl' />
-                      <h3 className="text-lg md:text-xl font-bold text-white">Users</h3>
-                    </div>
-                    <p className="text-4xl font-bold text-gray-100">{users.length}</p>
-                  </div>
-
-                </div>
-                <div className="bg-red-600 hover:bg-red-700 transition delay-150 duration-300 ease-in-out hover:-translate-y-1 hover:scale-110 p-6 rounded-lg shadow cursor-pointer" onClick={() => navigate('/dashboard/movementreports')}>
-                  <div className='flex items-center justify-between'>
-                    <div className='flex flex-col items-start gap-1'>
-                      <FaPersonWalkingDashedLineArrowRight className='text-white text:base md:text-5xl' />
-                      <h3 className="text-lg md:text-xl font-bold text-white">Movement Reports</h3>
-                    </div>
-                    <p className="text-4xl font-bold text-gray-100">{movementReports.length}</p>
-                  </div>
-                </div>
-                <div className='bg-red-600 hover:bg-red-700 transition delay-150 duration-300 ease-in-out hover:-translate-y-1 hover:scale-110 p-6 rounded-lg shadow cursor-pointer' onClick={() => navigate('/dashboard/allteam')}>
-                  <div className='flex items-center justify-between'>
-                    <div className='flex flex-col items-start gap-1'>
-                      <RiTeamFill className='text-white text:base md:text-5xl' />
-                      <h3 className="text-lg md:text-xl font-bold text-white">Teams</h3>
-                    </div>
-                    <p className="text-4xl font-bold text-gray-100">{teams.length}</p>
-                  </div>
-
-                </div>
-                <div className='bg-red-600 hover:bg-red-700 transition delay-150 duration-300 ease-in-out hover:-translate-y-1 hover:scale-110 p-6 rounded-lg shadow cursor-pointer' onClick={() => navigate('/dashboard/companynames')}>
-                  <div className='flex items-center justify-between'>
-                    <div className='flex flex-col items-start gap-1'>
-                      <FaBuilding className='text-white text:base md:text-5xl' />
-                      <h3 className='text-lg md:text-xl font-bold text-white'>Company Names</h3>
-                    </div>
-                    <p className="text-4xl font-bold text-gray-100">{companyNames.length}</p>
-                  </div>
-                </div>
-
-                <div className='bg-red-600 hover:bg-red-700 transition delay-150 duration-300 ease-in-out hover:-translate-y-1 hover:scale-110 p-6 rounded-lg shadow cursor-pointer' onClick={() => navigate('/dashboard/branchnames')}>
-                  <div className='flex items-center justify-between'>
-                    <div className='flex flex-col items-start gap-1'>
-                      <FaCodeBranch className='text-white text:base md:text-5xl' />
-                      <h3 className='text-lg md:text-xl font-bold text-white'>Branch Names</h3>
-                    </div>
-                    <p className="text-4xl font-bold text-gray-100">{branchNames.length}</p>
-                  </div>
-                </div>
-
-
-                <div className='bg-red-600 hover:bg-red-700 transition delay-150 duration-300 ease-in-out hover:-translate-y-1 hover:scale-110 p-6 rounded-lg shadow cursor-pointer' onClick={() => navigate('/dashboard/departments')}>
-                  <div className='flex items-center justify-between'>
-                    <div className='flex flex-col items-start gap-1'>
-                      <TbScanPosition className='text-white text:base md:text-5xl' />
-                      <h3 className='text-lg md:text-xl font-bold text-white'>Departments</h3>
-                    </div>
-                    <p className="text-4xl font-bold text-gray-100">{departments.length}</p>
-                  </div>
-                </div>
-
-                <div className='bg-red-600 hover:bg-red-700 transition delay-150 duration-300 ease-in-out hover:-translate-y-1 hover:scale-110 p-6 rounded-lg shadow cursor-pointer' onClick={() => navigate('/dashboard/designations')}>
-                  <div className='flex items-center justify-between'>
-                    <div className='flex flex-col items-start gap-1'>
-                      <MdDesignServices className='text-white text:base md:text-5xl' />
-                      <h3 className='text-lg md:text-xl font-bold text-white'>Designations</h3>
-                    </div>
-                    <p className="text-4xl font-bold text-gray-100">{designations.length}</p>
-                  </div>
-                </div>
-
-                <div className='bg-red-600 hover:bg-red-700 transition delay-150 duration-300 ease-in-out hover:-translate-y-1 hover:scale-110 p-6 rounded-lg shadow cursor-pointer' onClick={() => navigate('/dashboard/partynames')}>
-                  <div className='flex items-center justify-between'>
-                    <div className='flex flex-col items-start gap-1'>
-                      <SiGooglecolab className='text-white text:base md:text-5xl' />
-                      <h3 className='text-lg md:text-xl font-bold text-white'>Party Names</h3>
-                    </div>
-                    <p className="text-4xl font-bold text-gray-100">{partyNames.length}</p>
-                  </div>
-                </div>
-
-                <div className='bg-red-600 hover:bg-red-700 transition delay-150 duration-300 ease-in-out hover:-translate-y-1 hover:scale-110 p-6 rounded-lg shadow cursor-pointer' onClick={() => navigate('/dashboard/roles')}>
-                  <div className='flex items-center justify-between'>
-                    <div className='flex flex-col items-start gap-1'>
-                      <FaUserCog className='text-white text:base md:text-5xl' />
-                      <h3 className='text-lg md:text-xl font-bold text-white'>Roles</h3>
-                    </div>
-                    <p className="text-4xl font-bold text-gray-100">{roles.length}</p>
-                  </div>
-                </div>
+              <div className="mb-8">
+                <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">Welcome back, Admin!</h2>
+                <p className="text-gray-600">Here's what's happening with your system today.</p>
               </div>
+
+              {isLoading ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {[...Array(6)].map((_, i) => (
+                    <div key={i} className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 animate-pulse">
+                      <div className="h-6 w-3/4 bg-gray-200 rounded mb-4"></div>
+                      <div className="h-8 w-1/2 bg-gray-200 rounded"></div>
+                    </div>
+                  ))}
+                </div>
+              ) : error ? (
+                <div className="bg-red-50 border-l-4 border-red-500 p-4">
+                  <div className="flex">
+                    <div className="flex-shrink-0">
+                      <svg className="h-5 w-5 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <div className="ml-3">
+                      <p className="text-sm text-red-700">Error loading dashboard data: {error}</p>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {statCards.map((card, index) => (
+                    <div 
+                      key={index} 
+                      onClick={() => navigate(card.path)}
+                      className={`bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition cursor-pointer group ease-in-out duration-300 hover:scale-105`}
+                    >
+                      <div className="flex justify-between items-start">
+                        <div className={`${card.color} p-3 rounded-lg text-white`}>
+                          {card.icon}
+                        </div>
+                        <IoIosArrowForward className="text-gray-400 group-hover:text-gray-600 transition-colors" />
+                      </div>
+                      <div className="mt-4">
+                        <p className="text-sm font-medium text-gray-500">{card.title}</p>
+                        <p className="text-2xl font-semibold text-gray-800 mt-1">{card.count}</p>
+                      </div>
+                      <div className="mt-4 pt-4 border-t border-gray-100">
+                        <p className="text-xs text-gray-500 group-hover:text-blue-600 transition-colors flex items-center">
+                          View details
+                          <IoIosArrowForward className="ml-1" />
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </>
           )}
         </main>
