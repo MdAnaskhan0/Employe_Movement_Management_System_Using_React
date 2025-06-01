@@ -194,7 +194,7 @@ const TeamDetails = () => {
               <div className="bg-white shadow-sm rounded-lg overflow-hidden border border-gray-200 mb-6">
                 <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
                   <h2 className="text-xl font-semibold text-gray-800 flex items-center">
-                    <FaUsers className="mr-2 text-blue-500" />
+                    <FaUsers className="mr-2 text-blue-800" />
                     Team Information
                   </h2>
                 </div>
@@ -209,7 +209,7 @@ const TeamDetails = () => {
                         </div>
                         <div className="flex items-start">
                           <span className="text-gray-500 font-medium w-32">Team Leader:</span>
-                          <div className="flex items-center">
+                          <div className="flex items-center cursor-pointer" onClick={() => navigate(`/dashboard/userprofile/${teamData.team_leader.userID}`)}>
                             <FaUserShield className="text-green-500 mr-2" />
                             <span className="text-gray-800">{teamData.team_leader.name}</span>
                           </div>
@@ -223,9 +223,9 @@ const TeamDetails = () => {
                         <div className="bg-gray-50 rounded-md p-3 max-h-48 overflow-y-auto">
                           <ul className="divide-y divide-gray-200">
                             {teamData.team_members.map(member => (
-                              <li key={member.userID} className="py-2 flex items-center">
+                              <li key={member.userID} className="py-2 flex items-center cursor-pointer" onClick={() => navigate(`/dashboard/userprofile/${member.userID}`)}>
                                 <div className="flex-shrink-0 h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
-                                  <span className="text-blue-600 text-sm font-medium">
+                                  <span className="text-blue-800 text-sm font-medium">
                                     {member.name.charAt(0)}
                                   </span>
                                 </div>
@@ -255,7 +255,7 @@ const TeamDetails = () => {
                   <div className="flex flex-wrap gap-4">
                     <button
                       onClick={handleAddMemberClick}
-                      className="flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+                      className="flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-800 hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
                     >
                       <FaUserPlus className="mr-2" />
                       Add Member

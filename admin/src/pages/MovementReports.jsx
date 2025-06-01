@@ -277,7 +277,7 @@ const MovementReports = () => {
           <div className="flex space-x-2">
             <button
               onClick={downloadCSV}
-              className="flex items-center px-3 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
+              className="flex items-center px-3 py-2 bg-green-800 text-white rounded hover:bg-green-700 transition ease-in-out duration-300 hover:-translate-y-1 hover:scale-105 cursor-pointer"
             >
               <FaFileDownload className="mr-2" />
               Download CSV
@@ -354,7 +354,7 @@ const MovementReports = () => {
             <div>
               <button
                 onClick={applyFilters}
-                className="w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                className="w-full px-4 py-2 bg-blue-800 text-white rounded hover:bg-blue-900 transition-colors cursor-pointer"
               >
                 Search
               </button>

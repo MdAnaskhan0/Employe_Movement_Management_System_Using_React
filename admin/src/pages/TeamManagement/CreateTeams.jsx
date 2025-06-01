@@ -17,12 +17,13 @@ const CreateTeams = ({ children }) => {
     const [selectedTeamLeader, setSelectedTeamLeader] = useState('');
     const [selectedMembers, setSelectedMembers] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
+    const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
     useEffect(() => {
         const fetchAllUsers = async () => {
             setIsLoading(true);
             try {
-                const res = await axios.get('http://192.168.111.140:5137/users');
+                const res = await axios.get(`${baseUrl}/users`);
                 const allUsers = res.data.data;
 
                 // Normalize roles to lowercase for consistent filtering
@@ -83,7 +84,7 @@ const CreateTeams = ({ children }) => {
 
         setIsLoading(true);
         try {
-            const response = await axios.post('http://192.168.111.140:5137/assign-team', {
+            const response = await axios.post(`${baseUrl}/assign-team`, { 
                 team_name: teamName,
                 team_leader_id: selectedTeamLeader,
                 team_member_ids: selectedMembers,
@@ -139,7 +140,7 @@ const CreateTeams = ({ children }) => {
                             )}
                         </button>
                         <h1 className="text-xl font-semibold text-gray-800 flex items-center">
-                            <MdGroupAdd className="mr-2 text-blue-600" />
+                            <MdGroupAdd className="mr-2 text-blue-800" />
                             Team Management
                         </h1>
                     </div>
@@ -150,7 +151,7 @@ const CreateTeams = ({ children }) => {
                         <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
                             <div className="flex items-center justify-between mb-6">
                                 <h2 className="text-xl font-semibold text-gray-800 flex items-center">
-                                    <FaUsers className="mr-2 text-blue-500" />
+                                    <FaUsers className="mr-2 text-blue-800" />
                                     Create New Team
                                 </h2>
                                 <button
@@ -182,7 +183,7 @@ const CreateTeams = ({ children }) => {
                                     </div>
                                     <div>
                                         <label className="block mb-2 font-medium text-gray-700 flex items-center">
-                                            <FaUserShield className="mr-2 text-blue-500" />
+                                            <FaUserShield className="mr-2 text-blue-800" />
                                             Team Leader
                                         </label>
                                         <select
@@ -202,7 +203,7 @@ const CreateTeams = ({ children }) => {
 
                                     <div>
                                         <label className="block mb-2 font-medium text-gray-700 flex items-center">
-                                            <FaUsers className="mr-2 text-blue-500" />
+                                            <FaUsers className="mr-2 text-blue-800" />
                                             Search Members
                                         </label>
                                         <input
@@ -261,7 +262,7 @@ const CreateTeams = ({ children }) => {
                                         disabled={isLoading}
                                         className={`px-6 py-2.5 rounded-lg font-medium flex items-center ${isLoading
                                             ? 'bg-blue-400 cursor-not-allowed'
-                                            : 'bg-blue-600 hover:bg-blue-700'
+                                            : 'bg-blue-800 hover:bg-blue-900'
                                             } text-white transition`}
                                     >
                                         {isLoading ? (

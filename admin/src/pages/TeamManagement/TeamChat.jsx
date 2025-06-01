@@ -138,7 +138,7 @@ const TeamChat = () => {
 
     return (
       <div
-        className={`flex items-center justify-center bg-blue-500 text-white font-medium rounded-full`}
+        className={`flex items-center justify-center bg-blue-800 text-white font-medium rounded-full`}
         style={{
           width: `${size}px`,
           height: `${size}px`,
@@ -207,7 +207,7 @@ const TeamChat = () => {
           <div className="flex-grow overflow-y-auto">
             {loadingMessages ? (
               <div className="flex justify-center items-center h-full">
-                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-800"></div>
               </div>
             ) : (
               <ul className="divide-y divide-gray-200">
@@ -295,7 +295,7 @@ const TeamChat = () => {
               <main className="flex-grow overflow-auto p-2 md:p-4 bg-gray-100">
                 {loadingMessages ? (
                   <div className="flex justify-center items-center h-full">
-                    <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500"></div>
+                    <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-800"></div>
                   </div>
                 ) : filteredMessages.length > 0 ? (
                   <div className="space-y-3 md:space-y-4 max-w-4xl mx-auto px-2 md:px-0">
@@ -341,7 +341,7 @@ const TeamChat = () => {
                 ) : (
                   <div className="flex flex-col items-center justify-center h-full text-gray-500">
                     <div className="bg-white p-4 md:p-6 rounded-lg shadow-sm text-center max-w-md mx-4">
-                      <FaUsers className="mx-auto text-4xl text-blue-500 mb-3" />
+                      <FaUsers className="mx-auto text-4xl text-blue-800 mb-3" />
                       <h3 className="text-lg font-medium mb-2">No messages yet</h3>
                       <p className="text-sm">This team hasn't started chatting yet</p>
                     </div>

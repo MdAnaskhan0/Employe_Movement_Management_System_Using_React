@@ -191,7 +191,7 @@ const Roles = () => {
                 <div className="flex gap-2">
                   <button
                     type="submit"
-                    className="bg-blue-600 text-white px-4 py-2 rounded flex items-center gap-2 hover:bg-blue-700 transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                    className="bg-blue-800 text-white px-4 py-2 rounded flex items-center gap-2 hover:bg-blue-900 transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                   >
                     {editRoleID ? (
                       <>
@@ -276,7 +276,7 @@ const Roles = () => {
                             <div className="flex justify-end space-x-2">
                               <button
                                 onClick={() => startEdit(role)}
-                                className="text-blue-600 hover:text-blue-900 p-1 rounded-full hover:bg-blue-50 transition"
+                                className="text-blue-800 hover:text-blue-900 p-1 rounded-full hover:bg-blue-50 transition"
                                 aria-label="Edit role"
                                 title="Edit"
                               >

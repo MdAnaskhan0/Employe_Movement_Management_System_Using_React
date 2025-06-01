@@ -187,7 +187,7 @@ const CompanyNames = () => {
           {/* Form Section */}
           <div className="max-w-4xl mx-auto mb-8">
             <div className="bg-white rounded-lg shadow-md overflow-hidden">
-              <div className="bg-gradient-to-r from-blue-600 to-blue-800 p-4 text-white">
+              <div className="bg-gradient-to-r from-blue-700 to-blue-800 p-4 text-white">
                 <h2 className="text-lg font-semibold flex items-center">
                   {editingCompanyId ? (
                     <>
@@ -288,7 +288,7 @@ const CompanyNames = () => {
                   )}
                   <button
                     type="submit"
-                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-800 hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                     disabled={loading}
                   >
                     {loading ? (
@@ -400,7 +400,7 @@ const CompanyNames = () => {
                           <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                             <button
                               onClick={() => handleEdit(company)}
-                              className="text-blue-600 hover:text-blue-900 mr-4"
+                              className="text-blue-800 hover:text-blue-900 mr-4"
                               title="Edit"
                             >
                               <FaEdit />

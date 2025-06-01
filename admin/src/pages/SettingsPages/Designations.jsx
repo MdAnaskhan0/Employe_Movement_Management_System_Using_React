@@ -151,7 +151,7 @@ const Designations = () => {
               />
               <button
                 onClick={handleAdd}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center justify-center transition duration-200"
+                className="bg-blue-800 hover:bg-blue-900 text-white px-4 py-2 rounded-lg flex items-center justify-center transition duration-200"
               >
                 <FaPlus className="mr-2" />
                 Add Designation
@@ -223,7 +223,7 @@ const Designations = () => {
                             ) : (
                               <button
                                 onClick={() => handleEdit(item.designationID, item.designationName)}
-                                className="text-blue-600 hover:text-blue-800 p-1 rounded-full hover:bg-yellow-50 transition"
+                                className="text-blue-800 hover:text-blue-900 p-1 rounded-full hover:bg-yellow-50 transition"
                                 title="Edit"
                               >
                                 <FaEdit />

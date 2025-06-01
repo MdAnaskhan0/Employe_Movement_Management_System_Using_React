@@ -259,7 +259,7 @@ const LogReport = () => {
             {sidebarOpen ? <FaTimes className="h-6 w-6" /> : <FaBars className="h-6 w-6" />}
           </button>
           <div className="flex items-center">
-            <FaUniversity className="text-blue-600 mr-2 text-xl" />
+            <FaUniversity className="text-blue-800 mr-2 text-xl" />
             <h1 className="text-xl font-semibold text-gray-800">User Activity Logs</h1>
           </div>
         </header>
@@ -269,7 +269,7 @@ const LogReport = () => {
           <div className="bg-white rounded-lg shadow p-6 mb-6">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-lg font-semibold flex items-center">
-                <FaFilter className="mr-2 text-blue-600" /> Filter Criteria
+                <FaFilter className="mr-2 text-blue-800" /> Filter Criteria
               </h2>
               <div className="flex space-x-2">
                 <button
@@ -281,7 +281,7 @@ const LogReport = () => {
                 <button
                   onClick={handleSearch}
                   disabled={isLoading || isSearching}
-                  className="flex items-center px-3 py-1.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-blue-400"
+                  className="flex items-center px-3 py-1.5 bg-blue-800 text-white rounded-md hover:bg-blue-900 disabled:bg-blue-400 cursor-pointer"
                 >
                   <FaSearch className="mr-1" />
                   {isSearching ? 'Searching...' : 'Search'}
@@ -292,7 +292,7 @@ const LogReport = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
               <div className="space-y-1">
                 <label className="block text-sm font-medium text-gray-700 flex items-center">
-                  <FaUser className="mr-2 text-blue-500" /> User
+                  <FaUser className="mr-2 text-blue-800" /> User
                 </label>
                 <select
                   value={selectedUser}
@@ -311,7 +311,7 @@ const LogReport = () => {
 
               <div className="space-y-1">
                 <label className="block text-sm font-medium text-gray-700 flex items-center">
-                  <FaCalendarAlt className="mr-2 text-blue-500" /> From Date
+                  <FaCalendarAlt className="mr-2 text-blue-800" /> From Date
                 </label>
                 <input
                   type="date"
@@ -324,7 +324,7 @@ const LogReport = () => {
 
               <div className="space-y-1">
                 <label className="block text-sm font-medium text-gray-700 flex items-center">
-                  <FaCalendarAlt className="mr-2 text-blue-500" /> To Date
+                  <FaCalendarAlt className="mr-2 text-blue-800" /> To Date
                 </label>
                 <input
                   type="date"
@@ -342,7 +342,7 @@ const LogReport = () => {
           <div className="bg-white rounded-lg shadow overflow-hidden">
             <div className="p-4 border-b flex justify-between items-center">
               <h2 className="text-lg font-semibold flex items-center">
-                <MdOutlineDataUsage className="mr-2 text-blue-600" />
+                <MdOutlineDataUsage className="mr-2 text-blue-800" />
                 Activity Logs
                 {filteredLogs.length > 0 && (
                   <span className="ml-2 text-sm font-normal text-gray-500">

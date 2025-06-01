@@ -161,7 +161,7 @@ const VisitingStatus = () => {
                 />
                 <button
                   onClick={handleAdd}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 transition-colors duration-200"
+                  className="bg-blue-800 hover:bg-blue-900 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 transition-colors duration-200"
                 >
                   <FaPlus /> Add Status
                 </button>
@@ -222,7 +222,7 @@ const VisitingStatus = () => {
                           <div className="flex items-center gap-2">
                             <button
                               onClick={() => handleEdit(status.visitingstatusID, status.visitingstatusname)}
-                              className="text-blue-600 hover:text-blue-800 p-2 rounded-full hover:bg-blue-50 transition-colors duration-200"
+                              className="text-blue-800 hover:text-blue-900 p-2 rounded-full hover:bg-blue-50 transition-colors duration-200"
                               title="Edit"
                             >
                               <FaEdit />

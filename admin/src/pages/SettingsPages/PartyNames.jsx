@@ -133,7 +133,7 @@ const PartyNames = ({ children }) => {
 
           <button
             onClick={fetchParties}
-            className="flex items-center gap-2 bg-blue-100 text-blue-600 px-3 py-1 rounded hover:bg-blue-200 transition"
+            className="flex items-center gap-2 bg-blue-100 text-blue-800 px-3 py-1 rounded hover:bg-blue-200 transition"
             disabled={loading}
           >
             <FiRefreshCw className={`${loading ? 'animate-spin' : ''}`} />
@@ -183,7 +183,7 @@ const PartyNames = ({ children }) => {
                 <div className="flex justify-end">
                   <button
                     type="submit"
-                    className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                    className="flex items-center gap-2 bg-blue-800 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                   >
                     {editId ? (
                       <>
@@ -252,7 +252,7 @@ const PartyNames = ({ children }) => {
                             <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                               <button
                                 onClick={() => handleEdit(party)}
-                                className="text-blue-600 hover:text-blue-900 mr-4"
+                                className="text-blue-800 hover:text-blue-900 mr-4"
                                 title="Edit"
                               >
                                 <FaEdit />

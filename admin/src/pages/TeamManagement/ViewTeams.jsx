@@ -103,7 +103,7 @@ const ViewTeams = () => {
           </button>
 
           <h1 className="text-xl md:text-2xl font-semibold text-gray-800 flex items-center">
-            <FaUsers className="mr-2" /> Team Management
+            <FaUsers className="mr-2 text-blue-800" /> Team Management
           </h1>
         </header>
 
@@ -112,7 +112,7 @@ const ViewTeams = () => {
           <div className="max-w-full mx-auto">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl md:text-2xl font-semibold text-gray-800 flex items-center">
-                <FaUserTie className="mr-2" /> Team Details
+                <FaUserTie className="mr-2 text-blue-800" /> Team Details
               </h2>
             </div>
 
@@ -175,13 +175,13 @@ const ViewTeams = () => {
                         <tr key={team.team_id} className="hover:bg-gray-50">
                           <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                             <div className="flex items-center">
-                              <FaUserTie className="mr-2 text-blue-500" />
+                              <FaUserTie className="mr-2 text-blue-800" />
                               <p className="text-sm font-medium text-gray-900">{team.team_name}</p>
                             </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             <div className="flex items-center">
-                              <FaUserTie className="mr-2 text-blue-500" />
+                              <FaUserTie className="mr-2 text-blue-800" />
                               {team.team_leader_name}
                             </div>
                           </td>
@@ -198,7 +198,7 @@ const ViewTeams = () => {
                             <div className="flex space-x-2">
                               <button
                                 onClick={() => navigate(`/team/${team.team_id}`)}
-                                className="text-blue-600 hover:text-blue-900 flex items-center"
+                                className="text-blue-800 hover:text-blue-900 flex items-center"
                                 title="View"
                               >
                                 <FaEye className="mr-1" />

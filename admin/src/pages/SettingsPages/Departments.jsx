@@ -107,7 +107,7 @@ const Departments = ({ children }) => {
             {sidebarOpen ? <FaTimes className="h-6 w-6" /> : <FaBars className="h-6 w-6" />}
           </button>
           <div className="flex items-center">
-            <FaUniversity className="text-blue-600 mr-2 text-xl" />
+            <FaUniversity className="text-blue-800 mr-2 text-xl" />
             <h1 className="text-xl font-semibold text-gray-800">Department Management</h1>
           </div>
 
@@ -129,7 +129,7 @@ const Departments = ({ children }) => {
             {/* Form Card */}
             <div className="bg-white rounded-lg shadow-md p-6 mb-6 border border-gray-100">
               <h2 className="text-lg font-semibold text-gray-700 mb-4 flex items-center">
-                <FaPlus className="mr-2 text-blue-500" />
+                <FaPlus className="mr-2 text-blue-800" />
                 {editingId ? 'Update Department' : 'Add New Department'}
               </h2>
               <form onSubmit={handleSubmit}>
@@ -145,7 +145,7 @@ const Departments = ({ children }) => {
                   <button
                     type="submit"
                     disabled={isLoading}
-                    className={`flex items-center justify-center px-4 py-2 rounded-lg text-white ${editingId ? 'bg-yellow-500 hover:bg-yellow-600' : 'bg-blue-500 hover:bg-blue-600'} min-w-24`}
+                    className={`flex items-center justify-center px-4 py-2 rounded-lg text-white ${editingId ? 'bg-yellow-500 hover:bg-yellow-600' : 'bg-blue-800 hover:bg-blue-900'} min-w-24`}
                   >
                     {isLoading ? (
                       <span className="animate-spin">↻</span>
@@ -209,7 +209,7 @@ const Departments = ({ children }) => {
                           <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                             <button
                               onClick={() => handleEdit(dept)}
-                              className="text-blue-600 hover:text-blue-900 mr-4"
+                              className="text-blue-800 hover:text-blue-900 mr-4"
                               title="Edit"
                             >
                               <FaEdit />
