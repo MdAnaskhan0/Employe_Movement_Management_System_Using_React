@@ -1,21 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { 
-  FaBars, 
-  FaTimes, 
-  FaUserEdit, 
-  FaTrash, 
-  FaSave, 
-  FaTimesCircle, 
-  FaUpload, 
-  FaUserCircle,
-  FaBuilding,
-  FaPhone,
-  FaEnvelope,
-  FaIdBadge,
-  FaUserTie,
-  FaUsers,
-  FaUserShield
+import {
+    FaBars,
+    FaTimes,
+    FaUserEdit,
+    FaTrash,
+    FaSave,
+    FaTimesCircle,
+    FaUpload,
+    FaUserCircle,
+    FaBuilding,
+    FaPhone,
+    FaEnvelope,
+    FaIdBadge,
+    FaUserTie,
+    FaUsers,
+    FaUserShield,
+    FaLock,
+    FaEye,
+    FaEyeSlash
 } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import Sidebar from '../components/Sidebar/Sidebar';
@@ -30,13 +33,18 @@ const UserProfile = () => {
     const [error, setError] = useState(null);
     const [preview, setPreview] = useState(null);
     const [isUploading, setIsUploading] = useState(false);
-
-    const baseUrl = import.meta.env.VITE_API_BASE_URL;
     const [company, setCompany] = useState([]);
     const [department, setDepartment] = useState([]);
     const [designation, setDesignation] = useState([]);
     const [role, setRole] = useState([]);
+    const [newPassword, setNewPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [passwordError, setPasswordError] = useState('');
+    const [isChangingPassword, setIsChangingPassword] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+    const baseUrl = import.meta.env.VITE_API_BASE_URL;
     const navigate = useNavigate();
     const { userID } = useParams();
 
@@ -212,13 +220,13 @@ const UserProfile = () => {
                 <p className="font-bold mb-2">Are you sure you want to delete this user?</p>
                 <p className="text-sm mb-3">This action cannot be undone.</p>
                 <div className="flex justify-end space-x-2">
-                    <button 
+                    <button
                         onClick={() => toast.dismiss()}
                         className="px-3 py-1 bg-gray-300 rounded"
                     >
                         Cancel
                     </button>
-                    <button 
+                    <button
                         onClick={async () => {
                             toast.dismiss();
                             try {
@@ -247,13 +255,13 @@ const UserProfile = () => {
             <div>
                 <p>Are you sure you want to logout?</p>
                 <div className="flex justify-end space-x-2 mt-2">
-                    <button 
+                    <button
                         onClick={() => toast.dismiss()}
                         className="px-3 py-1 bg-gray-300 rounded text-sm"
                     >
                         Cancel
                     </button>
-                    <button 
+                    <button
                         onClick={() => {
                             toast.dismiss();
                             localStorage.removeItem('adminLoggedIn');
@@ -272,6 +280,44 @@ const UserProfile = () => {
                 closeButton: false,
             }
         );
+    };
+
+    const handleChangePassword = async () => {
+        if (!newPassword || !confirmPassword) {
+            setPasswordError('Both fields are required');
+            return;
+        }
+
+        if (newPassword !== confirmPassword) {
+            setPasswordError('Passwords do not match');
+            return;
+        }
+
+        if (newPassword.length < 6) {
+            setPasswordError('Password must be at least 6 characters');
+            return;
+        }
+
+        setPasswordError('');
+        setIsChangingPassword(true);
+
+        try {
+            const response = await axios.put(`${baseUrl}/change-password/${userID}`, {
+                newPassword
+            });
+
+            if (response.data.success) {
+                setNewPassword('');
+                setConfirmPassword('');
+                toast.success('Password changed successfully');
+            } else {
+                throw new Error(response.data.message || 'Failed to change password');
+            }
+        } catch (err) {
+            toast.error(err.response?.data?.message || err.message || 'Failed to change password');
+        } finally {
+            setIsChangingPassword(false);
+        }
     };
 
     const renderInfoItem = (icon, label, value) => (
@@ -331,7 +377,7 @@ const UserProfile = () => {
                         <div className="max-w-4xl mx-auto">
                             <div className="bg-white rounded-lg shadow-md overflow-hidden">
                                 {/* Profile Header */}
-                                <div className="bg-gradient-to-r from-gray-600 to-gray-500 p-6 text-white">  
+                                <div className="bg-gradient-to-r from-gray-600 to-gray-500 p-6 text-white">
                                     <div className="flex flex-col md:flex-row items-center">
                                         <div className="relative mb-4 md:mb-0 md:mr-6">
                                             {preview ? (
@@ -345,7 +391,7 @@ const UserProfile = () => {
                                                     <FaUserCircle className="text-blue-400 text-6xl" />
                                                 </div>
                                             )}
-                                            <label 
+                                            <label
                                                 htmlFor="profile-upload"
                                                 className="absolute bottom-0 right-0 bg-white text-blue-600 rounded-full p-2 shadow-md cursor-pointer hover:bg-blue-50 transition"
                                                 title="Upload new photo"
@@ -545,6 +591,7 @@ const UserProfile = () => {
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             <div>
                                                 {renderInfoItem(<FaUserCircle />, "Username", userData?.username)}
+                                                {renderInfoItem(<FaUserTie />, "Role", userData?.Role)}
                                                 {renderInfoItem(<FaUserTie />, "Name", userData?.Name)}
                                                 {renderInfoItem(<FaPhone />, "Phone", userData?.Phone)}
                                                 {renderInfoItem(<FaEnvelope />, "Email", userData?.email)}
@@ -559,13 +606,81 @@ const UserProfile = () => {
                                     )}
 
                                     {!editMode && (
-                                        <div className="mt-8 pt-6 border-t flex justify-end">
-                                            <button
-                                                onClick={handleDeleteUser}
-                                                className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 flex items-center"
-                                            >
-                                                <FaTrash className="mr-2" /> Delete Account
-                                            </button>
+                                        <div className="mt-8 pt-6 border-t">
+                                            <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                                <FaLock className="mr-2" /> Change Password
+                                            </h3>
+                                            
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                                <div className="relative">
+                                                    <label className="block text-gray-700 text-sm font-medium mb-1">New Password</label>
+                                                    <input
+                                                        type={showPassword ? "text" : "password"}
+                                                        value={newPassword}
+                                                        onChange={(e) => setNewPassword(e.target.value)}
+                                                        placeholder="Enter new password"
+                                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10"
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        className="absolute right-3 top-8 text-gray-500 hover:text-gray-700"
+                                                        onClick={() => setShowPassword(!showPassword)}
+                                                    >
+                                                        {showPassword ? <FaEyeSlash /> : <FaEye />}
+                                                    </button>
+                                                </div>
+                                                <div className="relative">
+                                                    <label className="block text-gray-700 text-sm font-medium mb-1">Confirm Password</label>
+                                                    <input
+                                                        type={showConfirmPassword ? "text" : "password"}
+                                                        value={confirmPassword}
+                                                        onChange={(e) => setConfirmPassword(e.target.value)}
+                                                        placeholder="Confirm new password"
+                                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10"
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        className="absolute right-3 top-8 text-gray-500 hover:text-gray-700"
+                                                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                                    >
+                                                        {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            {passwordError && (
+                                                <div className="text-red-500 text-sm mb-4">{passwordError}</div>
+                                            )}
+
+                                            <div className="flex justify-between items-center">
+                                                <div>
+                                                    <button
+                                                        onClick={handleChangePassword}
+                                                        disabled={isChangingPassword}
+                                                        className={`px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center ${isChangingPassword ? 'opacity-70 cursor-not-allowed' : ''}`}
+                                                    >
+                                                        {isChangingPassword ? (
+                                                            <>
+                                                                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                                </svg>
+                                                                Changing...
+                                                            </>
+                                                        ) : (
+                                                            <>Change Password</>
+                                                        )}
+                                                    </button>
+                                                </div>
+                                                <div>
+                                                    <button
+                                                        onClick={handleDeleteUser}
+                                                        className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 flex items-center"
+                                                    >
+                                                        <FaTrash className="mr-2" /> Delete Account
+                                                    </button>
+                                                </div>
+                                            </div>
                                         </div>
                                     )}
                                 </div>

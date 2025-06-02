@@ -13,12 +13,13 @@ const ViewTeams = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [sortConfig, setSortConfig] = useState({ key: 'team_id', direction: 'asc' });
+  const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
     const fetchTeams = async () => {
       setIsLoading(true);
       try {
-        const response = await axios.get('http://192.168.111.140:5137/teams');
+        const response = await axios.get(`${baseUrl}/teams`);
         if (response.data.status === 'ok') {
           setTeams(response.data.data);
         } else {

@@ -250,6 +250,55 @@ app.put('/users/:id', (req, res) => {
 });
 
 
+
+app.put('/change-password/:userID', (req, res) => {
+    const { userID } = req.params;
+    const { newPassword } = req.body;
+    if (!newPassword) {
+        return res.status(400).json({
+            success: false,
+            message: 'New password is required'
+        });
+    }
+
+    const checkUserSql = 'SELECT * FROM users WHERE userID = ?';
+    db.query(checkUserSql, [userID], (err, results) => {
+        if (err) {
+            console.error('Error checking user:', err);
+            return res.status(500).json({
+                success: false,
+                message: 'Database error'
+            });
+        }
+
+        if (results.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+
+        const updateSql = 'UPDATE users SET password = ? WHERE userID = ?';
+        db.query(updateSql, [newPassword, userID], (err, result) => {
+            if (err) {
+                console.error('Error updating password:', err);
+                return res.status(500).json({
+                    success: false,
+                    message: 'Failed to update password'
+                });
+            }
+
+            res.json({
+                success: true,
+                message: 'Password updated successfully'
+            });
+        });
+    });
+});
+
+
+
+
 // DELETE /users/:id
 app.delete('/users/:id', (req, res) => {
   const userId = req.params.id;

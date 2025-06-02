@@ -47,7 +47,7 @@ const Home = () => {
 
   return (
     <>
-      <div className="min-h-[76vh] bg-gray-100 flex bg-white">
+      <div className="min-h-screen flex bg-white">
         {/* Left side - Portal Info */}
         <div className="hidden md:flex md:w-1/2 text-white p-12 flex-col justify-center">
           {/* Add any portal info or image here */}

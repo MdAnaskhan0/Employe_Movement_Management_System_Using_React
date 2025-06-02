@@ -17,6 +17,7 @@ const TeamDetails = () => {
   const [usersToAdd, setUsersToAdd] = useState([]);
   const [selectedMember, setSelectedMember] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
+  const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
   const navigate = useNavigate();
   const { teamID } = useParams();
@@ -30,7 +31,7 @@ const TeamDetails = () => {
   useEffect(() => {
     const fetchTeamDetails = async () => {
       try {
-        const response = await axios.get(`http://192.168.111.140:5137/teams/${teamID}`);
+        const response = await axios.get(`${baseUrl}/teams/${teamID}`);
         console.log(response.data.data);
         setTeamData(response.data.data);
       } catch (err) {
@@ -48,7 +49,7 @@ const TeamDetails = () => {
     if (!window.confirm('Are you sure you want to delete this team?')) return;
 
     try {
-      await axios.delete(`http://192.168.111.140:5137/teams/${teamID}`);
+      await axios.delete(`${baseUrl}/teams/${teamID}`);
       toast.success('Team deleted successfully');
       navigate('/dashboard/allteam');
     } catch (err) {
@@ -58,7 +59,7 @@ const TeamDetails = () => {
 
   const handleAddMemberClick = async () => {
     try {
-      const response = await axios.get(`http://192.168.111.140:5137/unassigned-users`);
+      const response = await axios.get(`${baseUrl}/unassigned-users`);
       const unassignedUsers = response.data.data;
 
       if (!unassignedUsers || unassignedUsers.length === 0) {
@@ -80,7 +81,7 @@ const TeamDetails = () => {
     }
 
     try {
-      await axios.patch(`http://192.168.111.140:5137/teams/${teamID}/add-member`, {
+      await axios.patch(`${baseUrl}/teams/${teamID}/add-member`, {
         member_id: selectedUser.userID
       });
 
@@ -88,7 +89,7 @@ const TeamDetails = () => {
       setShowAddModal(false);
       setSelectedUser(null);
 
-      const updatedResponse = await axios.get(`http://192.168.111.140:5137/teams/${teamID}`);
+      const updatedResponse = await axios.get(`${baseUrl}/teams/${teamID}`);
       setTeamData(updatedResponse.data.data);
     } catch (err) {
       toast.error(`Failed to add member: ${err.response?.data?.message || err.message}`);
@@ -97,7 +98,7 @@ const TeamDetails = () => {
 
   const handleRemoveMemberClick = async () => {
     try {
-      const response = await axios.get(`http://192.168.111.140:5137/teams/${teamID}`);
+      const response = await axios.get(`${baseUrl}/teams/${teamID}`);
       const teamMembers = response.data.data?.team_members;
 
       if (!teamMembers || teamMembers.length === 0) {
@@ -119,7 +120,7 @@ const TeamDetails = () => {
     }
 
     try {
-      await axios.patch(`http://192.168.111.140:5137/teams/${teamID}/remove-member`, {
+      await axios.patch(`${baseUrl}/teams/${teamID}/remove-member`, {
         member_id: selectedMember.userID
       });
 
@@ -127,7 +128,7 @@ const TeamDetails = () => {
       setShowRemoveModal(false);
       setSelectedMember(null);
 
-      const updatedResponse = await axios.get(`http://192.168.111.140:5137/teams/${teamID}`);
+      const updatedResponse = await axios.get(`${baseUrl}/teams/${teamID}`);
       setTeamData(updatedResponse.data.data);
     } catch (err) {
       toast.error(`Failed to remove member: ${err.response?.data?.message || err.message}`);

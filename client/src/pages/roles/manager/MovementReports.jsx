@@ -112,7 +112,7 @@ const MovementReports = () => {
             if (filtered.length === 0) {
                 toast.info('No records found for the selected criteria');
             } else {
-                toast.success(`${filtered.length} records found`);
+                // toast.success(`${filtered.length} records found`);
             }
         } catch (err) {
             console.error(err);
