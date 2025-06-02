@@ -29,14 +29,13 @@ const MovementReports = () => {
   });
 
   const [users, setUsers] = useState([]);
+  const [filtersApplied, setFiltersApplied] = useState(false);
 
   // Sort state
   const [sortConfig, setSortConfig] = useState({
     key: 'dateTime',
     direction: 'desc'
   });
-
-  
 
   const fetchMovementReports = async () => {
     setIsLoading(true);
@@ -45,7 +44,7 @@ const MovementReports = () => {
       const usersResponse = await axios.get(`${baseUrl}/users`);
       setUsers(usersResponse.data.data);
       setMovementReports(response.data);
-      setFilteredData(response.data); // Initialize filteredData with all data
+      setFilteredData([]); // Initialize with empty array until filters are applied
     } catch (err) {
       console.error(err);
       toast.error('Failed to fetch movement reports');
@@ -59,6 +58,13 @@ const MovementReports = () => {
   }, []);
 
   const applyFilters = () => {
+    // Don't apply filters if no user is selected
+    if (!selectedUser && !statusFilter && !dateRange.start && !dateRange.end) {
+      setFilteredData([]);
+      setFiltersApplied(false);
+      return;
+    }
+
     // Apply filters when search button is clicked
     let result = [...movementReports];
 
@@ -112,6 +118,7 @@ const MovementReports = () => {
     }
 
     setFilteredData(result);
+    setFiltersApplied(true);
     setCurrentPage(1); // Reset to first page when filters change
   };
 
@@ -156,7 +163,9 @@ const MovementReports = () => {
       direction = 'desc';
     }
     setSortConfig({ key, direction });
-    applyFilters(); // Re-apply filters when sorting changes
+    if (filtersApplied) {
+      applyFilters(); // Re-apply filters when sorting changes
+    }
   };
 
   // Pagination logic
@@ -235,7 +244,8 @@ const MovementReports = () => {
     setSelectedUser('');
     setStatusFilter('all');
     setDateRange({ start: '', end: '' });
-    setFilteredData(movementReports);
+    setFilteredData([]);
+    setFiltersApplied(false);
     setCurrentPage(1);
   };
 
@@ -277,7 +287,8 @@ const MovementReports = () => {
           <div className="flex space-x-2">
             <button
               onClick={downloadCSV}
-              className="flex items-center px-3 py-2 bg-green-800 text-white rounded hover:bg-green-700 transition ease-in-out duration-300 hover:-translate-y-1 hover:scale-105 cursor-pointer"
+              disabled={!filtersApplied || filteredData.length === 0}
+              className={`flex items-center px-3 py-2 ${filtersApplied && filteredData.length > 0 ? 'bg-green-800 text-white hover:bg-green-700' : 'bg-gray-300 text-gray-500 cursor-not-allowed'} rounded transition ease-in-out duration-300 hover:-translate-y-1 hover:scale-105`}
             >
               <FaFileDownload className="mr-2" />
               Download CSV
@@ -298,7 +309,7 @@ const MovementReports = () => {
                 value={selectedUser}
                 onChange={(e) => setSelectedUser(e.target.value)}
               >
-                <option value="">All Users</option>
+                <option value="">Select User</option>
                 {users.map(user => (
                   <option key={user.username} value={user.username} className='capitalize'>
                     {user.username}
@@ -351,12 +362,18 @@ const MovementReports = () => {
             </div>
 
             {/* Search Button */}
-            <div>
+            <div className="flex space-x-2">
               <button
                 onClick={applyFilters}
                 className="w-full px-4 py-2 bg-blue-800 text-white rounded hover:bg-blue-900 transition-colors cursor-pointer"
               >
                 Search
+              </button>
+              <button
+                onClick={clearFilters}
+                className="w-full px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors cursor-pointer"
+              >
+                Clear
               </button>
             </div>
           </div>
@@ -367,6 +384,10 @@ const MovementReports = () => {
           {isLoading ? (
             <div className="flex justify-center items-center h-64">
               <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+            </div>
+          ) : !filtersApplied ? (
+            <div className="bg-white rounded-lg shadow p-6 text-center">
+              <p className="text-gray-500">Please select filters and click "Search" to view movement reports</p>
             </div>
           ) : filteredData.length === 0 ? (
             <div className="bg-white rounded-lg shadow p-6 text-center">
