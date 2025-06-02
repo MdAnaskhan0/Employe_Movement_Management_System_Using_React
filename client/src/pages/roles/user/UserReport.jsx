@@ -223,236 +223,6 @@ const UserReport = () => {
     };
 
 
-    const PrintFile = () => {
-        const dataToPrint = currentRows;
-
-        if (dataToPrint.length === 0) {
-            toast.info('No data available to print');
-            return;
-        }
-
-        const printWindow = window.open('', '_blank');
-        printWindow.document.open();
-
-        const currentDate = new Date().toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
-
-        printWindow.document.write(`
-        <html>
-            <head>
-                <title>Movement Report - ${user.name}</title>
-                <style>
-                    body {
-                        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                        margin: 0;
-                        padding: 20px;
-                        color: #333;
-                        line-height: 1.6;
-                    }
-                    .header {
-                        text-align: center;
-                        margin-bottom: 30px;
-                        padding-bottom: 20px;
-                        border-bottom: 1px solid #e0e0e0;
-                    }
-                    .header h1 {
-                        margin: 0;
-                        font-size: 28px;
-                        color: #2c3e50;
-                        font-weight: 600;
-                    }
-                    .header h2 {
-                        margin: 10px 0 0;
-                        font-size: 16px;
-                        font-weight: normal;
-                        color: #7f8c8d;
-                    }
-                    .report-info {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-bottom: 25px;
-  padding: 15px;
-  background-color: #f8f9fa;
-  border-radius: 5px;
-}
-
-.info-pair {
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 20px;
-}
-
-.info-pair div {
-  flex: 1 1 45%;
-}
-
-.report-info strong {
-  color: #2c3e50;
-  display: inline-block;
-  width: 100px;
-}
-
-                    table {
-                        width: 100%;
-                        border-collapse: collapse;
-                        margin-top: 20px;
-                        font-size: 14px;
-                        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-                    }
-                    th {
-                        background-color: #3498db;
-                        color: white;
-                        padding: 12px 8px;
-                        text-align: left;
-                        font-weight: 500;
-                    }
-                    td {
-                        padding: 10px 8px;
-                        border-bottom: 1px solid #e0e0e0;
-                    }
-                    tr:nth-child(even) {
-                        background-color: #f8f9fa;
-                    }
-                    tr:hover {
-                        background-color: #f1f8fe;
-                    }
-                    .footer {
-                        margin-top: 30px;
-                        padding-top: 20px;
-                        text-align: center;
-                        font-size: 12px;
-                        color: #7f8c8d;
-                        border-top: 1px solid #e0e0e0;
-                    }
-                    .page-break {
-                        page-break-after: always;
-                    }
-                    @page {
-                        size: A4 portrait;
-                        margin: 15mm;
-                    }
-                    @media print {
-                        body {
-                            padding: 0;
-                        }
-                        .no-print {
-                            display: none;
-                        }
-                        table {
-                            box-shadow: none;
-                        }
-                    }
-                    .logo {
-                        text-align: center;
-                        margin-bottom: 20px;
-                    }
-                    .logo img {
-                        max-height: 60px;
-                    }
-                    .summary {
-                        margin: 20px 0;
-                        padding: 15px;
-                        background-color: #f8f9fa;
-                        border-radius: 5px;
-                    }
-                    .summary p {
-                        margin: 5px 0;
-                    }
-                </style>
-            </head>
-            <body>
-                <div class="logo">
-                    <!-- Add your company logo here if needed -->
-                    <!-- <img src="path/to/logo.png" alt="Company Logo"> -->
-                </div>
-                
-                <div class="header">
-                    <h1>Employee Movement Report</h1>
-                    <h2>${currentDate}</h2>
-                </div>
-                
-                <div class="report-info">
-  <div class="info-pair">
-    <div><strong>Employee ID:</strong> ${userInfo.E_ID || 'N/A'}</div>
-    <div><strong>Name:</strong> ${userInfo.Name || 'N/A'}</div>
-  </div>
-  <div class="info-pair">
-    <div><strong>Company:</strong> ${userInfo.Company_name || 'N/A'}</div>
-    <div><strong>Department:</strong> ${userInfo.Department || 'N/A'}</div>
-  </div>
-  <div class="info-pair">
-    <div><strong>Designation:</strong> ${userInfo.Designation || 'N/A'}</div>
-    <div></div> <!-- empty to maintain structure -->
-  </div>
-</div>
-
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Time</th>
-                            <th>Status</th>
-                            <th>Visit Status</th>
-                            <th>Location</th>
-                            <th>Contact</th>
-                            <th>Purpose</th>
-                            <th>Remarks</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${dataToPrint.map((mv, index) => `
-                            <tr ${index > 0 && index % 15 === 0 ? 'class="page-break"' : ''}>
-                                <td>${new Date(mv.dateTime).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric'
-        })}</td>
-                                <td>${mv.punchingTime
-                ? new Date(`1970-01-01T${mv.punchingTime}`).toLocaleTimeString('en-US', {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    hour12: true,
-                })
-                : 'N/A'}</td>
-                                <td style="color: ${mv.punchTime === 'Punch In' ? '#27ae60' : '#e74c3c'}">
-                                    ${mv.punchTime || 'N/A'}
-                                </td>
-                                <td>${mv.visitingStatus || '-'}</td>
-                                <td>${mv.placeName || '-'}</td>
-                                <td>${mv.partyName || '-'}</td>
-                                <td>${mv.purpose || '-'}</td>
-                                <td>${mv.remark || '-'}</td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-                
-                <div class="footer">
-                    <p>Generated on ${new Date().toLocaleString()} | Page ${Math.ceil(dataToPrint.length / 15)} of ${Math.ceil(dataToPrint.length / 15)}</p>
-                    <p class="no-print">This is a computer generated report. No signature required.</p>
-                </div>
-                
-                <script>
-                    // Print the window when loaded
-                    window.onload = function() {
-                        setTimeout(function() {
-                            window.print();
-                            window.close();
-                        }, 300);
-                    };
-                </script>
-            </body>
-        </html>
-    `);
-        printWindow.document.close();
-    };
-
-
     if (isLoading) {
         return (
             <div className="container mx-auto px-4 py-6">
@@ -487,6 +257,228 @@ const UserReport = () => {
             </div>
         );
     }
+
+    const PrintFile = () => {
+        const dataToPrint = currentRows;
+
+        if (dataToPrint.length === 0) {
+            toast.info('No data available to print');
+            return;
+        }
+
+        const printWindow = window.open('', '_blank');
+        printWindow.document.open();
+
+        const currentDateTime = new Date().toLocaleString();
+        const formattedRows = dataToPrint.map((mv, index) => {
+            const date = new Date(mv.dateTime).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+
+            const time = mv.punchingTime
+                ? new Date(`1970-01-01T${mv.punchingTime}`).toLocaleTimeString('en-US', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true
+                })
+                : 'N/A';
+
+            const statusColor = mv.punchTime === 'Punch In' ? '#27ae60' : '#e74c3c';
+
+            return `
+            <tr ${index > 0 && index % 20 === 0 ? 'class="page-break"' : ''}>
+                <td>${date}</td>
+                <td>${time}</td>
+                <td style="color: ${statusColor}">${mv.punchTime || 'N/A'}</td>
+                <td>${mv.visitingStatus || '-'}</td>
+                <td>${mv.placeName || '-'}</td>
+                <td>${mv.partyName || '-'}</td>
+                <td>${mv.purpose || '-'}</td>
+                <td>${mv.remark || '-'}</td>
+            </tr>
+        `;
+        }).join('');
+
+        const htmlContent = `
+        <html>
+            <head>
+                <title>Movement Report - ${user.name}</title>
+                <style>
+                    html, body {
+                        height: 100%;
+                        margin: 0;
+                        padding: 0;
+                        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                        color: #333;
+                        line-height: 1.4;
+                        font-size: 13px;
+                    }
+                    .wrapper {
+                        display: flex;
+                        flex-direction: column;
+                        min-height: 100vh;
+                        padding: 5px 10px;
+                    }
+                    .header {
+                        text-align: center;
+                        margin-bottom: 15px;
+                        padding-bottom: 10px;
+                        border-bottom: 1px solid #e0e0e0;
+                    }
+                    .header h1 {
+                        margin: 0 0 5px 0;
+                        font-size: 20px;
+                        color: #2c3e50;
+                        font-weight: 600;
+                    }
+                    .report-info {
+                        display: flex;
+                        flex-direction: column;
+                        gap: 8px;
+                        margin-bottom: 15px;
+                        padding: 10px;
+                        background-color: #f8f9fa;
+                        border-radius: 3px;
+                        margin-left: 30px;
+                    }
+                    .info-pair {
+                        display: flex;
+                        justify-content: space-between;
+                        flex-wrap: wrap;
+                        gap: 15px;
+                    }
+                    .info-pair div {
+                        flex: 1 1 45%;
+                        min-width: 0;
+                    }
+                    .report-info strong {
+                        color: #2c3e50;
+                        display: inline-block;
+                        width: 90px;
+                    }
+                    table {
+                        width: 100%;
+                        border-collapse: collapse;
+                        margin-top: 15px;
+                        font-size: 12px;
+                        margin-left: 30px;
+                        flex-shrink: 0;
+                    }
+                    th {
+                        background-color: #3498db;
+                        color: white;
+                        padding: 8px 6px;
+                        text-align: left;
+                        font-weight: 500;
+                    }
+                    td {
+                        padding: 6px;
+                        border-bottom: 1px solid #e0e0e0;
+                    }
+                    tr:nth-child(even) {
+                        background-color: #f8f9fa;
+                    }
+                    .spacer {
+                        flex-grow: 1;
+                    }
+                    .footer {
+    text-align: center;
+    font-size: 11px;
+    color: #7f8c8d;
+    border-top: 1px solid #e0e0e0;
+    padding: 10px 0;
+}
+                    .page-break {
+                        page-break-after: always;
+                    }
+                    @page {
+                        size: A4 portrait;
+                        margin: 5mm;
+                    }
+                    @media print {
+    body {
+        padding-bottom: 60px; /* space for footer */
+    }
+
+    .footer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: white;
+    }
+
+    .no-print {
+        display: none;
+    }
+}
+                </style>
+            </head>
+            <body>
+                <div class="wrapper">
+                    <div class="header">
+                        <h1>Employee Movement Report</h1>
+                    </div>
+
+                    <div class="report-info">
+                        <div class="info-pair">
+                            <div><strong>Employee ID:</strong> ${userInfo.E_ID || 'N/A'}</div>
+                            <div><strong>Name:</strong> ${userInfo.Name || 'N/A'}</div>
+                        </div>
+                        <div class="info-pair">
+                            <div><strong>Company:</strong> ${userInfo.Company_name || 'N/A'}</div>
+                            <div><strong>Department:</strong> ${userInfo.Department || 'N/A'}</div>
+                        </div>
+                        <div class="info-pair">
+                            <div><strong>Designation:</strong> ${userInfo.Designation || 'N/A'}</div>
+                            <div></div>
+                        </div>
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Status</th>
+                                <th>Visit Status</th>
+                                <th>Location</th>
+                                <th>Contact</th>
+                                <th>Purpose</th>
+                                <th>Remarks</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${formattedRows}
+                        </tbody>
+                    </table>
+
+                    <div class="spacer"></div>
+
+                    <div class="footer">
+                        <p>Generated on ${currentDateTime}</p>
+                        <p class="no-print">This is a computer generated report</p>
+                    </div>
+                </div>
+
+                <script>
+                    window.onload = function() {
+                        setTimeout(function() {
+                            window.print();
+                            window.close();
+                        }, 200);
+                    };
+                </script>
+            </body>
+        </html>
+    `;
+
+        printWindow.document.write(htmlContent);
+        printWindow.document.close();
+    };
+
 
     return (
         <>
@@ -737,7 +729,7 @@ const UserReport = () => {
                                                                     className="border border-gray-300 rounded px-2 py-1 text-sm"
                                                                 />
                                                             ) : (
-                                                                mv.remark || '-'
+                                                                mv.remark ? mv.remark.slice(0, 25) : '-'
                                                             )}
                                                         </td>
                                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">

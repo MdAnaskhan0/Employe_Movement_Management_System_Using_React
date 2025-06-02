@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaBars, FaTimes, FaSearch, FaFilter, FaCalendarAlt, FaSort } from 'react-icons/fa';
+import { FaBars, FaTimes, FaSearch, FaFilter, FaCalendarAlt, FaSort, FaPrint } from 'react-icons/fa';
 import { MdFirstPage, MdLastPage, MdChevronLeft, MdChevronRight } from 'react-icons/md';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -30,6 +30,9 @@ const MovementReports = () => {
 
   const [users, setUsers] = useState([]);
   const [filtersApplied, setFiltersApplied] = useState(false);
+
+  console.log(selectedUser);
+  
 
   // Sort state
   const [sortConfig, setSortConfig] = useState({
@@ -240,6 +243,231 @@ const MovementReports = () => {
     toast.success('CSV download started');
   };
 
+  // // Print Function
+  // const PrintFile = () => {
+  //   console.log("Printing");
+  //   // Print the movement record with user details when user selected Like Name, Employe ID, company, Department, designation and movement data.
+  //   // If user not selected then print only movement data.
+  // };
+
+
+const PrintFile = () => {
+  if (filteredData.length === 0) {
+    toast.warning('No data to print');
+    return;
+  }
+
+  const userInfo = selectedUser
+    ? users.find(user => user.username.toLowerCase() === selectedUser.toLowerCase())
+    : null;
+
+  const formattedRows = currentRows.map(report => `
+    <tr>
+      <td class="py-1">${report.username}</td>
+      <td class="py-1">${formatDateTime(report.dateTime)}</td>
+      <td class="py-1">${formatTime12Hour(report.punchingTime)}</td>
+      <td class="py-1">${report.punchTime}</td>
+      <td class="py-1"><span class="status-badge status-${report.visitingStatus}">${report.visitingStatus}</span></td>
+      <td class="py-1">${report.placeName || 'N/A'}</td>
+      <td class="py-1">${report.partyName || 'N/A'}</td>
+      <td class="py-1">${report.purpose || 'Not specified'}</td>
+    </tr>
+  `).join('');
+
+  const printWindow = window.open('', '_blank');
+  printWindow.document.open();
+
+  const currentDateTime = new Date().toLocaleString();
+
+  printWindow.document.write(`
+    <html>
+      <head>
+        <title>Movement Report ${userInfo ? `- ${userInfo.username}` : ''}</title>
+        <style>
+          * {
+            box-sizing: border-box;
+          }
+          body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 10px;
+            color: #333;
+            font-size: 12px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            position: relative;
+          }
+          .content {
+            flex: 1;
+          }
+          .header {
+            text-align: center;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #e0e0e0;
+          }
+          .header h1 {
+            margin: 0 0 5px 0;
+            font-size: 18px;
+            color: #2c3e50;
+          }
+          .report-info {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            margin-bottom: 10px;
+            padding: 8px;
+            background-color: #f8f9fa;
+            border-radius: 3px;
+            font-size: 11px;
+            margin-left: 30px;
+          }
+          .info-pair {
+            display: flex;
+            justify-content: space-between;
+            gap: 5px;
+          }
+          .info-pair div {
+            flex: 1 1 45%;
+            min-width: 0;
+          }
+          .report-info strong {
+            color: #2c3e50;
+            display: inline-block;
+            width: 80px;
+          }
+          table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 5px;
+            font-size: 11px;
+            margin-left: 30px;
+          }
+          th {
+            background-color: #3498db;
+            color: white;
+            padding: 4px;
+            text-align: left;
+            font-weight: 500;
+            font-size: 11px;
+          }
+          td {
+            padding: 4px;
+            border-bottom: 1px solid #e0e0e0;
+          }
+          tr:nth-child(even) {
+            background-color: #f8f9fa;
+          }
+          .footer {
+            width: 100%;
+            text-align: center;
+            font-size: 10px;
+            color: #7f8c8d;
+            border-top: 1px solid #e0e0e0;
+            padding-top: 6px;
+            margin-top: auto;
+          }
+          @page {
+            size: A4 portrait;
+            margin: 10mm;
+          }
+          @media print {
+            body {
+              padding: 0;
+            }
+            .footer {
+              position: fixed;
+              bottom: 0;
+              left: 0;
+              right: 0;
+              padding-bottom: px;
+              background: white;
+            }
+          }
+          .status-badge {
+            display: inline-block;
+            padding: 1px 4px;
+            border-radius: 8px;
+            font-size: 10px;
+            font-weight: 500;
+          }
+          .status-IN {
+            background-color: #d1fae5;
+            color: #065f46;
+          }
+          .status-OUT {
+            background-color: #fee2e2;
+            color: #b91c1c;
+          }
+          .status-PENDING {
+            background-color: #fef3c7;
+            color: #92400e;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="content">
+          <div class="header">
+            <h1>Movement Report of ${userInfo ? userInfo.Name : 'User'}</h1>
+          </div>
+
+          ${userInfo ? `
+          <div class="report-info">
+            <div class="info-pair">
+              <div><strong>Employee:</strong> ${userInfo.Name || 'N/A'}</div>
+              <div><strong>ID:</strong> ${userInfo.E_ID || 'N/A'}</div>
+            </div>
+            <div class="info-pair">
+              <div><strong>Company:</strong> ${userInfo.Company_name || 'N/A'}</div>
+              <div><strong>Department:</strong> ${userInfo.Department || 'N/A'}</div>
+            </div>
+            <div class="info-pair">
+              <div><strong>Designation:</strong> ${userInfo.Designation || 'N/A'}</div>
+            </div>
+          </div>
+          ` : ''}
+
+          <table>
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Submitted Date/Time</th>
+                <th>Punch Time</th>
+                <th>Punch Status</th>
+                <th>Visit Status</th>
+                <th>Place</th>
+                <th>Party</th>
+                <th>Purpose</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${formattedRows}
+            </tbody>
+          </table>
+        </div>
+
+        <div class="footer">
+          <p>Generated on: ${currentDateTime}</p>
+        </div>
+
+        <script>
+          window.onload = function() {
+            setTimeout(function() {
+              window.print();
+              window.close();
+            }, 200);
+          };
+        </script>
+      </body>
+    </html>
+  `);
+
+  printWindow.document.close();
+};
+
+
+
   const clearFilters = () => {
     setSelectedUser('');
     setStatusFilter('all');
@@ -281,7 +509,7 @@ const MovementReports = () => {
               )}
             </button>
 
-            <h1 className="text-xl font-semibold text-gray-800">Movement Reports</h1>
+            <h1 className="text-xl font-semibold text-gray-800"> Movement Reports</h1>
           </div>
 
           <div className="flex space-x-2">
@@ -292,6 +520,13 @@ const MovementReports = () => {
             >
               <FaFileDownload className="mr-2" />
               Download CSV
+            </button>
+
+            <button
+              onClick={PrintFile}
+              className='flex items-center px-3 py-2 rounded-md text-sm cursor-pointer bg-emerald-700 hover:bg-emerald-600 text-white'>
+              <FaPrint className="mr-2" />
+              Print
             </button>
           </div>
         </header>
@@ -316,7 +551,7 @@ const MovementReports = () => {
                   </option>
                 ))}
               </select>
-            </div> 
+            </div>
 
             {/* Status Filter */}
             <div className="relative">
@@ -570,8 +805,8 @@ const MovementReports = () => {
                             key={pageNum}
                             onClick={() => paginate(pageNum)}
                             className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${currentPage === pageNum
-                                ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
-                                : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
+                              ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
+                              : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
                               }`}
                           >
                             {pageNum}

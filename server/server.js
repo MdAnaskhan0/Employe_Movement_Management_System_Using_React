@@ -464,9 +464,6 @@ app.get('/users/:id', (req, res) => {
   });
 });
 
-
-// 👉 Upload profile image
-// Create profile_images table if not exists
 const createProfileImagesTable = `CREATE TABLE IF NOT EXISTS profile_images (
   imageID INT AUTO_INCREMENT PRIMARY KEY,
   userID INT NOT NULL,
@@ -485,8 +482,7 @@ if (!fs.existsSync('uploads')) {
   fs.mkdirSync('uploads');
 }
 
-// Profile Image Routes
-// Upload or Update profile image
+
 app.post('/profile-image/:userID', upload.single('image'), (req, res) => {
   const { userID } = req.params;
   if (!req.file) {
@@ -535,7 +531,7 @@ app.post('/profile-image/:userID', upload.single('image'), (req, res) => {
   });
 });
 
-// Get profile image
+
 app.get('/profile-image/:userID', (req, res) => {
   const { userID } = req.params;
   
