@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import PlaceNames from '../../../assets/Json/Places.json';
+import LogoutButton from '../../../components/LogoutButton';
 
 const UploadReportUser = () => {
   const { user } = useAuth();
@@ -127,196 +128,201 @@ const UploadReportUser = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8">
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="max-w-3xl mx-auto"
-      >
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200 hover:shadow-xl transition-shadow duration-300">
-          <div className="bg-gradient-to-r from-blue-600 to-blue-700 py-5 px-6"> 
-            <h2 className="text-lg md:text-2xl font-semibold text-white flex items-center space-x-3">
-              <FiClock className="text-white" />
-              <span>Movement Status Report</span>
-            </h2>
-            <p className="text-sm text-blue-100 mt-1">Record your daily movements and visits</p>
+    <>
+      <div className='flex justify-end px-4'>
+        <LogoutButton />
+      </div>
+      <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="max-w-3xl mx-auto"
+        >
+          <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200 hover:shadow-xl transition-shadow duration-300">
+            <div className="bg-gradient-to-r from-blue-600 to-blue-700 py-5 px-6">
+              <h2 className="text-lg md:text-2xl font-semibold text-white flex items-center space-x-3">
+                <FiClock className="text-white" />
+                <span>Movement Status Report</span>
+              </h2>
+              <p className="text-sm text-blue-100 mt-1">Record your daily movements and visits</p>
+            </div>
+
+            <form onSubmit={handleSubmit} className="p-6 space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Punch Status */}
+                <div className="space-y-1">
+                  <label htmlFor="punchTime" className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
+                    <FiClock className="mr-2 text-blue-600" />
+                    Punch Status
+                  </label>
+                  <select
+                    id="punchTime"
+                    name="punchTime"
+                    value={formData.punchTime}
+                    onChange={handleChange}
+                    required
+                    className="mt-1 block w-full pl-9 pr-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm transition-all duration-200 hover:border-blue-400"
+                  >
+                    <option value="">Select Status</option>
+                    <option value="Punch In">Punch In</option>
+                    <option value="Punch Out">Punch Out</option>
+                  </select>
+                </div>
+
+                {/* Punching Time */}
+                <div className="space-y-1">
+                  <label htmlFor="punchingTime" className="block text-sm font-medium text-gray-700 mb-1">
+                    Punching Time
+                  </label>
+                  <input
+                    type="time"
+                    id="punchingTime"
+                    name="punchingTime"
+                    value={formData.punchingTime}
+                    onChange={handleChange}
+                    required
+                    className="mt-1 block w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm transition-all duration-200 hover:border-blue-400"
+                  />
+                </div>
+
+                {/* Visiting Status */}
+                <div className="space-y-1">
+                  <label htmlFor="visitingStatus" className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
+                    <FiMapPin className="mr-2 text-blue-600" />
+                    Visiting Status
+                  </label>
+                  <select
+                    id="visitingStatus"
+                    name="visitingStatus"
+                    value={formData.visitingStatus}
+                    onChange={handleChange}
+                    required
+                    className="mt-1 block w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm transition-all duration-200 hover:border-blue-400"
+                  >
+                    <option value="">Select Status</option>
+                    {visitingStatuses.map(status => (
+                      <option key={status.visitingstatusID} value={status.visitingstatusname}>
+                        {status.visitingstatusname}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Place Name with Suggestions */}
+                <div className="relative">
+                  <label htmlFor="placeName" className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
+                    <FiMapPin className="mr-2 text-blue-600" />
+                    Place Name
+                  </label>
+                  <input
+                    id="placeName"
+                    name="placeName"
+                    value={formData.placeName}
+                    onChange={handleChange}
+                    required
+                    autoComplete="off"
+                    className="mt-1 block w-full pl-3 pr-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm transition-all duration-200 hover:border-blue-400"
+                  />
+                  {filteredPlaces.length > 0 && (
+                    <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded-b-lg max-h-40 overflow-y-auto shadow-lg">
+                      {filteredPlaces.map((place, idx) => (
+                        <li
+                          key={idx}
+                          className="px-4 py-2 hover:bg-blue-50 cursor-pointer text-sm transition-colors duration-150"
+                          onClick={() => handleSelectSuggestion('placeName', place)}
+                        >
+                          {place}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+
+                {/* Party Name with Suggestions */}
+                <div className="relative">
+                  <label htmlFor="partyName" className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
+                    <FiBriefcase className="mr-2 text-blue-600" />
+                    Party Name
+                  </label>
+                  <input
+                    id="partyName"
+                    name="partyName"
+                    value={formData.partyName}
+                    onChange={handleChange}
+                    required
+                    autoComplete="off"
+                    className="mt-1 block w-full pl-3 pr-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm transition-all duration-200 hover:border-blue-400"
+                  />
+                  {filteredParties.length > 0 && (
+                    <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded-b-lg max-h-40 overflow-y-auto shadow-lg">
+                      {filteredParties.map((party, idx) => (
+                        <li
+                          key={idx}
+                          className="px-4 py-2 hover:bg-blue-50 cursor-pointer text-sm transition-colors duration-150"
+                          onClick={() => handleSelectSuggestion('partyName', party)}
+                        >
+                          {party}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+
+                {/* Purpose */}
+                <div className="space-y-1">
+                  <label htmlFor="purpose" className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
+                    <FiFileText className="mr-2 text-blue-600" />
+                    Purpose
+                  </label>
+                  <input
+                    type="text"
+                    id="purpose"
+                    name="purpose"
+                    value={formData.purpose}
+                    onChange={handleChange}
+                    required
+                    className="mt-1 block w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm transition-all duration-200 hover:border-blue-400"
+                  />
+                </div>
+              </div>
+
+              {/* Remarks */}
+              <div className="space-y-1">
+                <label htmlFor="remark" className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
+                  <FiEdit2 className="mr-2 text-blue-600" />
+                  Remarks
+                </label>
+                <textarea
+                  id="remark"
+                  name="remark"
+                  value={formData.remark}
+                  onChange={handleChange}
+                  className="mt-1 block w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm transition-all duration-200 hover:border-blue-400"
+                  rows="4"
+                  placeholder="Additional notes..."
+                ></textarea>
+              </div>
+
+              <div className="pt-2">
+                <motion.button
+                  type="submit"
+                  disabled={isSubmitting}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className={`w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 ${isSubmitting ? 'opacity-80 cursor-not-allowed' : ''}`}
+                >
+                  <FiSend className="mr-2" />
+                  {isSubmitting ? 'Processing...' : 'Submit Report'}
+                </motion.button>
+              </div>
+            </form>
           </div>
+        </motion.div>
 
-          <form onSubmit={handleSubmit} className="p-6 space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Punch Status */}
-              <div className="space-y-1">
-                <label htmlFor="punchTime" className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
-                  <FiClock className="mr-2 text-blue-600" />
-                  Punch Status
-                </label>
-                <select
-                  id="punchTime"
-                  name="punchTime"
-                  value={formData.punchTime}
-                  onChange={handleChange}
-                  required
-                  className="mt-1 block w-full pl-9 pr-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm transition-all duration-200 hover:border-blue-400"
-                >
-                  <option value="">Select Status</option>
-                  <option value="Punch In">Punch In</option>
-                  <option value="Punch Out">Punch Out</option>
-                </select>
-              </div>
-
-              {/* Punching Time */}
-              <div className="space-y-1">
-                <label htmlFor="punchingTime" className="block text-sm font-medium text-gray-700 mb-1">
-                  Punching Time
-                </label>
-                <input
-                  type="time"
-                  id="punchingTime"
-                  name="punchingTime"
-                  value={formData.punchingTime}
-                  onChange={handleChange}
-                  required
-                  className="mt-1 block w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm transition-all duration-200 hover:border-blue-400"
-                />
-              </div>
-
-              {/* Visiting Status */}
-              <div className="space-y-1">
-                <label htmlFor="visitingStatus" className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
-                  <FiMapPin className="mr-2 text-blue-600" />
-                  Visiting Status
-                </label>
-                <select
-                  id="visitingStatus"
-                  name="visitingStatus"
-                  value={formData.visitingStatus}
-                  onChange={handleChange}
-                  required
-                  className="mt-1 block w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm transition-all duration-200 hover:border-blue-400"
-                >
-                  <option value="">Select Status</option>
-                  {visitingStatuses.map(status => (
-                    <option key={status.visitingstatusID} value={status.visitingstatusname}>
-                      {status.visitingstatusname}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Place Name with Suggestions */}
-              <div className="relative">
-                <label htmlFor="placeName" className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
-                  <FiMapPin className="mr-2 text-blue-600" />
-                  Place Name
-                </label>
-                <input
-                  id="placeName"
-                  name="placeName"
-                  value={formData.placeName}
-                  onChange={handleChange}
-                  required
-                  autoComplete="off"
-                  className="mt-1 block w-full pl-3 pr-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm transition-all duration-200 hover:border-blue-400"
-                />
-                {filteredPlaces.length > 0 && (
-                  <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded-b-lg max-h-40 overflow-y-auto shadow-lg">
-                    {filteredPlaces.map((place, idx) => (
-                      <li
-                        key={idx}
-                        className="px-4 py-2 hover:bg-blue-50 cursor-pointer text-sm transition-colors duration-150"
-                        onClick={() => handleSelectSuggestion('placeName', place)}
-                      >
-                        {place}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-
-              {/* Party Name with Suggestions */}
-              <div className="relative">
-                <label htmlFor="partyName" className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
-                  <FiBriefcase className="mr-2 text-blue-600" />
-                  Party Name
-                </label>
-                <input
-                  id="partyName"
-                  name="partyName"
-                  value={formData.partyName}
-                  onChange={handleChange}
-                  required
-                  autoComplete="off"
-                  className="mt-1 block w-full pl-3 pr-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm transition-all duration-200 hover:border-blue-400"
-                />
-                {filteredParties.length > 0 && (
-                  <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded-b-lg max-h-40 overflow-y-auto shadow-lg">
-                    {filteredParties.map((party, idx) => (
-                      <li
-                        key={idx}
-                        className="px-4 py-2 hover:bg-blue-50 cursor-pointer text-sm transition-colors duration-150"
-                        onClick={() => handleSelectSuggestion('partyName', party)}
-                      >
-                        {party}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-
-              {/* Purpose */}
-              <div className="space-y-1">
-                <label htmlFor="purpose" className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
-                  <FiFileText className="mr-2 text-blue-600" />
-                  Purpose
-                </label>
-                <input
-                  type="text"
-                  id="purpose"
-                  name="purpose"
-                  value={formData.purpose}
-                  onChange={handleChange}
-                  required
-                  className="mt-1 block w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm transition-all duration-200 hover:border-blue-400"
-                />
-              </div>
-            </div>
-
-            {/* Remarks */}
-            <div className="space-y-1">
-              <label htmlFor="remark" className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
-                <FiEdit2 className="mr-2 text-blue-600" />
-                Remarks
-              </label>
-              <textarea
-                id="remark"
-                name="remark"
-                value={formData.remark}
-                onChange={handleChange}
-                className="mt-1 block w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm transition-all duration-200 hover:border-blue-400"
-                rows="4"
-                placeholder="Additional notes..."
-              ></textarea>
-            </div>
-
-            <div className="pt-2">
-              <motion.button
-                type="submit"
-                disabled={isSubmitting}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className={`w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 ${isSubmitting ? 'opacity-80 cursor-not-allowed' : ''}`}
-              >
-                <FiSend className="mr-2" />
-                {isSubmitting ? 'Processing...' : 'Submit Report'}
-              </motion.button>
-            </div>
-          </form>
-        </div>
-      </motion.div>
-
-      <ToastContainer />
-    </div>
+        <ToastContainer />
+      </div>
+    </>
   );
 };
 

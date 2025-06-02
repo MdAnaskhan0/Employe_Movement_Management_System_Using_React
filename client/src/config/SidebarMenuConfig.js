@@ -3,20 +3,21 @@
 export const sidebarMenu = {
   admin: [
     { name: 'Dashboard', path: '/dashboard' },
+    { name: 'Profile', path: '/user/profile' },
     {
-      name : 'Users',
-      path : '/admin/users',
-      submenu : [
-        { name : 'Create User', path : '/admin/create-user'},
-        { name : 'All Users', path : '/admin/users'},
+      name: 'Users',
+      path: '/admin/users',
+      submenu: [
+        { name: 'Create User', path: '/admin/create-user' },
+        { name: 'All Users', path: '/admin/users' },
       ]
     },
     {
-      name : 'Teams',
-      path : '/admin/teams',
-      submenu : [
-        { name : 'Create Team', path : '/admin/create-team'},
-        { name : 'All Teams', path : '/admin/teams'},
+      name: 'Teams',
+      path: '/admin/teams',
+      submenu: [
+        { name: 'Create Team', path: '/admin/create-team' },
+        { name: 'All Teams', path: '/admin/teams' },
       ]
     },
     {
@@ -28,18 +29,20 @@ export const sidebarMenu = {
       ]
     },
     {
-      name : 'Settings',
-      path : '/admin/settings',
-      submenu : [
-        { name : 'Departments', path : '/admin/departments'},
-        { name : 'Branch Names', path : '/admin/branchnames'},
-        { name : 'Designations', path : '/admin/designations'},
-        { name : 'Visiting Status', path : '/admin/visitingstatus'},
+      name: 'Settings',
+      path: '/admin/settings',
+      submenu: [
+        { name: 'Departments', path: '/admin/departments' },
+        { name: 'Branch Names', path: '/admin/branchnames' },
+        { name: 'Designations', path: '/admin/designations' },
+        { name: 'Visiting Status', path: '/admin/visitingstatus' },
       ]
     }
   ],
   manager: [
     { name: 'Dashboard', path: '/dashboard' },
+    { name: 'Profile', path: '/user/profile' },
+
     {
       name: 'Reports',
       path: '/manager/reports',
@@ -51,10 +54,12 @@ export const sidebarMenu = {
   ],
   accounce: [
     { name: 'Dashboard', path: '/dashboard' },
+    { name: 'Profile', path: '/user/profile' },
     { name: 'All Movement Reports', path: '/movement-reports' },
   ],
   teamleader: [
     { name: 'Dashboard', path: '/dashboard' },
+    { name: 'Profile', path: '/user/profile' },
     { name: 'Movement Status', path: '/user/upload-report' },
     { name: 'Movement Report', path: '/user/UserReport' },
     {
@@ -69,6 +74,7 @@ export const sidebarMenu = {
   ],
   user: [
     { name: 'Dashboard', path: '/dashboard' },
+    { name: 'Profile', path: '/user/profile' },
     { name: 'Movement Status', path: '/user/upload-report' },
     { name: 'Movement Report', path: '/user/UserReport' },
     {
@@ -77,6 +83,6 @@ export const sidebarMenu = {
       submenu: [
         { name: 'Team Massage', path: '/user/team-massage' },
       ]
-    }    
+    }
   ],
 };

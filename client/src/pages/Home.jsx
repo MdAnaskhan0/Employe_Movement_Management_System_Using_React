@@ -25,9 +25,9 @@ const Home = () => {
       <div className="w-full lg:w-1/2 flex flex-col items-center justify-center p-4 lg:p-12 mb-8 lg:mb-0">
         <div className="w-full max-w-full">
           <h1 className="text-2xl lg:text-3xl font-bold text-gray-800 mb-4 text-center lg:text-left">
-            Welcome to <span className="text-indigo-600">Fashion Group</span>Employee Portal
+            Welcome !! <br /><span className="text-indigo-600">Fashion Group</span> Employee Movement Portal
           </h1>
-          <p className="text-gray-400 mb-8 text-center lg:text-left">
+          <p className="text-gray-400 font-medium mb-8 text-center lg:text-left">
             Monitor and optimize workforce movement with our dedicated tracking platform.
           </p>
           

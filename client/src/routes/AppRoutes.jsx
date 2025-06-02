@@ -9,6 +9,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import Home from '../pages/Home';
 import NotFound from '../pages/NotFound';
 import Dashboard from '../pages/Dashboard';
+import Profile from '../pages/roles/user/Profile';
 // Admin
 import UserProfile from '../pages/roles/admin/UserProfile';
 import Users from '../pages/roles/admin/Users';
@@ -47,7 +48,7 @@ export default function AppRoutes() {
 
                       {/* Admin */}
                       <Route path="/admin/movement-reports" element={<AllMovementReports />} />
-                      <Route path="/admin/UserProfile" element={<UserProfile />} />
+                      <Route path="/admin/user-profile" element={<UserProfile />} />
                       <Route path="/admin/Users" element={<Users />} />
 
                       {/* Manager */}
@@ -59,6 +60,7 @@ export default function AppRoutes() {
                       <Route path="team/team-massage" element={<TeamMassage />}/>
 
                       {/* User */}
+                      <Route path="/user/profile" element={<Profile />} />
                       <Route path="/user/upload-report" element={<UploadReportUser />} />
                       <Route path="/user/UserReport" element={<UserReport />} />
                       <Route path="/user/team-massage" element={<TeamMassage />} />

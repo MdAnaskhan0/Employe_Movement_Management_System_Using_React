@@ -22,11 +22,9 @@ const Dashboard = () => {
       });
     } catch (error) {
       console.error('Logout logging failed:', error);
-      // Optionally, you can show a notification here.
     }
-
-    logout(); // Clear frontend session
-    navigate('/'); // Redirect to login/home
+    logout();
+    navigate('/');
   };
 
   useEffect(() => {
