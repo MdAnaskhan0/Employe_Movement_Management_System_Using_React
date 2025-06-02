@@ -104,7 +104,7 @@ const TeamChat = ({ selectedTeam, user, updateUnreadCount }) => {
         </div>
       ) : (
         <div 
-          className="h-64 md:h-96 overflow-y-auto p-4 bg-gray-50"
+          className="h-64 md:h-[60vh] overflow-y-auto p-4 bg-gray-50"
           id="chat-messages"
         >
           {messages.length === 0 ? (

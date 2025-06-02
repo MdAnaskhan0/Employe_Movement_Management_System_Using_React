@@ -99,7 +99,7 @@ const TeamMassage = () => {
         <LogoutButton />
       </div>
 
-      <div className="max-w-6xl mx-auto p-4 bg-white rounded-lg shadow-md flex flex-col md:flex-row">
+      <div className="max-w-6xl mx-auto p-4 bg-white rounded-lg shadow-md flex flex-col md:flex-row min-h-screen">
         {/* Team List Sidebar - Hidden on mobile unless toggled */}
         <div className={`${showTeamList ? 'block' : 'hidden'} md:block w-full md:w-1/4 border-r border-gray-200 pr-0 md:pr-4 mb-4 md:mb-0`}>
           <div className="flex items-center mb-6">

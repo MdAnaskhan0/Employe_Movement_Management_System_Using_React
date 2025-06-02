@@ -38,7 +38,7 @@ const UserDashboard = () => {
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-4 py-8">
+    <div className="min-h-screen max-w-6xl mx-auto px-4 sm:px-6 lg:px-4 py-8">
       {/* Header */}
       <div className="mb-10">
         <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
