@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../../../auth/AuthContext';
-import { FiClock, FiMapPin, FiBriefcase, FiFileText, FiEdit2, FiSend } from 'react-icons/fi';
+import { FiClock, FiMapPin, FiBriefcase, FiFileText, FiEdit2, FiSend, FiUser, FiCalendar } from 'react-icons/fi';
 import { motion } from 'framer-motion';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -28,6 +28,12 @@ const UploadReportUser = () => {
   const [partyNames, setPartyNames] = useState([]);
   const [filteredPlaces, setFilteredPlaces] = useState([]);
   const [filteredParties, setFilteredParties] = useState([]);
+  const [currentDate] = useState(new Date().toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  }));
   const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
@@ -49,12 +55,12 @@ const UploadReportUser = () => {
         ]);
 
         setVisitingStatuses(visitRes.data);
-        setPartyNames(partyRes.data.map(p => p.partyname)); // Extract only names
+        setPartyNames(partyRes.data.map(p => p.partyname));
       } catch (error) {
         console.error('Error fetching dropdown data:', error);
         toast.error('Failed to load dropdown data', {
           position: "top-right",
-          className: 'bg-blue-100 text-blue-800'
+          className: 'bg-red-100 text-red-800 border border-red-200'
         });
       }
     };
@@ -97,7 +103,7 @@ const UploadReportUser = () => {
       if (res.status === 201) {
         toast.success('Movement recorded successfully!', {
           position: "top-right",
-          className: 'bg-green-100 text-green-800'
+          className: 'bg-green-100 text-green-800 border border-green-200'
         });
         setFormData(prev => ({
           ...prev,
@@ -114,7 +120,7 @@ const UploadReportUser = () => {
       console.error('Submit error:', error);
       toast.error(error.response?.data?.message || 'Submission failed', {
         position: "top-right",
-        className: 'bg-blue-100 text-blue-800'
+        className: 'bg-red-100 text-red-800 border border-red-200'
       });
     } finally {
       setIsSubmitting(false);
@@ -128,33 +134,47 @@ const UploadReportUser = () => {
   );
 
   return (
-    <>
-      <div className='flex justify-end px-4'>
-        <LogoutButton />
-      </div>
-      <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-800">Movement Tracker</h1>
+            <p className="text-gray-600 flex items-center">
+              <FiCalendar className="mr-2" />
+              {currentDate}
+            </p>
+          </div>
+          <div className="flex items-center space-x-4">
+            <LogoutButton />
+          </div>
+        </div>
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="max-w-3xl mx-auto"
+          className="max-w-4xl mx-auto"
         >
-          <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200 hover:shadow-xl transition-shadow duration-300">
-            <div className="bg-gradient-to-r from-blue-600 to-blue-700 py-5 px-6">
-              <h2 className="text-lg md:text-2xl font-semibold text-white flex items-center space-x-3">
-                <FiClock className="text-white" />
-                <span>Movement Status Report</span>
-              </h2>
-              <p className="text-sm text-blue-100 mt-1">Record your daily movements and visits</p>
+          <div className="bg-white rounded-xl shadow-xl overflow-hidden border border-gray-100 hover:shadow-2xl transition-all duration-300">
+            <div className="bg-gradient-to-r from-indigo-600 to-blue-600 py-6 px-8">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-xl md:text-2xl font-bold text-white flex items-center space-x-3">
+                    <FiClock className="text-white" />
+                    <span>Movement Status Report</span>
+                  </h2>
+                  <p className="text-sm text-blue-100 mt-1">Record your daily movements and visits</p>
+                </div>
+              </div>
             </div>
 
-            <form onSubmit={handleSubmit} className="p-6 space-y-6">
+            <form onSubmit={handleSubmit} className="p-8 space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Punch Status */}
-                <div className="space-y-1">
+                <div className="space-y-2">
                   <label htmlFor="punchTime" className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
-                    <FiClock className="mr-2 text-blue-600" />
-                    Punch Status
+                    <FiClock className="mr-2 text-indigo-600" />
+                    Punch Status <span className='text-red-600 pl-1'>*</span>
                   </label>
                   <select
                     id="punchTime"
@@ -162,7 +182,7 @@ const UploadReportUser = () => {
                     value={formData.punchTime}
                     onChange={handleChange}
                     required
-                    className="mt-1 block w-full pl-9 pr-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm transition-all duration-200 hover:border-blue-400"
+                    className="mt-1 block w-full pl-10 pr-3 py-3 text-base border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all duration-200 hover:border-indigo-300 bg-gray-50"
                   >
                     <option value="">Select Status</option>
                     <option value="Punch In">Punch In</option>
@@ -171,9 +191,10 @@ const UploadReportUser = () => {
                 </div>
 
                 {/* Punching Time */}
-                <div className="space-y-1">
-                  <label htmlFor="punchingTime" className="block text-sm font-medium text-gray-700 mb-1">
-                    Punching Time
+                <div className="space-y-2">
+                  <label htmlFor="punchingTime" className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
+                    <FiClock className="mr-2 text-indigo-600" />
+                    Punching Time<span className='text-red-600 pl-1'>*</span>
                   </label>
                   <input
                     type="time"
@@ -182,15 +203,15 @@ const UploadReportUser = () => {
                     value={formData.punchingTime}
                     onChange={handleChange}
                     required
-                    className="mt-1 block w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm transition-all duration-200 hover:border-blue-400"
+                    className="mt-1 block w-full px-4 py-3 text-base border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all duration-200 hover:border-indigo-300 bg-gray-50"
                   />
                 </div>
 
                 {/* Visiting Status */}
-                <div className="space-y-1">
+                <div className="space-y-2">
                   <label htmlFor="visitingStatus" className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
-                    <FiMapPin className="mr-2 text-blue-600" />
-                    Visiting Status
+                    <FiMapPin className="mr-2 text-indigo-600" />
+                    Visiting Status<span className='text-red-600 pl-1'>*</span>
                   </label>
                   <select
                     id="visitingStatus"
@@ -198,7 +219,7 @@ const UploadReportUser = () => {
                     value={formData.visitingStatus}
                     onChange={handleChange}
                     required
-                    className="mt-1 block w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm transition-all duration-200 hover:border-blue-400"
+                    className="mt-1 block w-full px-4 py-3 text-base border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all duration-200 hover:border-indigo-300 bg-gray-50"
                   >
                     <option value="">Select Status</option>
                     {visitingStatuses.map(status => (
@@ -210,10 +231,10 @@ const UploadReportUser = () => {
                 </div>
 
                 {/* Place Name with Suggestions */}
-                <div className="relative">
+                <div className="space-y-2 relative">
                   <label htmlFor="placeName" className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
-                    <FiMapPin className="mr-2 text-blue-600" />
-                    Place Name
+                    <FiMapPin className="mr-2 text-indigo-600" />
+                    Place Name<span className='text-red-600 pl-1'>*</span>
                   </label>
                   <input
                     id="placeName"
@@ -222,28 +243,32 @@ const UploadReportUser = () => {
                     onChange={handleChange}
                     required
                     autoComplete="off"
-                    className="mt-1 block w-full pl-3 pr-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm transition-all duration-200 hover:border-blue-400"
+                    className="mt-1 block w-full px-4 py-3 text-base border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all duration-200 hover:border-indigo-300 bg-gray-50"
                   />
                   {filteredPlaces.length > 0 && (
-                    <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded-b-lg max-h-40 overflow-y-auto shadow-lg">
+                    <ul className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg max-h-48 overflow-y-auto shadow-xl divide-y divide-gray-100">
                       {filteredPlaces.map((place, idx) => (
-                        <li
+                        <motion.li
                           key={idx}
-                          className="px-4 py-2 hover:bg-blue-50 cursor-pointer text-sm transition-colors duration-150"
+                          initial={{ opacity: 0, y: -10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.2, delay: idx * 0.05 }}
+                          className="px-4 py-3 hover:bg-indigo-50 cursor-pointer text-sm transition-colors duration-150 flex items-center"
                           onClick={() => handleSelectSuggestion('placeName', place)}
                         >
+                          <FiMapPin className="text-indigo-400 mr-2" />
                           {place}
-                        </li>
+                        </motion.li>
                       ))}
                     </ul>
                   )}
                 </div>
 
                 {/* Party Name with Suggestions */}
-                <div className="relative">
+                <div className="space-y-2 relative">
                   <label htmlFor="partyName" className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
-                    <FiBriefcase className="mr-2 text-blue-600" />
-                    Party Name
+                    <FiBriefcase className="mr-2 text-indigo-600" />
+                    Party Name<span className='text-red-600 pl-1'>*</span>
                   </label>
                   <input
                     id="partyName"
@@ -252,28 +277,32 @@ const UploadReportUser = () => {
                     onChange={handleChange}
                     required
                     autoComplete="off"
-                    className="mt-1 block w-full pl-3 pr-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm transition-all duration-200 hover:border-blue-400"
+                    className="mt-1 block w-full px-4 py-3 text-base border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all duration-200 hover:border-indigo-300 bg-gray-50"
                   />
                   {filteredParties.length > 0 && (
-                    <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded-b-lg max-h-40 overflow-y-auto shadow-lg">
+                    <ul className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg max-h-48 overflow-y-auto shadow-xl divide-y divide-gray-100">
                       {filteredParties.map((party, idx) => (
-                        <li
+                        <motion.li
                           key={idx}
-                          className="px-4 py-2 hover:bg-blue-50 cursor-pointer text-sm transition-colors duration-150"
+                          initial={{ opacity: 0, y: -10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.2, delay: idx * 0.05 }}
+                          className="px-4 py-3 hover:bg-indigo-50 cursor-pointer text-sm transition-colors duration-150 flex items-center"
                           onClick={() => handleSelectSuggestion('partyName', party)}
                         >
+                          <FiBriefcase className="text-indigo-400 mr-2" />
                           {party}
-                        </li>
+                        </motion.li>
                       ))}
                     </ul>
                   )}
                 </div>
 
                 {/* Purpose */}
-                <div className="space-y-1">
+                <div className="space-y-2">
                   <label htmlFor="purpose" className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
-                    <FiFileText className="mr-2 text-blue-600" />
-                    Purpose
+                    <FiFileText className="mr-2 text-indigo-600" />
+                    Purpose<span className='text-red-600 pl-1'>*</span>
                   </label>
                   <input
                     type="text"
@@ -282,15 +311,15 @@ const UploadReportUser = () => {
                     value={formData.purpose}
                     onChange={handleChange}
                     required
-                    className="mt-1 block w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm transition-all duration-200 hover:border-blue-400"
+                    className="mt-1 block w-full px-4 py-3 text-base border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all duration-200 hover:border-indigo-300 bg-gray-50"
                   />
                 </div>
               </div>
 
               {/* Remarks */}
-              <div className="space-y-1">
+              <div className="space-y-2">
                 <label htmlFor="remark" className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
-                  <FiEdit2 className="mr-2 text-blue-600" />
+                  <FiEdit2 className="mr-2 text-indigo-600" />
                   Remarks
                 </label>
                 <textarea
@@ -298,31 +327,43 @@ const UploadReportUser = () => {
                   name="remark"
                   value={formData.remark}
                   onChange={handleChange}
-                  className="mt-1 block w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm transition-all duration-200 hover:border-blue-400"
+                  className="mt-1 block w-full px-4 py-3 text-base border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all duration-200 hover:border-indigo-300 bg-gray-50"
                   rows="4"
                   placeholder="Additional notes..."
                 ></textarea>
               </div>
 
-              <div className="pt-2">
+              <div className="pt-4">
                 <motion.button
                   type="submit"
                   disabled={isSubmitting}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className={`w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 ${isSubmitting ? 'opacity-80 cursor-not-allowed' : ''}`}
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.99 }}
+                  className={`w-full flex justify-center items-center py-4 px-6 border border-transparent rounded-xl shadow-sm text-base font-medium text-white bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200 ${isSubmitting ? 'opacity-90 cursor-not-allowed' : ''}`}
                 >
-                  <FiSend className="mr-2" />
-                  {isSubmitting ? 'Processing...' : 'Submit Report'}
+                  <FiSend className="mr-3" />
+                  {isSubmitting ? 'Processing...' : 'Submit Movement Report'}
                 </motion.button>
               </div>
             </form>
           </div>
         </motion.div>
 
-        <ToastContainer />
+        <ToastContainer 
+          position="top-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          toastClassName="border"
+          progressClassName="bg-gradient-to-r from-indigo-500 to-blue-500"
+        />
       </div>
-    </>
+    </div>
   );
 };
 
