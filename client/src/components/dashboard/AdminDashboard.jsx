@@ -51,9 +51,9 @@ const AdminDashboard = () => {
           axios.get(`${import.meta.env.VITE_API_BASE_URL}/users`),
           axios.get(`${import.meta.env.VITE_API_BASE_URL}/get_all_movement`),
           axios.get(`${import.meta.env.VITE_API_BASE_URL}/teams`),
+          axios.get(`${import.meta.env.VITE_API_BASE_URL}/companynames`),
           axios.get(`${import.meta.env.VITE_API_BASE_URL}/branchnames`),
           axios.get(`${import.meta.env.VITE_API_BASE_URL}/partynames`),
-          axios.get(`${import.meta.env.VITE_API_BASE_URL}/companynames`),
           axios.get(`${import.meta.env.VITE_API_BASE_URL}/departments`),
           axios.get(`${import.meta.env.VITE_API_BASE_URL}/designations`),
           axios.get(`${import.meta.env.VITE_API_BASE_URL}/roles`)

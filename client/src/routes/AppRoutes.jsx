@@ -50,7 +50,7 @@ export default function AppRoutes() {
                       {/* Admin */}
                       <Route path="/admin/create-user" element={<CreateUser />} />
                       <Route path="/admin/Users" element={<Users />} />
-                      <Route path="/admin/user-profile" element={<UserProfile />} />
+                      <Route path="/admin/user-profile/:userID" element={<UserProfile />} />
                       <Route path="/admin/movement-reports" element={<AllMovementReports />} />
 
 
