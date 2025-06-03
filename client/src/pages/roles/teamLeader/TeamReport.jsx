@@ -393,12 +393,12 @@ const handlePrint = () => {
               <div className="flex items-center mr-2">
                 <button
                   onClick={handleCSVDownload}
-                  className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center gap-1'>
+                  className='bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded flex items-center gap-1'>
                   <FaFileExcel /> CSV
                 </button>
                 <button
                   onClick={handlePrint}
-                  className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-2 flex items-center gap-1'>
+                  className='bg-blue-800 hover:bg-blue-900 text-white font-semibold py-2 px-4 rounded ml-2 flex items-center gap-1'>
                   <FaDownload /> Print
                 </button>
               </div>
