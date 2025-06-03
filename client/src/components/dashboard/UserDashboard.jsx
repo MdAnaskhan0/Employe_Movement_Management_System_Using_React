@@ -25,7 +25,7 @@ const UserDashboard = () => {
       title: "Teams",
       icon: <FaUsers size={20} />,
       color: "bg-indigo-600",
-      action: () => navigate('/user/teams')
+      action: () => navigate('/user/team-massage')
     }
   ];
 

@@ -8,7 +8,6 @@ import {
 } from 'react-icons/fi';
 import { Skeleton } from '@mui/material';
 import LogoutButton from '../../../components/LogoutButton';
-import ProfileProgress from '../../../components/Profile/ProfileProgress';
 import ProfileAvatar from '../../../components/Profile/ProfileAvatar';
 
 const Profile = () => {
@@ -138,13 +137,6 @@ const Profile = () => {
                                     <p className="text-gray-500 text-sm mt-1">{userData.Designation}</p>
                                     <p className="text-gray-400 text-xs mt-2">Employee ID: {userData.E_ID}</p>
                                 </div>
-                            </div>
-                            
-                            <div className="border-t border-gray-100 p-4">
-                                <ProfileProgress value={profileComplete} />
-                                <p className="text-xs text-gray-500 mt-2 text-center">
-                                    {profileComplete === 100 ? 'Profile complete!' : `${profileComplete}% complete`}
-                                </p>
                             </div>
                         </div>
                         
