@@ -11,8 +11,9 @@ import NotFound from '../pages/NotFound';
 import Dashboard from '../pages/Dashboard';
 import Profile from '../pages/roles/user/Profile';
 // Admin
-import UserProfile from '../pages/roles/admin/UserProfile';
+import CreateUser from '../pages/roles/admin/CreateUser';
 import Users from '../pages/roles/admin/Users';
+import UserProfile from '../pages/roles/admin/UserProfile';
 // Manager
 import AllMovementReports from '../pages/roles/manager/MovementReports';
 // Team Leader
@@ -47,9 +48,11 @@ export default function AppRoutes() {
                       <Route path="/unauthorized" element={<div>Unauthorized</div>} />
 
                       {/* Admin */}
-                      <Route path="/admin/movement-reports" element={<AllMovementReports />} />
-                      <Route path="/admin/user-profile" element={<UserProfile />} />
+                      <Route path="/admin/create-user" element={<CreateUser />} />
                       <Route path="/admin/Users" element={<Users />} />
+                      <Route path="/admin/user-profile" element={<UserProfile />} />
+                      <Route path="/admin/movement-reports" element={<AllMovementReports />} />
+
 
                       {/* Manager */}
                       <Route path="/movement-reports" element={<AllMovementReports />} />

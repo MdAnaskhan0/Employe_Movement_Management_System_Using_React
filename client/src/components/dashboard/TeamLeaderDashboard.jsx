@@ -1,12 +1,11 @@
 import React from 'react';
-import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../auth/AuthContext';
 import axios from 'axios';
-import { toast, ToastContainer } from 'react-toastify';
+import {ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {
-  FaUpload, FaChartLine, FaArrowRight
+  FaUpload,
 } from 'react-icons/fa';
 import {
   MdOutlineAnalytics
@@ -25,35 +24,30 @@ const TeamLeaderDashboard = ({ movementData }) => {
   const cards = [
     {
       title: "New Report",
-      description: "Upload new movement report",
       icon: <FaUpload size={24} />,
       action: () => navigate('/user/upload-report'),
       color: "bg-blue-600"
     },
     {
       title: "My Reports",
-      description: "View all your submitted reports",
       icon: <HiOutlineDocumentReport size={24} />,
       action: () => navigate('/user/UserReport'),
       color: "bg-indigo-600"
     },
     {
       title: "Team View",
-      description: "Manage your team members",
       icon: <HiOutlineUserGroup size={24} />,
       action: () => navigate('/team/manage-team'),
       color: "bg-purple-600"
     },
     {
       title: "Team Reports",
-      description: "View team analytics",
       icon: <MdOutlineAnalytics size={24} />,
       action: () => navigate('/team/team-report'),
       color: "bg-green-600"
     },
     {
       title: "Team Massage",
-      description: "Send massage to team members",
       icon: <FaCommentDots size={24} />,
       action: () => navigate('/team/team-massage'),
       color: "bg-red-600"
@@ -101,7 +95,6 @@ const TeamLeaderDashboard = ({ movementData }) => {
 
             <div className="flex flex-col items-start">
               <h3 className="font-semibold text-gray-800 my-2">{card.title}</h3>
-              <p className="text-gray-500 text-sm">{card.description}</p>
             </div>
           </div>
         ))}

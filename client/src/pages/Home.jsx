@@ -7,9 +7,9 @@ import 'react-toastify/dist/ReactToastify.css';
 
 const Home = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex flex-col lg:flex-row items-center justify-center p-4">
+    <div className="min-h-screen bg-white flex flex-col lg:flex-row items-center justify-center px-4">
       {/* Toast notifications container */}
-      <ToastContainer 
+      <ToastContainer
         position="top-right"
         autoClose={5000}
         hideProgressBar={false}
@@ -22,22 +22,25 @@ const Home = () => {
       />
 
       {/* Left Content - Text + Video (shown on all screens) */}
-      <div className="w-full lg:w-1/2 flex flex-col items-center justify-center p-4 lg:p-12 mb-8 lg:mb-0">
+      <div className="w-full lg:w-1/2 flex flex-col items-center justify-center p-4 lg:px-8 lg:py-0 mb-8 lg:mb-0">
         <div className="w-full max-w-full">
-          <h1 className="text-2xl lg:text-3xl font-bold text-gray-800 mb-4 text-center lg:text-left">
-            Welcome !! <br /><span className="text-indigo-600">Fashion Group</span> Employee Movement Portal
-          </h1>
-          <p className="text-gray-400 font-medium mb-8 text-center lg:text-left">
-            Monitor and optimize workforce movement with our dedicated tracking platform.
-          </p>
-          
-          <div className="bg-white p-2 rounded-xl shadow-xl">
-            <video 
-              src={HomeVideo} 
-              autoPlay 
-              loop 
-              muted 
-              className="w-full h-auto rounded-lg object-cover shadow-md"
+          {/*  */}
+
+          <div className="hidden md:flex flex-col items-center text-center md:text-left ">
+            <h1 className="text-xl font-bold text-gray-900 leading-snug mb-8">
+              <span className="text-5xl bg-gradient-to-r from-green-700 to-red-700 bg-clip-text text-transparent font-bold">Fashion Group</span> Movement Management System!
+            </h1>
+          </div>
+
+
+          {/*  */}
+          <div className="bg-white p-1 rounded-xl shadow-xl">
+            <video
+              src={HomeVideo}
+              autoPlay
+              loop
+              muted
+              className="w-full h-auto rounded-lg object-cover shadow-lg"
             />
           </div>
         </div>
@@ -52,9 +55,9 @@ const Home = () => {
             </div>
             <h2 className="text-2xl font-bold text-gray-800">Sign in to your account</h2>
           </div>
-          
+
           <Login />
-          
+
           <div className="mt-6 text-center text-sm">
             <p className="text-gray-600">
               Don't have an account?{' '}

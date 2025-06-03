@@ -10,10 +10,10 @@ export default function Header() {
 
   return (
     <div className="bg-gray-100 py-2 px-6 shadow-md">
-      <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
+      <div className="flex flex-row items-center justify-between md:space-y-0">
 
         {/* Logo */}
-        <div className="w-full md:w-1/2 flex justify-center md:justify-start items-center">
+        <div className="w-1/3 md:w-1/2 flex justify-center md:justify-start items-center">
           {isLoggedIn ? (
             <Link to="/dashboard">
               <img src={logo} alt="Logo" className="w-40 md:w-48 items-center p-4" />
