@@ -4,6 +4,8 @@ import { useAuth } from '../../../auth/AuthContext';
 import { toast } from 'react-toastify';
 import { FiFilter, FiCalendar, FiUsers, FiUser, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import ReactPaginate from 'react-paginate';
+import { FaDownload, FaFileExcel } from 'react-icons/fa';
+import * as XLSX from 'xlsx';
 
 const TeamReport = () => {
   const baseUrl = import.meta.env.VITE_API_BASE_URL;
@@ -20,7 +22,7 @@ const TeamReport = () => {
   // Pagination state
   const [currentPage, setCurrentPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const rowsPerPageOptions = [5, 10, 20, 50, 100];
+  const rowsPerPageOptions = [5, 10, 20, 50, 100, 200, 500, 1000];
 
   useEffect(() => {
     const fetchMovementData = async () => {
@@ -121,6 +123,180 @@ const TeamReport = () => {
     setCurrentPage(0);
   };
 
+  const handleCSVDownload = () => {
+    // Prepare data for CSV
+    const dataToExport = filteredMovements.map((item, index) => ({
+      No: index + 1,
+      Username: item.username,
+      Date: item.dateTime?.slice(0, 10),
+      'Punch Time': item.punchingTime,
+      'Punch Status': item.punchTime,
+      'Visit Status': item.visitingStatus,
+      Place: item.placeName,
+      Purpose: item.purpose,
+      Remark: item.remark
+    }));
+
+    // Create worksheet
+    const ws = XLSX.utils.json_to_sheet(dataToExport);
+
+    // Create workbook
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "MovementReport");
+
+    // Generate file name
+    const fileName = `Team_Movement_Report_${selectedTeam || 'All'}_${selectedMember || 'All'}_${fromDate || 'Start'}_${toDate || 'End'}.xlsx`;
+
+    // Download the file
+    XLSX.writeFile(wb, fileName);
+  }
+
+const handlePrint = () => {
+  // Create a printable HTML string with compact styling
+  const printContent = `
+    <html>
+      <head>
+        <title>Team Movement Report</title>
+        <style>
+          @page { size: auto; margin: 5mm 5mm 5mm 5mm; }
+          body { 
+            font-family: Arial, sans-serif; 
+            margin: 0; 
+            padding: 10px; 
+            font-size: 12px;
+            position: relative;
+            min-height: 100vh;
+          }
+          .content {
+            padding-bottom: 20px; /* Space for footer */
+          }
+          h1 { 
+            color: #333; 
+            text-align: center; 
+            font-size: 16px;
+            margin: 5px 0;
+          }
+          .filter-info {
+            margin: 5px 0 10px 30px;
+            font-size: 11px;
+          }
+          .filter-info p {
+            margin: 2px 0;
+          }
+          table { 
+            width: calc(100% - 60px); 
+            border-collapse: collapse; 
+            margin: 5px 30px;
+            font-size: 11px;
+          }
+          th, td { 
+            border: 1px solid #ddd; 
+            padding: 4px; 
+            text-align: left; 
+          }
+          th { 
+            background-color: #f2f2f2; 
+            font-weight: bold;
+            padding: 4px;
+          }
+          .status-in { 
+            background-color: #d4edda; 
+            color: #155724; 
+            padding: 2px 4px; 
+            border-radius: 3px; 
+            font-size: 10px;
+          }
+          .status-out { 
+            background-color: #cce5ff; 
+            color: #004085; 
+            padding: 2px 4px; 
+            border-radius: 3px; 
+            font-size: 10px;
+          }
+          .status-completed { 
+            background-color: #d4edda; 
+            color: #155724; 
+            padding: 2px 4px; 
+            border-radius: 3px; 
+            font-size: 10px;
+          }
+          .status-pending { 
+            background-color: #fff3cd; 
+            color: #856404; 
+            padding: 2px 4px; 
+            border-radius: 3px; 
+            font-size: 10px;
+          }
+          .footer { 
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            font-size: 10px; 
+            color: #666; 
+          }
+        </style>
+      </head>
+      <body>
+        <div class="content">
+          <h1>Team Movement Report</h1>
+          <div class="filter-info">
+            <p><strong>Team:</strong> ${selectedTeam || 'All'}</p>
+            <p><strong>Member:</strong> ${selectedMember || 'All'}</p>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>No</th>
+                <th>Username</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Status</th>
+                <th>Visit</th>
+                <th>Place</th>
+                <th>Purpose</th>
+                <th>Remark</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${currentMovements.map((item, index) => `
+                <tr>
+                  <td>${offset + index + 1}</td>
+                  <td>${item.username}</td>
+                  <td>${item.dateTime?.slice(0, 10)}</td>
+                  <td>${item.punchingTime}</td>
+                  <td><span class="${item.punchTime === 'In' ? 'status-in' : 'status-out'}">${item.punchTime}</span></td>
+                  <td><span class="${item.visitingStatus === 'Completed' ? 'status-completed' : 'status-pending'}">${item.visitingStatus}</span></td>
+                  <td>${item.placeName}</td>
+                  <td>${item.purpose}</td>
+                  <td>${item.remark}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+        <div class="footer">
+          Printed on ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}
+        </div>
+      </body>
+    </html>
+  `;
+
+  // Open print window
+  const printWindow = window.open('', '_blank');
+  printWindow.document.open();
+  printWindow.document.write(printContent);
+  printWindow.document.close();
+
+  // Wait for content to load before printing
+  printWindow.onload = function () {
+    setTimeout(() => {
+      printWindow.focus();
+      printWindow.print();
+      printWindow.close();
+    }, 300);
+  };
+}
+
   return (
     <div className="max-w-6xl mx-auto p-4">
       <h1 className="text-2xl font-bold text-gray-800 mb-6">Team Movement Reports</h1>
@@ -213,17 +389,19 @@ const TeamReport = () => {
         <div className="mt-8 bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
           <div className="p-4 border-b border-gray-200 flex justify-between items-center">
             <h2 className="text-lg font-semibold text-gray-800">Movement Data</h2>
-            <div className="flex items-center">
-              <label className="mr-2 text-sm text-gray-600">Rows per page:</label>
-              <select
-                className="border border-gray-300 rounded p-1 text-sm"
-                value={rowsPerPage}
-                onChange={handleRowsPerPageChange}
-              >
-                {rowsPerPageOptions.map(option => (
-                  <option key={option} value={option}>{option}</option>
-                ))}
-              </select>
+            <div className='flex items-center justify-between'>
+              <div className="flex items-center mr-2">
+                <button
+                  onClick={handleCSVDownload}
+                  className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center gap-1'>
+                  <FaFileExcel /> CSV
+                </button>
+                <button
+                  onClick={handlePrint}
+                  className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-2 flex items-center gap-1'>
+                  <FaDownload /> Print
+                </button>
+              </div>
             </div>
           </div>
 
@@ -250,22 +428,20 @@ const TeamReport = () => {
                     <td className="px-6 py-4">{item.dateTime?.slice(0, 10)}</td>
                     <td className="px-6 py-4">{item.punchingTime}</td>
                     <td className="px-6 py-4">
-                      <span className={`px-2 py-1 rounded-full text-xs ${
-                        item.punchTime === 'In' 
-                          ? 'bg-green-100 text-green-800' 
-                          : 'bg-blue-100 text-blue-800'
-                      }`}>
+                      <span className={`px-2 py-1 rounded-full text-xs ${item.punchTime === 'In'
+                        ? 'bg-green-100 text-green-800'
+                        : 'bg-blue-100 text-blue-800'
+                        }`}>
                         {item.punchTime}
                       </span>
                     </td>
                     <td className="px-6 py-4">
-                      <span className={`px-2 py-1 rounded-full text-xs ${
-                        item.visitingStatus === 'Completed' 
-                          ? 'bg-green-100 text-green-800' 
-                          : item.visitingStatus === 'Pending'
+                      <span className={`px-2 py-1 rounded-full text-xs ${item.visitingStatus === 'Completed'
+                        ? 'bg-green-100 text-green-800'
+                        : item.visitingStatus === 'Pending'
                           ? 'bg-yellow-100 text-yellow-800'
                           : 'bg-gray-100 text-gray-800'
-                      }`}>
+                        }`}>
                         {item.visitingStatus}
                       </span>
                     </td>
@@ -279,8 +455,17 @@ const TeamReport = () => {
           </div>
 
           <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
-            <div className="text-sm text-gray-600">
-              Showing {offset + 1} to {Math.min(offset + rowsPerPage, filteredMovements.length)} of {filteredMovements.length} entries
+            <div className="flex items-center">
+              <label className="mr-2 text-sm text-gray-600">Rows per page:</label>
+              <select
+                className="border border-gray-300 rounded p-1 text-sm"
+                value={rowsPerPage}
+                onChange={handleRowsPerPageChange}
+              >
+                {rowsPerPageOptions.map(option => (
+                  <option key={option} value={option} className='flex items-center'>{option} Rows</option>
+                ))}
+              </select>
             </div>
             <ReactPaginate
               previousLabel={<FiChevronLeft className="h-5 w-5" />}
@@ -305,8 +490,8 @@ const TeamReport = () => {
       ) : (
         <div className="mt-8 bg-white rounded-lg shadow-md border border-gray-200 p-8 text-center">
           <p className="text-gray-500">
-            {selectedTeam === '' 
-              ? 'Please select a team to view movement data' 
+            {selectedTeam === ''
+              ? 'Please select a team to view movement data'
               : 'No movement data found for the selected filters'}
           </p>
         </div>
