@@ -2,13 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { 
-  FaUserPlus, 
-  FaUserTie, 
-  FaIdCard, 
-  FaBuilding, 
-  FaPhone, 
-  FaEnvelope 
+import {
+    FaUserPlus,
+    FaUserTie,
+    FaIdCard,
+    FaBuilding,
+    FaPhone,
+    FaEnvelope
 } from 'react-icons/fa';
 import { MdDepartureBoard } from 'react-icons/md';
 import { SiGoogletasks } from 'react-icons/si';
@@ -28,36 +28,34 @@ const CreateUser = () => {
         email: '',
         role: ''
     });
-    
+
     const [department, setDepartment] = useState([]);
     const [designation, setDesignation] = useState([]);
     const [company, setCompany] = useState([]);
     const [roles, setRoles] = useState([]);
-    const baseUrl = process.env.REACT_APP_BASE_URL;
 
     useEffect(() => {
-        // Fetch dropdown data when component mounts
         const fetchDropdownData = async () => {
             try {
                 const [deptRes, desigRes, compRes, rolesRes] = await Promise.all([
-                    axios.get(`${baseUrl}/department`),
-                    axios.get(`${baseUrl}/designation`),
-                    axios.get(`${baseUrl}/company`),
-                    axios.get(`${baseUrl}/roles`)
+                    axios.get(`${import.meta.env.VITE_API_BASE_URL}/departments`),
+                    axios.get(`${import.meta.env.VITE_API_BASE_URL}/designations`),
+                    axios.get(`${import.meta.env.VITE_API_BASE_URL}/companynames`),
+                    axios.get(`${import.meta.env.VITE_API_BASE_URL}/roles`)
                 ]);
-                
-                setDepartment(deptRes.data.data || []);
-                setDesignation(desigRes.data.data || []);
-                setCompany(compRes.data.data || []);
-                setRoles(rolesRes.data.data || []);
+
+                setCompany(compRes.data.data || compRes.data);
+                setDepartment(deptRes.data.data || deptRes.data);
+                setDesignation(desigRes.data.data || desigRes.data);
+                setRoles(rolesRes.data.data || rolesRes.data);
             } catch (err) {
                 console.error("Error fetching dropdown data:", err);
                 toast.error('Failed to load dropdown data');
             }
         };
-        
+
         fetchDropdownData();
-    }, [baseUrl]);
+    }, []);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -68,19 +66,24 @@ const CreateUser = () => {
     };
 
     const handleCancel = () => {
-        navigate(-1); // Go back to previous page
+        navigate(-1);
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
+        
         try {
-            const response = await axios.post(`${baseUrl}/users`, formData);
+            console.log('Posting to:', `${import.meta.env.VITE_API_BASE_URL}/users`);
+            const response = await axios.post(
+                `${import.meta.env.VITE_API_BASE_URL}/users`, 
+                formData
+            );
 
             if (response.data.status === 'ok') {
                 toast.success('User created successfully!');
                 setTimeout(() => {
-                    navigate('/dashboard');
+                    navigate('/admin/users');
                 }, 2000);
             } else {
                 toast.error(`Error: ${response.data.message}`);
@@ -88,6 +91,8 @@ const CreateUser = () => {
         } catch (err) {
             console.error("Create user error", err);
             if (err.response) {
+                console.error("Response data:", err.response.data);
+                console.error("Response status:", err.response.status);
                 toast.error(`Error: ${err.response.data.message || 'Failed to create user'}`);
             } else {
                 toast.error('Network error. Please try again.');
@@ -110,6 +115,7 @@ const CreateUser = () => {
 
                 <form onSubmit={handleSubmit} className="p-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Username Field */}
                         <div className="space-y-2">
                             <label htmlFor="username" className="block text-sm font-medium text-gray-700 flex items-center">
                                 <FaUserTie className="mr-2 text-gray-600" />
@@ -127,6 +133,7 @@ const CreateUser = () => {
                             />
                         </div>
 
+                        {/* Password Field */}
                         <div className="space-y-2">
                             <label htmlFor="password" className="block text-sm font-medium text-gray-700 flex items-center">
                                 <FaUserTie className="mr-2 text-gray-600" />
@@ -144,6 +151,7 @@ const CreateUser = () => {
                             />
                         </div>
 
+                        {/* Employee ID Field */}
                         <div className="space-y-2">
                             <label htmlFor="eid" className="block text-sm font-medium text-gray-700 flex items-center">
                                 <FaIdCard className="mr-2 text-gray-600" />
@@ -161,6 +169,7 @@ const CreateUser = () => {
                             />
                         </div>
 
+                        {/* Full Name Field */}
                         <div className="space-y-2">
                             <label htmlFor="name" className="block text-sm font-medium text-gray-700 flex items-center">
                                 <FaUserTie className="mr-2 text-gray-600" />
@@ -178,6 +187,7 @@ const CreateUser = () => {
                             />
                         </div>
 
+                        {/* Department Dropdown */}
                         <div className="space-y-2">
                             <label htmlFor="department" className="block text-sm font-medium text-gray-700 flex items-center">
                                 <MdDepartureBoard className="mr-2 text-gray-600" />
@@ -200,6 +210,7 @@ const CreateUser = () => {
                             </select>
                         </div>
 
+                        {/* Designation Dropdown */}
                         <div className="space-y-2">
                             <label htmlFor="designation" className="block text-sm font-medium text-gray-700 flex items-center">
                                 <FaUserTie className="mr-2 text-gray-600" />
@@ -222,6 +233,7 @@ const CreateUser = () => {
                             </select>
                         </div>
 
+                        {/* Company Dropdown */}
                         <div className="space-y-2">
                             <label htmlFor="company" className="block text-sm font-medium text-gray-700 flex items-center">
                                 <FaBuilding className="mr-2 text-gray-600" />
@@ -244,6 +256,7 @@ const CreateUser = () => {
                             </select>
                         </div>
 
+                        {/* Phone Number Field */}
                         <div className="space-y-2">
                             <label htmlFor="phone" className="block text-sm font-medium text-gray-700 flex items-center">
                                 <FaPhone className="mr-2 text-gray-600" />
@@ -261,6 +274,7 @@ const CreateUser = () => {
                             />
                         </div>
 
+                        {/* Email Field */}
                         <div className="space-y-2">
                             <label htmlFor="email" className="block text-sm font-medium text-gray-700 flex items-center">
                                 <FaEnvelope className="mr-2 text-gray-600" />
@@ -278,6 +292,7 @@ const CreateUser = () => {
                             />
                         </div>
 
+                        {/* Role Dropdown */}
                         <div className="space-y-2">
                             <label htmlFor="role" className="block text-sm font-medium text-gray-700 flex items-center">
                                 <SiGoogletasks className="mr-2 text-gray-600" />
