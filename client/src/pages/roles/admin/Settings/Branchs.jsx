@@ -3,6 +3,7 @@ import axios from 'axios';
 import { FaPlus, FaSave, FaEdit, FaTrash, FaCodeBranch, FaTimesCircle } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import LogOutButton from '../../../../components/LogoutButton';
 
 const Branchs = () => {
     const [branches, setBranches] = useState([]);
@@ -80,6 +81,9 @@ const Branchs = () => {
     return (
         <>
             <div className='min-h-screen'>
+                <div className="flex justify-end mb-4">
+                    <LogOutButton />
+                </div>
                 {/* Form Card */}
                 <div className="bg-white rounded-lg shadow-md p-6 mb-6 border border-gray-100">
                     <div className="flex justify-between items-center mb-4">

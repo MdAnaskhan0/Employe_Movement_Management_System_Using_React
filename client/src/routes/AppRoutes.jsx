@@ -18,9 +18,12 @@ import Departments from '../pages/roles/admin/Settings/Departments';
 import Branchs from '../pages/roles/admin/Settings/Branchs';
 import Designations from '../pages/roles/admin/Settings/Designations';
 import VisitingStatus from '../pages/roles/admin/Settings/VisitingStatus';
+import Teams from '../pages/roles/admin/Teams/Teams';
+import TeamDetails from '../pages/roles/admin/Teams/TeamDetails';
 
 // Manager
 import AllMovementReports from '../pages/roles/manager/MovementReports';
+import UserProfileNoEdit from '../pages/roles/manager/UserProfile';
 // Team Leader
 import ManageTeam from '../pages/roles/teamLeader/ManageTeam';
 import TeamReport from '../pages/roles/teamLeader/TeamReport';
@@ -61,10 +64,12 @@ export default function AppRoutes() {
                       <Route path="/admin/branchs" element={<Branchs />} />
                       <Route path="/admin/designations" element={<Designations />} />
                       <Route path="/admin/visitingstatus" element={<VisitingStatus />} />
-
+                      <Route path="/admin/teams" element={<Teams />} />
+                      <Route path="/team/:teamID" element={<TeamDetails />} />
 
                       {/* Manager */}
                       <Route path="/movement-reports" element={<AllMovementReports />} />
+                      <Route path="/manager/user-profile/:userID" element={<UserProfileNoEdit />} />
 
                       {/* Team Leader */}
                       <Route path="team/manage-team" element={<ManageTeam />}/>

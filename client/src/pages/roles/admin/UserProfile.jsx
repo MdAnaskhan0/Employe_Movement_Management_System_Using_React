@@ -4,6 +4,7 @@ import { useAuth } from '../../../auth/AuthContext';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import LogoutButton from '../../../components/LogoutButton';
 import {
   FaUserCircle, FaUserTie, FaPhone, FaEnvelope,
   FaIdBadge, FaBuilding, FaUsers, FaUserShield,
@@ -23,13 +24,13 @@ const UserProfile = () => {
   const [editMode, setEditMode] = useState(false);
   const [preview, setPreview] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
-  
+
   // Dropdown data
   const [company, setCompany] = useState([]);
   const [department, setDepartment] = useState([]);
   const [designation, setDesignation] = useState([]);
   const [role, setRole] = useState([]);
-  
+
   // Password change
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -348,332 +349,337 @@ const UserProfile = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-5xl mx-auto">
-        {/* Profile Card */}
-        <div className="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg">
-          {/* Profile Header */}
-          <div className="bg-gradient-to-r from-indigo-600 to-blue-500 p-6 text-white">
-            <div className="flex flex-col md:flex-row items-center">
-              <div className="relative mb-4 md:mb-0 md:mr-8 group">
-                {preview ? (
-                  <div className="relative">
-                    <img
-                      src={preview}
-                      alt="Profile"
-                      className="w-32 h-32 object-cover rounded-full border-4 border-white shadow-lg transition-transform duration-300 group-hover:scale-105"
-                    />
-                    {isUploading && (
-                      <div className="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center">
-                        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-white"></div>
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <div className="w-32 h-32 rounded-full bg-blue-100 border-4 border-white flex items-center justify-center shadow-lg">
-                    <FaUserCircle className="text-blue-400 text-7xl" />
-                  </div>
-                )}
-                <label
-                  htmlFor="profile-upload"
-                  className={`absolute bottom-0 right-0 bg-white text-blue-600 rounded-full p-2 shadow-md cursor-pointer hover:bg-blue-50 transition-all duration-200 ${isUploading ? 'opacity-50 cursor-not-allowed' : ''}`}
-                  title="Upload new photo"
-                >
-                  {isUploading ? (
-                    <div className="animate-spin h-4 w-4 border-t-2 border-b-2 border-blue-600 rounded-full"></div>
+    <div>
+      <div className='flex items-center justify-end mb-4'>
+        <LogoutButton />
+      </div>
+      <div className="min-h-screen bg-white py-8 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-5xl mx-auto">
+          {/* Profile Card */}
+          <div className="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg">
+            {/* Profile Header */}
+            <div className="bg-gradient-to-r from-indigo-600 to-blue-500 p-6 text-white">
+              <div className="flex flex-col md:flex-row items-center">
+                <div className="relative mb-4 md:mb-0 md:mr-8 group">
+                  {preview ? (
+                    <div className="relative">
+                      <img
+                        src={preview}
+                        alt="Profile"
+                        className="w-32 h-32 object-cover rounded-full border-4 border-white shadow-lg transition-transform duration-300 group-hover:scale-105"
+                      />
+                      {isUploading && (
+                        <div className="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center">
+                          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-white"></div>
+                        </div>
+                      )}
+                    </div>
                   ) : (
-                    <FaUpload />
+                    <div className="w-32 h-32 rounded-full bg-blue-100 border-4 border-white flex items-center justify-center shadow-lg">
+                      <FaUserCircle className="text-blue-400 text-7xl" />
+                    </div>
                   )}
-                  <input
-                    id="profile-upload"
-                    type="file"
-                    onChange={handleUpload}
-                    accept="image/*"
-                    className="hidden"
-                    disabled={isUploading}
-                  />
-                </label>
-              </div>
-              <div className="text-center md:text-left">
-                <h2 className="text-3xl font-bold mb-1">{userData?.Name}</h2>
-                <p className="text-blue-100 text-lg mb-1">{userData?.Designation}</p>
-                <p className="text-blue-100">{userData?.Company_name}</p>
-                {preview && (
-                  <button
-                    onClick={handleDelete}
-                    className={`mt-3 text-sm flex items-center justify-center md:justify-start text-blue-100 hover:text-white transition-colors ${isUploading ? 'opacity-50 cursor-not-allowed' : ''}`}
-                    disabled={isUploading}
+                  <label
+                    htmlFor="profile-upload"
+                    className={`absolute bottom-0 right-0 bg-white text-blue-600 rounded-full p-2 shadow-md cursor-pointer hover:bg-blue-50 transition-all duration-200 ${isUploading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    title="Upload new photo"
                   >
-                    <FaTrash className="mr-1" /> Remove Photo
-                  </button>
-                )}
+                    {isUploading ? (
+                      <div className="animate-spin h-4 w-4 border-t-2 border-b-2 border-blue-600 rounded-full"></div>
+                    ) : (
+                      <FaUpload />
+                    )}
+                    <input
+                      id="profile-upload"
+                      type="file"
+                      onChange={handleUpload}
+                      accept="image/*"
+                      className="hidden"
+                      disabled={isUploading}
+                    />
+                  </label>
+                </div>
+                <div className="text-center md:text-left">
+                  <h2 className="text-3xl font-bold mb-1">{userData?.Name}</h2>
+                  <p className="text-blue-100 text-lg mb-1">{userData?.Designation}</p>
+                  <p className="text-blue-100">{userData?.Company_name}</p>
+                  {preview && (
+                    <button
+                      onClick={handleDelete}
+                      className={`mt-3 text-sm flex items-center justify-center md:justify-start text-blue-100 hover:text-white transition-colors ${isUploading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      disabled={isUploading}
+                    >
+                      <FaTrash className="mr-1" /> Remove Photo
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Profile Content */}
-          <div className="p-6 md:p-8">
-            {/* Personal Information Section */}
-            <div className="pb-6 mb-6">
-              <div className="flex justify-between items-center mb-4 border-b border-gray-800 pb-2">
-                <h3 className="text-xl font-semibold text-gray-800">Personal Information</h3>
-                {!editMode ? (
-                  <button
-                    onClick={() => setEditMode(true)}
-                    className="flex items-center text-blue-800 hover:text-blue-900 transition-colors"
-                  >
-                    <FaUserEdit className="mr-2" /> Edit Profile
-                  </button>
+            {/* Profile Content */}
+            <div className="p-6 md:p-8">
+              {/* Personal Information Section */}
+              <div className="pb-6 mb-6">
+                <div className="flex justify-between items-center mb-4 border-b border-gray-800 pb-2">
+                  <h3 className="text-xl font-semibold text-gray-800">Personal Information</h3>
+                  {!editMode ? (
+                    <button
+                      onClick={() => setEditMode(true)}
+                      className="flex items-center text-blue-800 hover:text-blue-900 transition-colors"
+                    >
+                      <FaUserEdit className="mr-2" /> Edit Profile
+                    </button>
+                  ) : (
+                    <div className="flex space-x-3">
+                      <button
+                        onClick={() => setEditMode(false)}
+                        className="flex items-center px-3 py-1 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                      >
+                        <FaTimes className="mr-2" /> Cancel
+                      </button>
+                      <button
+                        onClick={handleUpdateUser}
+                        className="flex items-center px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                      >
+                        <FaSave className="mr-2" /> Save
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                {editMode ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <div className="mb-4">
+                        <label className="block text-gray-700 text-sm font-medium mb-2">Username</label>
+                        <input
+                          type="text"
+                          name="username"
+                          value={formData.username || ''}
+                          onChange={handleChange}
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                      </div>
+
+                      <div className="mb-4">
+                        <label className="block text-gray-700 text-sm font-medium mb-2">Name</label>
+                        <input
+                          type="text"
+                          name="Name"
+                          value={formData.Name || ''}
+                          onChange={handleChange}
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                      </div>
+
+                      <div className="mb-4">
+                        <label className="block text-gray-700 text-sm font-medium mb-2">Phone</label>
+                        <input
+                          type="text"
+                          name="Phone"
+                          value={formData.Phone || ''}
+                          onChange={handleChange}
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                      </div>
+
+                      <div className="mb-4">
+                        <label className="block text-gray-700 text-sm font-medium mb-2">Email</label>
+                        <input
+                          type="email"
+                          name="email"
+                          value={formData.email || ''}
+                          onChange={handleChange}
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <div className="mb-4">
+                        <label className="block text-gray-700 text-sm font-medium mb-2">Department</label>
+                        <select
+                          name="Department"
+                          value={formData.Department || ''}
+                          onChange={handleChange}
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        >
+                          <option value="">Select Department</option>
+                          {department.map((d) => (
+                            <option key={d.departmentID} value={d.departmentName}>
+                              {d.departmentName}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div className="mb-4">
+                        <label className="block text-gray-700 text-sm font-medium mb-2">Designation</label>
+                        <select
+                          name="Designation"
+                          value={formData.Designation || ''}
+                          onChange={handleChange}
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        >
+                          <option value="">Select Designation</option>
+                          {designation.map((des) => (
+                            <option key={des.designationID} value={des.designationName}>
+                              {des.designationName}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div className="mb-4">
+                        <label className="block text-gray-700 text-sm font-medium mb-2">Company</label>
+                        <select
+                          name="Company_name"
+                          value={formData.Company_name || ''}
+                          onChange={handleChange}
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        >
+                          <option value="">Select Company</option>
+                          {company.map((c) => (
+                            <option key={c.companynameID} value={c.companyname}>
+                              {c.companyname}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div className="mb-4">
+                        <label className="block text-gray-700 text-sm font-medium mb-2">Role</label>
+                        <select
+                          name="Role"
+                          value={formData.Role || ''}
+                          onChange={handleChange}
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        >
+                          <option value="">Select Role</option>
+                          {role.map((r) => (
+                            <option key={r.roleID} value={r.rolename}>
+                              {r.rolename}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div className="mb-4">
+                        <label className="block text-gray-700 text-sm font-medium mb-2">Employee ID</label>
+                        <input
+                          type="text"
+                          name="E_ID"
+                          value={formData.E_ID || ''}
+                          onChange={handleChange}
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                      </div>
+                    </div>
+                  </div>
                 ) : (
-                  <div className="flex space-x-3">
-                    <button
-                      onClick={() => setEditMode(false)}
-                      className="flex items-center px-3 py-1 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
-                    >
-                      <FaTimes className="mr-2" /> Cancel
-                    </button>
-                    <button
-                      onClick={handleUpdateUser}
-                      className="flex items-center px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-                    >
-                      <FaSave className="mr-2" /> Save
-                    </button>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      {renderInfoItem(<FaUserCircle className="text-indigo-500" />, "Username", userData?.username)}
+                      {renderInfoItem(<FaUserTie className="text-indigo-500" />, "Role", userData?.Role)}
+                      {renderInfoItem(<FaUserTie className="text-indigo-500" />, "Name", userData?.Name)}
+                      {renderInfoItem(<FaPhone className="text-indigo-500" />, "Phone", userData?.Phone)}
+                      {renderInfoItem(<FaEnvelope className="text-indigo-500" />, "Email", userData?.email)}
+                    </div>
+                    <div>
+                      {renderInfoItem(<FaIdBadge className="text-indigo-500" />, "Employee ID", userData?.E_ID)}
+                      {renderInfoItem(<FaBuilding className="text-indigo-500" />, "Company", userData?.Company_name)}
+                      {renderInfoItem(<FaUsers className="text-indigo-500" />, "Department", userData?.Department)}
+                      {renderInfoItem(<FaUserShield className="text-indigo-500" />, "Designation", userData?.Designation)}
+                    </div>
                   </div>
                 )}
               </div>
 
-              {editMode ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <div className="mb-4">
-                      <label className="block text-gray-700 text-sm font-medium mb-2">Username</label>
-                      <input
-                        type="text"
-                        name="username"
-                        value={formData.username || ''}
-                        onChange={handleChange}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      />
-                    </div>
+              {/* Password Change Section */}
+              {!editMode && (
+                <div className="mt-6 pt-6 border-t">
+                  <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                    <FaLock className="text-indigo-500 mr-2" /> Change Password
+                  </h3>
 
-                    <div className="mb-4">
-                      <label className="block text-gray-700 text-sm font-medium mb-2">Name</label>
-                      <input
-                        type="text"
-                        name="Name"
-                        value={formData.Name || ''}
-                        onChange={handleChange}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div className="relative">
+                      <label className="block text-gray-700 text-sm font-medium mb-2">New Password</label>
+                      <div className="relative">
+                        <input
+                          type={showPassword ? "text" : "password"}
+                          value={newPassword}
+                          onChange={(e) => setNewPassword(e.target.value)}
+                          placeholder="Enter new password"
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-10"
+                        />
+                        <button
+                          type="button"
+                          className="absolute right-3 top-3 text-gray-500 hover:text-gray-700"
+                          onClick={() => setShowPassword(!showPassword)}
+                        >
+                          {showPassword ? <FaEyeSlash /> : <FaEye />}
+                        </button>
+                      </div>
                     </div>
-
-                    <div className="mb-4">
-                      <label className="block text-gray-700 text-sm font-medium mb-2">Phone</label>
-                      <input
-                        type="text"
-                        name="Phone"
-                        value={formData.Phone || ''}
-                        onChange={handleChange}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      />
-                    </div>
-
-                    <div className="mb-4">
-                      <label className="block text-gray-700 text-sm font-medium mb-2">Email</label>
-                      <input
-                        type="email"
-                        name="email"
-                        value={formData.email || ''}
-                        onChange={handleChange}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      />
+                    <div className="relative">
+                      <label className="block text-gray-700 text-sm font-medium mb-2">Confirm Password</label>
+                      <div className="relative">
+                        <input
+                          type={showConfirmPassword ? "text" : "password"}
+                          value={confirmPassword}
+                          onChange={(e) => setConfirmPassword(e.target.value)}
+                          placeholder="Confirm new password"
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-10"
+                        />
+                        <button
+                          type="button"
+                          className="absolute right-3 top-3 text-gray-500 hover:text-gray-700"
+                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        >
+                          {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                        </button>
+                      </div>
                     </div>
                   </div>
 
-                  <div>
-                    <div className="mb-4">
-                      <label className="block text-gray-700 text-sm font-medium mb-2">Department</label>
-                      <select
-                        name="Department"
-                        value={formData.Department || ''}
-                        onChange={handleChange}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      >
-                        <option value="">Select Department</option>
-                        {department.map((d) => (
-                          <option key={d.departmentID} value={d.departmentName}>
-                            {d.departmentName}
-                          </option>
-                        ))}
-                      </select>
+                  {passwordError && (
+                    <div className="text-red-500 text-sm mb-4 flex items-center">
+                      <FaTimes className="mr-2" /> {passwordError}
                     </div>
+                  )}
 
-                    <div className="mb-4">
-                      <label className="block text-gray-700 text-sm font-medium mb-2">Designation</label>
-                      <select
-                        name="Designation"
-                        value={formData.Designation || ''}
-                        onChange={handleChange}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      >
-                        <option value="">Select Designation</option>
-                        {designation.map((des) => (
-                          <option key={des.designationID} value={des.designationName}>
-                            {des.designationName}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
+                    <button
+                      onClick={handleChangePassword}
+                      disabled={isChangingPassword || !newPassword || !confirmPassword}
+                      className={`px-6 py-2 rounded-lg flex items-center ${isChangingPassword || !newPassword || !confirmPassword ? 'bg-blue-800 cursor-not-allowed' : 'bg-blue-800 hover:bg-blue-900'} text-white transition-colors duration-200`}
+                    >
+                      {isChangingPassword ? (
+                        <>
+                          <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                          Changing...
+                        </>
+                      ) : (
+                        <>
+                          <FaCheck className="mr-2" /> Change Password
+                        </>
+                      )}
+                    </button>
 
-                    <div className="mb-4">
-                      <label className="block text-gray-700 text-sm font-medium mb-2">Company</label>
-                      <select
-                        name="Company_name"
-                        value={formData.Company_name || ''}
-                        onChange={handleChange}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      >
-                        <option value="">Select Company</option>
-                        {company.map((c) => (
-                          <option key={c.companynameID} value={c.companyname}>
-                            {c.companyname}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div className="mb-4">
-                      <label className="block text-gray-700 text-sm font-medium mb-2">Role</label>
-                      <select
-                        name="Role"
-                        value={formData.Role || ''}
-                        onChange={handleChange}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      >
-                        <option value="">Select Role</option>
-                        {role.map((r) => (
-                          <option key={r.roleID} value={r.rolename}>
-                            {r.rolename}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div className="mb-4">
-                      <label className="block text-gray-700 text-sm font-medium mb-2">Employee ID</label>
-                      <input
-                        type="text"
-                        name="E_ID"
-                        value={formData.E_ID || ''}
-                        onChange={handleChange}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      />
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    {renderInfoItem(<FaUserCircle className="text-indigo-500" />, "Username", userData?.username)}
-                    {renderInfoItem(<FaUserTie className="text-indigo-500" />, "Role", userData?.Role)}
-                    {renderInfoItem(<FaUserTie className="text-indigo-500" />, "Name", userData?.Name)}
-                    {renderInfoItem(<FaPhone className="text-indigo-500" />, "Phone", userData?.Phone)}
-                    {renderInfoItem(<FaEnvelope className="text-indigo-500" />, "Email", userData?.email)}
-                  </div>
-                  <div>
-                    {renderInfoItem(<FaIdBadge className="text-indigo-500" />, "Employee ID", userData?.E_ID)}
-                    {renderInfoItem(<FaBuilding className="text-indigo-500" />, "Company", userData?.Company_name)}
-                    {renderInfoItem(<FaUsers className="text-indigo-500" />, "Department", userData?.Department)}
-                    {renderInfoItem(<FaUserShield className="text-indigo-500" />, "Designation", userData?.Designation)}
+                    <button
+                      onClick={handleDeleteUser}
+                      className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 flex items-center transition-colors duration-200"
+                    >
+                      <FaTrash className="mr-2" /> Delete Account
+                    </button>
                   </div>
                 </div>
               )}
             </div>
-
-            {/* Password Change Section */}
-            {!editMode && (
-              <div className="mt-6 pt-6 border-t">
-                <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
-                  <FaLock className="text-indigo-500 mr-2" /> Change Password
-                </h3>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                  <div className="relative">
-                    <label className="block text-gray-700 text-sm font-medium mb-2">New Password</label>
-                    <div className="relative">
-                      <input
-                        type={showPassword ? "text" : "password"}
-                        value={newPassword}
-                        onChange={(e) => setNewPassword(e.target.value)}
-                        placeholder="Enter new password"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-10"
-                      />
-                      <button
-                        type="button"
-                        className="absolute right-3 top-3 text-gray-500 hover:text-gray-700"
-                        onClick={() => setShowPassword(!showPassword)}
-                      >
-                        {showPassword ? <FaEyeSlash /> : <FaEye />}
-                      </button>
-                    </div>
-                  </div>
-                  <div className="relative">
-                    <label className="block text-gray-700 text-sm font-medium mb-2">Confirm Password</label>
-                    <div className="relative">
-                      <input
-                        type={showConfirmPassword ? "text" : "password"}
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        placeholder="Confirm new password"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-10"
-                      />
-                      <button
-                        type="button"
-                        className="absolute right-3 top-3 text-gray-500 hover:text-gray-700"
-                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      >
-                        {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                {passwordError && (
-                  <div className="text-red-500 text-sm mb-4 flex items-center">
-                    <FaTimes className="mr-2" /> {passwordError}
-                  </div>
-                )}
-
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
-                  <button
-                    onClick={handleChangePassword}
-                    disabled={isChangingPassword || !newPassword || !confirmPassword}
-                    className={`px-6 py-2 rounded-lg flex items-center ${isChangingPassword || !newPassword || !confirmPassword ? 'bg-blue-800 cursor-not-allowed' : 'bg-blue-800 hover:bg-blue-900'} text-white transition-colors duration-200`}
-                  >
-                    {isChangingPassword ? (
-                      <>
-                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        Changing...
-                      </>
-                    ) : (
-                      <>
-                        <FaCheck className="mr-2" /> Change Password
-                      </>
-                    )}
-                  </button>
-
-                  <button
-                    onClick={handleDeleteUser}
-                    className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 flex items-center transition-colors duration-200"
-                  >
-                    <FaTrash className="mr-2" /> Delete Account
-                  </button>
-                </div>
-              </div>
-            )}
           </div>
         </div>
       </div>

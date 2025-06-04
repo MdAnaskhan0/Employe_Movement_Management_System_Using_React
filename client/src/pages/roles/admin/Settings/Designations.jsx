@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import { FaEdit, FaPlus, FaSave, FaTimes, FaTrash } from 'react-icons/fa';
 import { CgIfDesign } from 'react-icons/cg';
+import LogOutButton from '../../../../components/LogoutButton';
 
 const Designations = () => {
     const [designations, setDesignations] = useState([]);
@@ -95,6 +96,9 @@ const Designations = () => {
 
     return (
         <div className='min-h-screen p-4'>
+            <div className="flex justify-end mb-4">
+                <LogOutButton />
+            </div>
             {/* Add New Designation Card */}
             <div className="bg-white rounded-lg shadow-md p-6 mb-6">
                 <h2 className="text-lg font-semibold text-gray-800 mb-4">Add New Designation</h2>
