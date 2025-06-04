@@ -75,7 +75,7 @@ const Users = () => {
       {
         header: 'Email',
         accessorKey: 'email',
-        cell: info => <span className="text-blue-600 hover:underline">{info.getValue()}</span>,
+        cell: info => <span className="text-gray-600 hover:underline">{info.getValue()}</span>,
       },
       {
         header: 'Actions',
@@ -83,7 +83,7 @@ const Users = () => {
         cell: info => (
           <button
             onClick={() => navigate(`/admin/user-profile/${info.getValue()}`)}
-            className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300 shadow-sm hover:shadow-md flex items-center"
+            className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300 shadow-sm hover:shadow-md flex items-center cursor-pointer"
           >
             <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -132,13 +132,13 @@ const Users = () => {
     <div className="container mx-auto px-4 py-8">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-800">User Management</h1>
+          <h1 className="text-3xl font-bold text-gray-800">All Users</h1>
           <p className="text-gray-600 mt-2">Manage all system users and their permissions</p>
         </div>
         <div className="mt-4 md:mt-0">
           <button 
-            className="px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 transition-all duration-300 shadow-sm hover:shadow-md flex items-center"
-            onClick={() => navigate('/admin/add-user')}
+            className="px-6 py-3 bg-gradient-to-r from-blue-800 to-blue-900 text-white rounded-lg hover:from-green-600 hover:to-green-700 transition-all duration-300 shadow-sm hover:shadow-md flex items-center cursor-pointer"
+            onClick={() => navigate('/admin/create-user')}
           >
             <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />

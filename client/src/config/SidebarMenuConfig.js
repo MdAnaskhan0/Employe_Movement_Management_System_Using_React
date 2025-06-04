@@ -33,7 +33,7 @@ export const sidebarMenu = {
       path: '/admin/settings',
       submenu: [
         { name: 'Departments', path: '/admin/departments' },
-        { name: 'Branch Names', path: '/admin/branchnames' },
+        { name: 'Branch Names', path: '/admin/branchs' },
         { name: 'Designations', path: '/admin/designations' },
         { name: 'Visiting Status', path: '/admin/visitingstatus' },
       ]

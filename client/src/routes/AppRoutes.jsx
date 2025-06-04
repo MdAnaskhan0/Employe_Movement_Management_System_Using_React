@@ -14,6 +14,11 @@ import Profile from '../pages/roles/user/Profile';
 import CreateUser from '../pages/roles/admin/CreateUser';
 import Users from '../pages/roles/admin/Users';
 import UserProfile from '../pages/roles/admin/UserProfile';
+import Departments from '../pages/roles/admin/Settings/Departments';
+import Branchs from '../pages/roles/admin/Settings/Branchs';
+import Designations from '../pages/roles/admin/Settings/Designations';
+import VisitingStatus from '../pages/roles/admin/Settings/VisitingStatus';
+
 // Manager
 import AllMovementReports from '../pages/roles/manager/MovementReports';
 // Team Leader
@@ -52,6 +57,10 @@ export default function AppRoutes() {
                       <Route path="/admin/Users" element={<Users />} />
                       <Route path="/admin/user-profile/:userID" element={<UserProfile />} />
                       <Route path="/admin/movement-reports" element={<AllMovementReports />} />
+                      <Route path="/admin/departments" element={<Departments />} />
+                      <Route path="/admin/branchs" element={<Branchs />} />
+                      <Route path="/admin/designations" element={<Designations />} />
+                      <Route path="/admin/visitingstatus" element={<VisitingStatus />} />
 
 
                       {/* Manager */}
