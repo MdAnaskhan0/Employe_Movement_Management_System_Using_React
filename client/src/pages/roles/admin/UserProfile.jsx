@@ -14,8 +14,7 @@ import {
 const UserProfile = () => {
   const { userID } = useParams();
   const navigate = useNavigate();
-  const { baseUrl } = useAuth();
-
+  const baseUrl = import.meta.env.VITE_API_BASE_URL;
   // State management
   const [userData, setUserData] = useState(null);
   const [formData, setFormData] = useState({});
@@ -42,8 +41,24 @@ const UserProfile = () => {
   // Fetch user data
   const fetchUserData = useCallback(async () => {
     try {
-      const resUser = await axios.get(`${baseUrl}/users/${userID}`);
-      console.log(resUser.data);
+      setIsLoading(true);
+      const [userRes, imageRes] = await Promise.all([
+        axios.get(`${baseUrl}/users/${userID}`),
+        axios.get(`${baseUrl}/profile-image/${userID}`, {
+          responseType: 'blob',
+        }).catch(err => {
+          if (err.response?.status === 404) return null;
+          throw err;
+        })
+      ]);
+
+      setUserData(userRes.data.data);
+      setFormData(userRes.data.data);
+
+      if (imageRes) {
+        const imageUrl = URL.createObjectURL(imageRes.data);
+        setPreview(imageUrl);
+      }
     } catch (err) {
       setError(err.message);
       toast.error('Failed to load user data');
@@ -399,13 +414,13 @@ const UserProfile = () => {
           {/* Profile Content */}
           <div className="p-6 md:p-8">
             {/* Personal Information Section */}
-            <div className="border-b pb-6 mb-6">
-              <div className="flex justify-between items-center mb-4">
+            <div className="pb-6 mb-6">
+              <div className="flex justify-between items-center mb-4 border-b border-gray-800 pb-2">
                 <h3 className="text-xl font-semibold text-gray-800">Personal Information</h3>
                 {!editMode ? (
                   <button
                     onClick={() => setEditMode(true)}
-                    className="flex items-center text-blue-600 hover:text-blue-800 transition-colors"
+                    className="flex items-center text-blue-800 hover:text-blue-900 transition-colors"
                   >
                     <FaUserEdit className="mr-2" /> Edit Profile
                   </button>
@@ -633,7 +648,7 @@ const UserProfile = () => {
                   <button
                     onClick={handleChangePassword}
                     disabled={isChangingPassword || !newPassword || !confirmPassword}
-                    className={`px-6 py-2 rounded-lg flex items-center ${isChangingPassword || !newPassword || !confirmPassword ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'} text-white transition-colors duration-200`}
+                    className={`px-6 py-2 rounded-lg flex items-center ${isChangingPassword || !newPassword || !confirmPassword ? 'bg-blue-800 cursor-not-allowed' : 'bg-blue-800 hover:bg-blue-900'} text-white transition-colors duration-200`}
                   >
                     {isChangingPassword ? (
                       <>
