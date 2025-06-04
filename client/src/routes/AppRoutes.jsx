@@ -43,7 +43,7 @@ export default function AppRoutes() {
         <Route path="/" element={<Home />} />
 
         {/* Protected Routes */}
-        <Route element={<PrivateRoute allowedRoles={['admin', 'manager', 'teamLeader', 'user']} />}>
+        <Route element={<PrivateRoute allowedRoles={['admin', 'manager', 'accounce', 'teamLeader', 'user']} />}>
           <Route
             path="*"
             element={

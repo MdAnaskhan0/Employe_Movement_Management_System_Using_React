@@ -62,7 +62,6 @@ const Dashboard = () => {
         {(role === 'manager' || role === 'accounce') && <ManagerDashboard />}
         {role === 'team leader' && <TeamLeaderDashboard movementData={movementData} />}
       </main>
-
     </div>
   );
 };
