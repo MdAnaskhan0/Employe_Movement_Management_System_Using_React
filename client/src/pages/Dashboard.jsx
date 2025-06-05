@@ -7,24 +7,25 @@ import {
   FiUsers, FiMessageSquare, FiBriefcase, FiLayers, FiMapPin,
   FiAward, FiFlag
 } from 'react-icons/fi';
+import { IoIosArrowForward } from 'react-icons/io';
 
 // Menu items with meta
 const allDashboardMenuItems = [
-  { name: 'Dashboard', path: '/dashboard', icon: <FiHome size={20} /> },
-  { name: 'Profile', path: '/user/profile', icon: <FiUser size={20} /> },
-  { name: 'Upload Report', path: '/user/upload-report', icon: <FiUpload size={20} /> },
-  { name: 'My Reports', path: '/user/UserReport', icon: <FiFileText size={20} /> },
-  { name: 'Movement Reports', path: '/admin/movement-reports', icon: <FiActivity size={20} /> },
-  { name: 'Create User', path: '/admin/create-user', icon: <FiUserPlus size={20} /> },
-  { name: 'Users', path: '/admin/Users', icon: <FiUsers size={20} /> },
-  { name: 'Teams', path: '/admin/teams', icon: <FiUsers size={20} /> },
-  { name: 'Team Messages', path: '/user/team-massage', icon: <FiMessageSquare size={20} /> },
-  { name: 'Companies', path: '/admin/companynames', icon: <FiBriefcase size={20} /> },
-  { name: 'Departments', path: '/admin/departments', icon: <FiLayers size={20} /> },
-  { name: 'Branchs', path: '/admin/branchs', icon: <FiMapPin size={20} /> },
-  { name: 'Designations', path: '/admin/designations', icon: <FiAward size={20} /> },
-  { name: 'Visiting Status', path: '/admin/visitingstatus', icon: <FiFlag size={20} /> },
-  { name: 'Parties', path: '/admin/parties', icon: <FiUsers size={20} /> }
+  { name: 'Dashboard', path: '/dashboard', icon: <FiHome size={20} />, color: 'bg-blue-500' },
+  { name: 'Profile', path: '/user/profile', icon: <FiUser size={20} />, color: 'bg-purple-500' },
+  { name: 'Upload Report', path: '/user/upload-report', icon: <FiUpload size={20} />, color: 'bg-green-500' },
+  { name: 'My Reports', path: '/user/UserReport', icon: <FiFileText size={20} />, color: 'bg-yellow-500' },
+  { name: 'Movement Reports', path: '/admin/movement-reports', icon: <FiActivity size={20} />, color: 'bg-red-500' },
+  { name: 'Create User', path: '/admin/create-user', icon: <FiUserPlus size={20} />, color: 'bg-indigo-500' },
+  { name: 'Users', path: '/admin/Users', icon: <FiUsers size={20} />, color: 'bg-pink-500' },
+  { name: 'Teams', path: '/admin/teams', icon: <FiUsers size={20} />, color: 'bg-teal-500' },
+  { name: 'Team Messages', path: '/user/team-massage', icon: <FiMessageSquare size={20} />, color: 'bg-orange-500' },
+  { name: 'Companies', path: '/admin/companynames', icon: <FiBriefcase size={20} />, color: 'bg-cyan-500' },
+  { name: 'Departments', path: '/admin/departments', icon: <FiLayers size={20} />, color: 'bg-amber-500' },
+  { name: 'Branchs', path: '/admin/branchs', icon: <FiMapPin size={20} />, color: 'bg-emerald-500' },
+  { name: 'Designations', path: '/admin/designations', icon: <FiAward size={20} />, color: 'bg-violet-500' },
+  { name: 'Visiting Status', path: '/admin/visitingstatus', icon: <FiFlag size={20} />, color: 'bg-rose-500' },
+  { name: 'Parties', path: '/admin/parties', icon: <FiUsers size={20} />, color: 'bg-fuchsia-500' }
 ];
 
 const Dashboard = () => {
@@ -58,12 +59,18 @@ const Dashboard = () => {
     fetchData();
   }, [user.userID]);
 
-  const filteredMenu = allDashboardMenuItems.filter(item => permissionPage[item.path] === 1);
+  const actionCards = allDashboardMenuItems
+    .filter(item => permissionPage[item.path] === 1)
+    .map(item => ({
+      ...item,
+      action: () => navigate(item.path),
+      title: item.name
+    }));
 
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="flex justify-between items-center px-6 py-4 bg-white shadow-sm">
-        <h1 className="text-2xl font-bold text-gray-800">Hey, {user?.username} 👋</h1>
+        <h1 className="text-2xl font-bold text-gray-800">Hey, {user?.name} 👋</h1>
         <button
           onClick={handleLogout}
           className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition"
@@ -73,16 +80,26 @@ const Dashboard = () => {
       </header>
 
       <main className="px-6 py-6">
-        <h2 className="text-xl font-semibold text-gray-700 mb-4">Your Access</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
-          {filteredMenu.map(item => (
-            <div
-              key={item.path}
-              onClick={() => navigate(item.path)}
-              className="cursor-pointer bg-white border border-gray-200 rounded-2xl p-4 flex items-center gap-3 shadow-sm hover:shadow-md hover:scale-[1.02] transition-all duration-200"
+          {actionCards.map((card, index) => (
+            <div 
+              key={index}
+              onClick={card.action}
+              className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition-all duration-200 cursor-pointer group"
             >
-              <div className="text-blue-600">{item.icon}</div>
-              <span className="text-gray-700 font-medium">{item.name}</span>
+              <div className="flex justify-between items-start">
+                <div className={`${card.color} p-3 rounded-lg text-white`}>
+                  {card.icon}
+                </div>
+                <div className='flex items-center'>
+                  <p className='text-sm text-gray-500'>View details</p>
+                  <IoIosArrowForward className="ml-1 text-gray-400 group-hover:text-gray-600 transition-colors" />
+                </div>
+              </div>
+              
+              <div className="mt-6">
+                <h3 className="text-lg font-semibold text-gray-800">{card.title}</h3>
+              </div>
             </div>
           ))}
         </div>
