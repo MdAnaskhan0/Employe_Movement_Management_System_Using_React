@@ -20,6 +20,8 @@ import Designations from '../pages/roles/admin/Settings/Designations';
 import VisitingStatus from '../pages/roles/admin/Settings/VisitingStatus';
 import Teams from '../pages/roles/admin/Teams/Teams';
 import TeamDetails from '../pages/roles/admin/Teams/TeamDetails';
+import Companies from '../pages/roles/admin/Settings/Companies';
+import Parties from '../pages/roles/admin/Settings/Parties';
 
 // Manager
 import AllMovementReports from '../pages/roles/manager/MovementReports';
@@ -66,6 +68,8 @@ export default function AppRoutes() {
                       <Route path="/admin/visitingstatus" element={<VisitingStatus />} />
                       <Route path="/admin/teams" element={<Teams />} />
                       <Route path="/team/:teamID" element={<TeamDetails />} />
+                      <Route path="/admin/companynames" element={<Companies />} />
+                      <Route path="/admin/parties" element={<Parties />} />
 
                       {/* Manager */}
                       <Route path="/movement-reports" element={<AllMovementReports />} />

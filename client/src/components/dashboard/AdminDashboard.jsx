@@ -29,7 +29,6 @@ const AdminDashboard = () => {
   const [partyNames, setPartyNames] = useState([]);
   const [departmentNames, setDepartmentNames] = useState([]);
   const [designationNames, setDesignationNames] = useState([]);
-  const [roles, setRoles] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -46,7 +45,6 @@ const AdminDashboard = () => {
           respartynames, 
           resdepartmentnames, 
           resdesignationnames, 
-          resroles
         ] = await Promise.all([
           axios.get(`${import.meta.env.VITE_API_BASE_URL}/users`),
           axios.get(`${import.meta.env.VITE_API_BASE_URL}/get_all_movement`),
@@ -56,7 +54,6 @@ const AdminDashboard = () => {
           axios.get(`${import.meta.env.VITE_API_BASE_URL}/partynames`),
           axios.get(`${import.meta.env.VITE_API_BASE_URL}/departments`),
           axios.get(`${import.meta.env.VITE_API_BASE_URL}/designations`),
-          axios.get(`${import.meta.env.VITE_API_BASE_URL}/roles`)
         ]);
 
         setUsers(resusers.data.data);
@@ -67,7 +64,6 @@ const AdminDashboard = () => {
         setCompanyNames(rescompanynames.data.data);
         setDepartmentNames(resdepartmentnames.data);
         setDesignationNames(resdesignationnames.data);
-        setRoles(resroles.data);
         
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -93,7 +89,7 @@ const AdminDashboard = () => {
       count: movementData.length,
       icon: <IoArrowForward size={24} />,
       color: 'bg-green-500',
-      action: () => navigate('/admin/movements')
+      action: () => navigate('/admin/movement-reports')
     },
     {
       title: 'Teams',
@@ -107,14 +103,14 @@ const AdminDashboard = () => {
       count: companyNames.length,
       icon: <IoBusiness size={24} />,
       color: 'bg-red-500',
-      action: () => navigate('/admin/companies')
+      action: () => navigate('/admin/companynames')
     },
     {
       title: 'Branches',
       count: branchNames.length,
       icon: <IoGitBranch size={24} />,
       color: 'bg-yellow-500',
-      action: () => navigate('/admin/branches')
+      action: () => navigate('/admin/branchs')
     },
     {
       title: 'Parties',
@@ -136,13 +132,6 @@ const AdminDashboard = () => {
       icon: <IoBriefcase size={24} />,
       color: 'bg-teal-500',
       action: () => navigate('/admin/designations')
-    },
-    {
-      title: 'Roles',
-      count: roles.length,
-      icon: <IoShieldCheckmark size={24} />,
-      color: 'bg-orange-500',
-      action: () => navigate('/admin/roles')
     }
   ];
 

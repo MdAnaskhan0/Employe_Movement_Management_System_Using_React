@@ -30,10 +30,12 @@ export const sidebarMenu = {
       name: 'Settings',
       path: '/admin/settings',
       submenu: [
+        { name: 'Company Names', path: '/admin/companynames' },
         { name: 'Departments', path: '/admin/departments' },
         { name: 'Branch Names', path: '/admin/branchs' },
         { name: 'Designations', path: '/admin/designations' },
         { name: 'Visiting Status', path: '/admin/visitingstatus' },
+        { name: 'Parties', path: '/admin/parties' },
       ]
     }
   ],

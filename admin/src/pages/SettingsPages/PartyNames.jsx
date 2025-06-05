@@ -19,7 +19,7 @@ const PartyNames = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
-  const apiUrl = `${baseUrl}/partynames`; 
+  const apiUrl = `${baseUrl}/partynames`;
 
   // Fetch all parties
   const fetchParties = async () => {
@@ -45,7 +45,7 @@ const PartyNames = ({ children }) => {
       toast.success('Party created successfully');
     } catch (err) {
       if (err.response) {
-      toast.error(err.response?.data?.message || 'Error saving party');
+        toast.error(err.response?.data?.message || 'Error saving party');
       } else {
         toast.error('Network error. Please try again.');
       }
@@ -210,69 +210,69 @@ const PartyNames = ({ children }) => {
                 </div>
               </div>
 
-                {loading ? (
-                  <div className="flex justify-center items-center py-8">
-                    <FiRefreshCw className="animate-spin text-blue-500 text-2xl" />
-                  </div>
-                ) : partyList.length === 0 ? (
-                  <div className="text-center py-8 text-gray-500">
-                    No parties found. Create one to get started.
-                  </div>
-                ) : (
-                  <div className="overflow-x-auto">
-                    <table className="min-w-full divide-y divide-gray-200">
-                      <thead className="bg-gray-50">
-                        <tr>
-                          <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
-                            No.
-                          </th>
-                          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Party Name
-                          </th>
-                          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Address
-                          </th>
-                          <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Actions
-                          </th>
+              {loading ? (
+                <div className="flex justify-center items-center py-8">
+                  <FiRefreshCw className="animate-spin text-blue-500 text-2xl" />
+                </div>
+              ) : partyList.length === 0 ? (
+                <div className="text-center py-8 text-gray-500">
+                  No parties found. Create one to get started.
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
+                          No.
+                        </th>
+                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Party Name
+                        </th>
+                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Address
+                        </th>
+                        <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Actions
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {partyList.map((party, index) => (
+                        <tr key={party.partynameID} className="hover:bg-gray-50">
+                          <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-500'>
+                            <div className='font-medium text-gray-900'>{index + 1}</div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="font-medium text-gray-900">{party.partyname}</div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-gray-500">{party.partyaddress}</div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <button
+                              onClick={() => handleEdit(party)}
+                              className="text-blue-800 hover:text-blue-900 mr-4 cursor-pointer"
+                              title="Edit"
+                            >
+                              <FaEdit />
+                            </button>
+                            <button
+                              onClick={() => handleDelete(party.partynameID)}
+                              className="text-red-600 hover:text-red-900 cursor-pointer"
+                              title="Delete"
+                            >
+                              <FaTrash />
+                            </button>
+                          </td>
                         </tr>
-                      </thead>
-                      <tbody className="bg-white divide-y divide-gray-200">
-                        {partyList.map((party,index) => (
-                          <tr key={party.partynameID} className="hover:bg-gray-50">
-                            <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-500'>
-                              <div className='font-medium text-gray-900'>{index+1}</div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="font-medium text-gray-900">{party.partyname}</div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-gray-500">{party.partyaddress}</div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                              <button
-                                onClick={() => handleEdit(party)}
-                                className="text-blue-800 hover:text-blue-900 mr-4 cursor-pointer"
-                                title="Edit"
-                              >
-                                <FaEdit />
-                              </button>
-                              <button
-                                onClick={() => handleDelete(party.partynameID)}
-                                className="text-red-600 hover:text-red-900 cursor-pointer"
-                                title="Delete"
-                              >
-                                <FaTrash />
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-              </div>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
+          </div>
         </main>
       </div>
     </div>
