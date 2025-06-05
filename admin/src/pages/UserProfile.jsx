@@ -20,6 +20,7 @@ import {
     FaEye,
     FaEyeSlash
 } from 'react-icons/fa';
+import { TbLockAccess } from "react-icons/tb";
 import { toast } from 'react-toastify';
 import Sidebar from '../components/Sidebar/Sidebar';
 import axios from 'axios';
@@ -421,10 +422,16 @@ const UserProfile = () => {
                                         <div className="flex justify-end mb-4">
                                             <button
                                                 onClick={handleDelete}
-                                                className="text-red-500 hover:text-red-700 text-sm flex items-center"
+                                                className="text-red-500 hover:text-red-700 text-sm flex items-center cursor-pointer"
                                                 disabled={isUploading}
                                             >
                                                 <FaTrash className="mr-1" /> Remove Photo
+                                            </button>
+                                            <button
+                                                onClick={() => navigate(`/dashboard/profile-access/${userID}`)}
+                                                className="text-blue-800 hover:text-blue-900 ml-4 flex items-center cursor-pointer">
+                                                <TbLockAccess className="mr-1" />
+                                                Access
                                             </button>
                                         </div>
                                     )}
@@ -435,7 +442,7 @@ const UserProfile = () => {
                                             {!editMode && (
                                                 <button
                                                     onClick={() => setEditMode(true)}
-                                                    className="text-blue-800 hover:text-blue-900 flex items-center"
+                                                    className="text-blue-800 hover:text-blue-900 flex items-center cursor-pointer"
                                                 >
                                                     <FaUserEdit className="mr-1" /> Edit Profile
                                                 </button>

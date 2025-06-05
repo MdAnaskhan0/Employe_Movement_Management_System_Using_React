@@ -1547,6 +1547,80 @@ app.patch('/teams/:id/remove-member', (req, res) => {
 
 
 
+// Get user permissions
+app.get('/users/:id/permissions', (req, res) => {
+  const { id } = req.params;
+  const sql = 'SELECT permission_name, has_access FROM user_permissions WHERE user_id = ?';
+  db.query(sql, [id], (err, results) => {
+    if (err) return res.status(500).send({ error: err.message });
+    
+    // Convert array of permissions to object format
+    const permissions = {};
+    results.forEach(row => {
+      permissions[row.permission_name] = row.has_access;
+    });
+    
+    res.send({ data: permissions });
+  });
+});
+
+// Update user permissions
+app.put('/users/:id/permissions', (req, res) => {
+  const { id } = req.params;
+  const permissions = req.body.permissions;
+  
+  // Start transaction
+  db.beginTransaction(err => {
+    if (err) return res.status(500).send({ error: err.message });
+
+    // First delete all existing permissions for this user
+    db.query('DELETE FROM user_permissions WHERE user_id = ?', [id], (err) => {
+      if (err) {
+        return db.rollback(() => {
+          res.status(500).send({ error: err.message });
+        });
+      }
+
+      // Then insert the new permissions
+      const values = Object.entries(permissions).map(([name, hasAccess]) => 
+        [id, name, hasAccess]
+      );
+
+      if (values.length > 0) {
+        db.query(
+          'INSERT INTO user_permissions (user_id, permission_name, has_access) VALUES ?',
+          [values],
+          (err) => {
+            if (err) {
+              return db.rollback(() => {
+                res.status(500).send({ error: err.message });
+              });
+            }
+            
+            db.commit(err => {
+              if (err) {
+                return db.rollback(() => {
+                  res.status(500).send({ error: err.message });
+                });
+              }
+              res.send({ message: 'Permissions updated successfully' });
+            });
+          }
+        );
+      } else {
+        db.commit(err => {
+          if (err) {
+            return db.rollback(() => {
+              res.status(500).send({ error: err.message });
+            });
+          }
+          res.send({ message: 'All permissions removed' });
+        });
+      }
+    });
+  });
+});
+
 
 // App listerner
 server.listen(port, '0.0.0.0', () => {

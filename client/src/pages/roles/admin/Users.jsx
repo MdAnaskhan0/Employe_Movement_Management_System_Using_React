@@ -167,15 +167,6 @@ const Users = () => {
             <p className="text-gray-600 mt-2">Manage all system users and their permissions</p>
           </div>
           <div className="mt-4 md:mt-0">
-            <button
-              className="px-6 py-3 bg-gradient-to-r from-blue-800 to-blue-900 text-white rounded-lg hover:from-green-600 hover:to-green-700 transition-all duration-300 shadow-sm hover:shadow-md flex items-center cursor-pointer"
-              onClick={() => navigate('/admin/create-user')}
-            >
-              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-              </svg>
-              Add New User
-            </button>
           </div>
         </div>
 
