@@ -9,17 +9,19 @@ import { toast } from 'react-toastify';
 const menuItems = [
   { name: "Dashboard", path: "/dashboard" },
   { name: "Profile", path: "/user/profile" },
-  { name: "Movement Submit", path: "/user/upload-report" },
-  { name: "Movement Report", path: "/user/UserReport" },
+  { name: "User Movement Submit", path: "/user/upload-report" },
+  { name: "User Movement Report", path: "/user/UserReport" },
+  { name: "All Movement Reports", path: "/admin/movement-reports" },
   { name: "Users/Create User", path: "/admin/create-user" },
   { name: "Users/All User", path: "/admin/Users" },
-  { name: "Teams/Create Team", path: "/admin/teams" },
   { name: "Teams/All Teams", path: "/admin/teams" },
+  { name: "User Team Massage", path: "/user/team-massage"},
   { name: "Settings/Companys Name", path: "/admin/companynames" },
   { name: "Settings/Departments Name", path: "/admin/departments" },
   { name: "Settings/Branchs Name", path: "/admin/branchs" },
   { name: "Settings/Designations Name", path: "/admin/designations" },
-  { name: "Settings/Visiting Status Name", path: "/admin/visitingstatus" }
+  { name: "Settings/Visiting Status Name", path: "/admin/visitingstatus" },
+  { name: "Settings/Parties Name", path: "/admin/parties" },
 ];
 
 const ProfileAccess = () => {

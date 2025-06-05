@@ -1,18 +1,119 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../auth/AuthContext';
-import { sidebarMenu } from '../../config/SidebarMenuConfig';
-import { FiMenu, FiX, FiChevronDown, FiChevronRight } from 'react-icons/fi';
+import {
+    FiMenu, FiX, FiChevronDown, FiChevronRight,
+    FiHome, FiUser, FiUpload, FiFileText, FiActivity,
+    FiUserPlus, FiUsers, FiMessageSquare, FiBriefcase,
+    FiLayers, FiMapPin, FiAward, FiFlag
+} from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
+import axios from 'axios';
+
+// Define all possible menu items with their paths
+const allMenuItems = {
+    dashboard: {
+        name: 'Dashboard',
+        path: '/dashboard',
+        icon: <FiHome size={18} />
+    },
+    profile: {
+        name: 'Profile',
+        path: '/user/profile',
+        icon: <FiUser size={18} />
+    },
+    uploadReport: {
+        name: 'Upload Report',
+        path: '/user/upload-report',
+        icon: <FiUpload size={18} />
+    },
+    userReport: {
+        name: 'My Reports',
+        path: '/user/UserReport',
+        icon: <FiFileText size={18} />
+    },
+    movementReports: {
+        name: 'Movement Reports',
+        path: '/admin/movement-reports',
+        icon: <FiActivity size={18} />
+    },
+    createUser: {
+        name: 'Create User',
+        path: '/admin/create-user',
+        icon: <FiUserPlus size={18} />
+    },
+    users: {
+        name: 'Users',
+        path: '/admin/Users',
+        icon: <FiUsers size={18} />
+    },
+    teams: {
+        name: 'Teams',
+        path: '/admin/teams',
+        icon: <FiUsers size={18} />
+    },
+    teamMassage: {
+        name: 'Team Messages',
+        path: '/user/team-massage',
+        icon: <FiMessageSquare size={18} />
+    },
+    companies: {
+        name: 'Companies',
+        path: '/admin/companynames',
+        icon: <FiBriefcase size={18} />
+    },
+    departments: {
+        name: 'Departments',
+        path: '/admin/departments',
+        icon: <FiLayers size={18} />
+    },
+    branchs: {
+        name: 'Branchs',
+        path: '/admin/branchs',
+        icon: <FiMapPin size={18} />
+    },
+    designations: {
+        name: 'Designations',
+        path: '/admin/designations',
+        icon: <FiAward size={18} />
+    },
+    visitingStatus: {
+        name: 'Visiting Status',
+        path: '/admin/visitingstatus',
+        icon: <FiFlag size={18} />
+    },
+    parties: {
+        name: 'Parties',
+        path: '/admin/parties',
+        icon: <FiUsers size={18} />
+    }
+};
 
 export default function Sidebar() {
     const { user } = useAuth();
     const location = useLocation();
     const [isOpen, setIsOpen] = useState(false);
-    const [activeSubmenus, setActiveSubmenus] = useState({});
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
     const sidebarRef = useRef(null);
     const [profileImage, setProfileImage] = useState(null);
+    const [permissions, setPermissions] = useState(null);
+    const baseUrl = import.meta.env.VITE_API_BASE_URL;
+
+    console.log(user);
+    console.log(user.userID);
+
+    // Fetch user permissions
+    useEffect(() => {
+        const fetchPermissions = async () => {
+            try{
+                const res = await axios.get(`${baseUrl}/users/${user.userID}/permissions`);
+                setPermissions(res.data.data);
+            }catch(error){
+                console.error('Error fetching permissions:', error);
+            }
+        }
+        fetchPermissions();
+    }, [user]);
 
     // Close sidebar on outside click
     useEffect(() => {
@@ -37,21 +138,6 @@ export default function Sidebar() {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    // Submenu highlight
-    useEffect(() => {
-        if (user) {
-            const role = user.role.toLowerCase().replace(/\s+/g, '');
-            const menu = sidebarMenu[role] || [];
-            const newActive = {};
-            menu.forEach((item, idx) => {
-                if (item.submenu && item.submenu.some(sub => location.pathname.startsWith(sub.path))) {
-                    newActive[idx] = true;
-                }
-            });
-            setActiveSubmenus(newActive);
-        }
-    }, [location.pathname, user]);
-
     // Fetch profile image
     useEffect(() => {
         if (user && user.id) {
@@ -61,15 +147,29 @@ export default function Sidebar() {
 
     if (!user) return null;
 
-    const role = user.role.toLowerCase().replace(/\s+/g, '');
-    const menu = sidebarMenu[role] || [];
+    // Show loading state while permissions are being fetched
+    if (permissions === null) {
+        return (
+            <div className="fixed md:relative inset-y-0 left-0 z-50 w-72 bg-gradient-to-b from-gray-800 to-gray-900 p-4">
+                <div className="animate-pulse flex flex-col space-y-4">
+                    <div className="h-16 bg-gray-700 rounded"></div>
+                    <div className="h-10 bg-gray-700 rounded"></div>
+                    <div className="h-10 bg-gray-700 rounded"></div>
+                    <div className="h-10 bg-gray-700 rounded"></div>
+                </div>
+            </div>
+        );
+    }
 
-    const toggleSubmenu = (index) => {
-        setActiveSubmenus(prev => ({
-            ...prev,
-            [index]: !prev[index]
-        }));
-    };
+    // Filter menu items based on permissions
+    const filteredMenu = Object.values(allMenuItems)
+        .filter(item => {
+            const hasAccess = permissions[item.path] === 1;
+            console.log(`Checking ${item.path}:`, hasAccess);
+            return hasAccess;
+        });
+
+    console.log('Filtered menu:', filteredMenu);
 
     const handleLinkClick = () => {
         if (isMobile) setIsOpen(false);
@@ -129,48 +229,9 @@ export default function Sidebar() {
 
                     {/* Menu items */}
                     <ul className="flex-1 space-y-1 overflow-y-auto">
-                        {menu.map((item, idx) => (
-                            <li key={idx}>
-                                {item.submenu ? (
-                                    <div className="mb-1">
-                                        <button
-                                            onClick={() => toggleSubmenu(idx)}
-                                            className={`w-full flex justify-between items-center px-4 py-3 rounded-lg hover:bg-gray-700 transition-all duration-200 ${activeSubmenus[idx] ? 'bg-gray-700 text-white' : 'text-gray-300'}`}
-                                        >
-                                            <span className="flex items-center">
-                                                {item.icon && <span className="mr-3 text-indigo-400">{item.icon}</span>}
-                                                <span className="font-medium">{item.name}</span>
-                                            </span>
-                                            {activeSubmenus[idx] ? <FiChevronDown className="text-indigo-300" /> : <FiChevronRight className="text-indigo-300" />}
-                                        </button>
-
-                                        <AnimatePresence>
-                                            {activeSubmenus[idx] && (
-                                                <motion.div
-                                                    initial={{ height: 0, opacity: 0 }}
-                                                    animate={{ height: 'auto', opacity: 1 }}
-                                                    exit={{ height: 0, opacity: 0 }}
-                                                    transition={{ duration: 0.2 }}
-                                                    className="pl-4 ml-2 border-l-2 border-gray-700 overflow-hidden"
-                                                >
-                                                    {item.submenu.map((subItem, subIdx) => (
-                                                        <Link
-                                                            key={subIdx}
-                                                            to={subItem.path}
-                                                            onClick={handleLinkClick}
-                                                            className={`block px-4 py-2.5 my-1 rounded-lg text-sm hover:bg-gray-700 transition-colors ${location.pathname === subItem.path ? 'bg-indigo-600 text-white font-medium' : 'text-gray-300'}`}
-                                                        >
-                                                            <span className="flex items-center">
-                                                                {subItem.icon && <span className="mr-3 text-indigo-300">{subItem.icon}</span>}
-                                                                {subItem.name}
-                                                            </span>
-                                                        </Link>
-                                                    ))}
-                                                </motion.div>
-                                            )}
-                                        </AnimatePresence>
-                                    </div>
-                                ) : (
+                        {filteredMenu.length > 0 ? (
+                            filteredMenu.map((item, idx) => (
+                                <li key={idx}>
                                     <Link
                                         to={item.path}
                                         onClick={handleLinkClick}
@@ -181,9 +242,13 @@ export default function Sidebar() {
                                             <span className="font-medium">{item.name}</span>
                                         </span>
                                     </Link>
-                                )}
-                            </li>
-                        ))}
+                                </li>
+                            ))
+                        ) : (
+                            <div className="text-center py-8 text-gray-400">
+                                No menu items available
+                            </div>
+                        )}
                     </ul>
                 </div>
             </motion.aside>
