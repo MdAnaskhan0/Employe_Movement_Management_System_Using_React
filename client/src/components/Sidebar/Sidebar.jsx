@@ -99,23 +99,18 @@ export default function Sidebar() {
     const [permissions, setPermissions] = useState(null);
     const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
-    console.log(user);
-    console.log(user.userID);
-
-    // Fetch user permissions
     useEffect(() => {
         const fetchPermissions = async () => {
-            try{
+            try {
                 const res = await axios.get(`${baseUrl}/users/${user.userID}/permissions`);
                 setPermissions(res.data.data);
-            }catch(error){
+            } catch (error) {
                 console.error('Error fetching permissions:', error);
             }
-        }
+        };
         fetchPermissions();
     }, [user]);
 
-    // Close sidebar on outside click
     useEffect(() => {
         const handleClickOutside = (e) => {
             if (isMobile && isOpen && sidebarRef.current && !sidebarRef.current.contains(e.target)) {
@@ -126,7 +121,6 @@ export default function Sidebar() {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, [isMobile, isOpen]);
 
-    // Handle resize
     useEffect(() => {
         const handleResize = () => {
             const mobile = window.innerWidth < 768;
@@ -138,7 +132,6 @@ export default function Sidebar() {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    // Fetch profile image
     useEffect(() => {
         if (user && user.id) {
             setProfileImage(`/profile-image/${user.id}`);
@@ -147,7 +140,6 @@ export default function Sidebar() {
 
     if (!user) return null;
 
-    // Show loading state while permissions are being fetched
     if (permissions === null) {
         return (
             <div className="fixed md:relative inset-y-0 left-0 z-50 w-72 bg-gradient-to-b from-gray-800 to-gray-900 p-4">
@@ -161,15 +153,12 @@ export default function Sidebar() {
         );
     }
 
-    // Filter menu items based on permissions
-    const filteredMenu = Object.values(allMenuItems)
-        .filter(item => {
-            const hasAccess = permissions[item.path] === 1;
-            console.log(`Checking ${item.path}:`, hasAccess);
-            return hasAccess;
-        });
+    // Always-visible paths
+    const alwaysVisible = ['/dashboard', '/user/profile'];
 
-    console.log('Filtered menu:', filteredMenu);
+    const filteredMenu = Object.values(allMenuItems).filter(item => {
+        return alwaysVisible.includes(item.path) || permissions[item.path] === 1;
+    });
 
     const handleLinkClick = () => {
         if (isMobile) setIsOpen(false);
@@ -177,7 +166,6 @@ export default function Sidebar() {
 
     return (
         <>
-            {/* Toggle button */}
             <button
                 onClick={() => setIsOpen(!isOpen)}
                 className="md:hidden fixed top-4 left-4 z-50 p-2 rounded-lg bg-indigo-600 text-white shadow-lg hover:bg-indigo-700 transition-colors"
@@ -186,7 +174,6 @@ export default function Sidebar() {
                 {isOpen ? <FiX size={24} /> : <FiMenu size={24} />}
             </button>
 
-            {/* Overlay for mobile */}
             <AnimatePresence>
                 {isOpen && isMobile && (
                     <motion.div
@@ -199,7 +186,6 @@ export default function Sidebar() {
                 )}
             </AnimatePresence>
 
-            {/* Sidebar */}
             <motion.aside
                 ref={sidebarRef}
                 initial={{ x: -300 }}

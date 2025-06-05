@@ -11,7 +11,7 @@ import TeamLeaderDashboard from '../components/dashboard/TeamLeaderDashboard';
 const Dashboard = () => {
   const { logout, user } = useAuth();
   const navigate = useNavigate();
-  const [movementData, setMovementData] = useState([]);
+  const [permissionPage, setPermissionPage] = useState([]);
   const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
   const handleLogout = async () => {
@@ -27,22 +27,20 @@ const Dashboard = () => {
     navigate('/');
   };
 
-  useEffect(() => {
-    const fetchMovementData = async () => {
-      try {
-        const res = await axios.get(`${baseUrl}/get_movement/${user.userID}`);
-        setMovementData(res.data);
-      } catch (error) {
-        console.error('Error fetching movement data:', error);
+  console.log(user.userID)
+
+  useEffect(()=>{
+    const fetchData = async () => {
+      try{
+        const res = await axios.get(`${baseUrl}/users/${user.userID}/permissions`);
+        setPermissionPage(res.data.data);
+      }catch(err){
+        console.error(err);
       }
-    };
-
-    if (user?.userID) {
-      fetchMovementData();
     }
-  }, [user]);
-
-  const role = user?.role?.toLowerCase();
+    fetchData();
+  })
+  
 
   return (
     <div>
@@ -57,10 +55,12 @@ const Dashboard = () => {
       </div>
 
       <main>
-        {role === 'user' && <UserDashboard movementData={movementData} />}
+        {/* {role === 'user' && <UserDashboard movementData={movementData} />}
         {role === 'admin' && <AdminDashboard />}
         {(role === 'manager' || role === 'accounce') && <ManagerDashboard />}
-        {role === 'team leader' && <TeamLeaderDashboard movementData={movementData} />}
+        {role === 'team leader' && <TeamLeaderDashboard movementData={movementData} />} */}
+
+        <p>Dashboard</p>
       </main>
     </div>
   );

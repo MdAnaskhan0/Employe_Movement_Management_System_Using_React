@@ -5,10 +5,8 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
-// This maps the menu items to their corresponding permission names
+// Menu items for permission management (excluding Dashboard and Profile)
 const menuItems = [
-  { name: "Dashboard", path: "/dashboard" },
-  { name: "Profile", path: "/user/profile" },
   { name: "User Movement Submit", path: "/user/upload-report" },
   { name: "User Movement Report", path: "/user/UserReport" },
   { name: "All Movement Reports", path: "/admin/movement-reports" },
@@ -43,7 +41,7 @@ const ProfileAccess = () => {
                 // Fetch user permissions
                 const permRes = await axios.get(`${baseUrl}/users/${userID}/permissions`);
                 
-                // Initialize access state with default false for all items
+                // Initialize access state
                 const initialState = {};
                 menuItems.forEach(item => {
                     initialState[item.path] = permRes.data.data[item.path] || false;
