@@ -93,12 +93,14 @@ const TeamMassage = () => {
   );
 
   if (teams.length === 0) return (
-    <div className="max-w-md mx-auto p-6 bg-white rounded-xl shadow-lg text-center">
-      <div className="bg-blue-100 p-4 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
-        <FaUsers className="text-3xl text-blue-600" />
+    <div className='min-h-screen flex justify-center items-center'>
+      <div className="max-w-md mx-auto p-6 bg-white rounded-xl shadow-lg text-center">
+        <div className="bg-blue-100 p-4 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
+          <FaUsers className="text-3xl text-blue-600" />
+        </div>
+        <h3 className="text-xl font-semibold text-gray-800">No Teams Found</h3>
+        <p className="text-gray-500 mt-2">You are not assigned to any teams yet.</p>
       </div>
-      <h3 className="text-xl font-semibold text-gray-800">No Teams Found</h3>
-      <p className="text-gray-500 mt-2">You are not assigned to any teams yet.</p>
     </div>
   );
 
@@ -209,7 +211,7 @@ const TeamMassage = () => {
                       </div>
                       <p className="text-sm text-gray-600">{selectedTeam.team_leader_name}</p>
                     </div>
-                    
+
                     {/* Team members info */}
                     <div className="bg-white p-3 rounded-lg shadow-xs col-span-2">
                       <div className="flex items-center mb-2">

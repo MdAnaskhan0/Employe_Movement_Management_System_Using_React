@@ -13,6 +13,8 @@ const menuItems = [
   { name: "Users/Create User", path: "/admin/create-user" },
   { name: "Users/All User", path: "/admin/Users" },
   { name: "Teams/All Teams", path: "/admin/teams" },
+  { name: "Team Report", path:"/team/team-report"},
+  { name: "Team Information", path: "/team/manage-team"},
   { name: "User Team Massage", path: "/user/team-massage"},
   { name: "Settings/Companys Name", path: "/admin/companynames" },
   { name: "Settings/Departments Name", path: "/admin/departments" },

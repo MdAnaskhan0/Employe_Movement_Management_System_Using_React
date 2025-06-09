@@ -9,6 +9,7 @@ import {
 } from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
+import { FaTeamspeak } from 'react-icons/fa';
 
 // Define all possible menu items with their paths
 const allMenuItems = {
@@ -36,6 +37,16 @@ const allMenuItems = {
         name: 'Movement Reports',
         path: '/admin/movement-reports',
         icon: <FiActivity size={18} />
+    },
+    teamInformation:{
+        name: "Team Information",
+        path: "/team/manage-team",
+        icon: <FaTeamspeak size={18} />
+    },
+    teamReport:{
+        name: "Team Report",
+        path: "/team/team-report",
+        icon: <FaTeamspeak size={18} />
     },
     createUser: {
         name: 'Create User',
