@@ -427,26 +427,28 @@ const UserProfile = () => {
                                             >
                                                 <FaTrash className="mr-1" /> Remove Photo
                                             </button>
-                                            <button
-                                                onClick={() => navigate(`/dashboard/profile-access/${userID}`)}
-                                                className="text-blue-800 hover:text-blue-900 ml-4 flex items-center cursor-pointer">
-                                                <TbLockAccess className="mr-1" />
-                                                Access
-                                            </button>
                                         </div>
                                     )}
 
                                     <div className="border-b pb-4 mb-6">
                                         <div className="flex justify-between items-center">
                                             <h3 className="text-xl font-semibold text-gray-800">Personal Information</h3>
-                                            {!editMode && (
+                                            <div className='flex'>
+                                                {!editMode && (
+                                                    <button
+                                                        onClick={() => setEditMode(true)}
+                                                        className="text-blue-800 hover:text-blue-900 flex items-center cursor-pointer"
+                                                    >
+                                                        <FaUserEdit className="mr-1" /> Edit Profile
+                                                    </button>
+                                                )}
                                                 <button
-                                                    onClick={() => setEditMode(true)}
-                                                    className="text-blue-800 hover:text-blue-900 flex items-center cursor-pointer"
-                                                >
-                                                    <FaUserEdit className="mr-1" /> Edit Profile
+                                                    onClick={() => navigate(`/dashboard/profile-access/${userID}`)}
+                                                    className="text-green-800 hover:text-green-900 ml-4 flex items-center cursor-pointer">
+                                                    <TbLockAccess className="mr-1" />
+                                                    Access
                                                 </button>
-                                            )}
+                                            </div>
                                         </div>
                                     </div>
 
