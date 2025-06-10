@@ -5,23 +5,42 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
-// Menu items for permission management (excluding Dashboard and Profile)
 const menuItems = [
-  { name: "User Movement Submit", path: "/user/upload-report" },
-  { name: "User Movement Report", path: "/user/UserReport" },
-  { name: "All Movement Reports", path: "/admin/movement-reports" },
-  { name: "Users/Create User", path: "/admin/create-user" },
-  { name: "Users/All User", path: "/admin/Users" },
-  { name: "Teams/All Teams", path: "/admin/teams" },
-  { name: "Team Report", path:"/team/team-report"},
-  { name: "Team Information", path: "/team/manage-team"},
-  { name: "User Team Massage", path: "/user/team-massage"},
-  { name: "Settings/Companys Name", path: "/admin/companynames" },
-  { name: "Settings/Departments Name", path: "/admin/departments" },
-  { name: "Settings/Branchs Name", path: "/admin/branchs" },
-  { name: "Settings/Designations Name", path: "/admin/designations" },
-  { name: "Settings/Visiting Status Name", path: "/admin/visitingstatus" },
-  { name: "Settings/Parties Name", path: "/admin/parties" },
+    {
+        category: "User Management",
+        items: [
+            { name: "Create User", path: "/admin/create-user" },
+            { name: "All Users", path: "/admin/Users" },
+        ]
+    },
+    {
+        category: "Movement Report",
+        items: [
+            { name: "Movement Status (User, Team Leader)", path: "/user/upload-report" },
+            { name: "Movement Report (User, Team Leader)", path: "/user/UserReport" },
+            { name: "All Movement Reports (Admin, Manager)", path: "/admin/movement-reports" },
+        ]
+    },
+    {
+        category: "Team Management",
+        items: [
+            { name: "All Teams (Admin)", path: "/admin/teams" },
+            { name: "Team Report (Team Leader)", path: "/team/team-report" },
+            { name: "Team Information (Team Leader)", path: "/team/manage-team" },
+            { name: "User Team Message (User & Team Leader)", path: "/user/team-massage" },
+        ]
+    },
+    {
+        category: "Settings",
+        items: [
+            { name: "Company Names", path: "/admin/companynames" },
+            { name: "Department Names", path: "/admin/departments" },
+            { name: "Branch Names", path: "/admin/branchs" },
+            { name: "Designation Names", path: "/admin/designations" },
+            { name: "Visiting Status", path: "/admin/visitingstatus" },
+            { name: "Parties Names", path: "/admin/parties" },
+        ]
+    }
 ];
 
 const ProfileAccess = () => {
@@ -36,19 +55,18 @@ const ProfileAccess = () => {
         const fetchUserData = async () => {
             try {
                 setLoading(true);
-                // Fetch user details
                 const userRes = await axios.get(`${baseUrl}/users/${userID}`);
                 setUser(userRes.data.data);
-                
-                // Fetch user permissions
+
                 const permRes = await axios.get(`${baseUrl}/users/${userID}/permissions`);
-                
-                // Initialize access state
+
                 const initialState = {};
-                menuItems.forEach(item => {
-                    initialState[item.path] = permRes.data.data[item.path] || false;
+                menuItems.forEach(category => {
+                    category.items.forEach(item => {
+                        initialState[item.path] = permRes.data.data[item.path] || false;
+                    });
                 });
-                
+
                 setAccessState(initialState);
             } catch (err) {
                 console.error(err);
@@ -57,7 +75,7 @@ const ProfileAccess = () => {
                 setLoading(false);
             }
         };
-        
+
         fetchUserData();
     }, [userID, baseUrl]);
 
@@ -91,13 +109,10 @@ const ProfileAccess = () => {
     }
 
     return (
-        <div className="flex min-h-screen bg-gray-100">
-            {/* Sidebar */}
+        <div className="flex min-h-screen">
             <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-            {/* Main content */}
             <div className="flex flex-col flex-1 w-full">
-                {/* Header */}
                 <header className="flex items-center justify-between bg-white shadow-sm p-4">
                     <button
                         onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -108,41 +123,45 @@ const ProfileAccess = () => {
                     </button>
                     <h1 className="text-xl font-semibold text-gray-800">User Access Management</h1>
                     <div className="text-sm text-gray-600">
-                        Editing permissions for: <span className="font-semibold">{user?.name}</span>
+                        <p>Editing permissions for: <span className="font-semibold mx-2 text-blue-800">{user?.Name}</span></p>
+                        <p>User Role: <span className='font-semibold mx-2 text-blue-800 uppercase'>{user?.Role}</span></p>
                     </div>
                 </header>
 
-                {/* Content */}
                 <main className="p-6">
-                    <div className="bg-white rounded-lg shadow p-6 text-gray-700">
-                        <h2 className="text-lg font-bold mb-4 text-center">Access Permissions</h2>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                            {menuItems.map((item, index) => (
-                                <label key={index} className="flex items-center gap-2 p-2 hover:bg-gray-50 rounded">
-                                    <input
-                                        type="checkbox"
-                                        className="form-checkbox h-5 w-5 text-blue-600 rounded"
-                                        checked={!!accessState[item.path]}
-                                        onChange={() => handleToggle(item.path)}
-                                    />
-                                    <div>
-                                        <span className="block font-medium">{item.name.split('/')[0]}</span>
-                                        {item.name.includes('/') && (
-                                            <span className="block text-sm text-gray-500">
-                                                {item.name.split('/')[1]}
-                                            </span>
-                                        )}
+                    <div className="bg-white rounded-xl shadow-md p-6 text-gray-700">
+                        <h2 className="text-2xl font-bold mb-8 text-center text-gray-800">Access Permissions</h2>
+
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                            {menuItems.map((category, catIndex) => (
+                                <div key={catIndex} className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                                    <div className="flex items-center mb-3">
+                                        <h3 className="text-lg font-semibold text-gray-600 uppercase">{category.category}</h3>
                                     </div>
-                                </label>
+
+                                    <div className="space-y-2">
+                                        {category.items.map((item, itemIndex) => (
+                                            <label key={itemIndex} className="flex items-center cursor-pointer hover:bg-blue-50 p-2 rounded-md transition">
+                                                <input
+                                                    type="checkbox"
+                                                    className="form-checkbox h-5 w-5 text-blue-600 mr-3"
+                                                    checked={!!accessState[item.path]}
+                                                    onChange={() => handleToggle(item.path)}
+                                                />
+                                                <span className="text-sm font-medium text-gray-800">{item.name}</span>
+                                            </label>
+                                        ))}
+                                    </div>
+                                </div>
                             ))}
                         </div>
-                        <div className='flex justify-end mt-6'>
+
+                        <div className='flex justify-end mt-8'>
                             <button
                                 onClick={handleAccessSave}
-                                className='px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors'
-                                disabled={loading}
+                                className='px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-md transition-all duration-200'
                             >
-                                {loading ? 'Saving...' : 'Save Permissions'}
+                                Save Permissions
                             </button>
                         </div>
                     </div>

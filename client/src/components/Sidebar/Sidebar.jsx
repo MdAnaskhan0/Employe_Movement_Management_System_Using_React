@@ -24,7 +24,7 @@ const allMenuItems = {
     },
     // Movement Submenu
     movement: {
-        name: 'Movements',
+        name: 'Movement Report',
         icon: <FaAccusoft size={18} />,
         submenu: {
             uploadReport: {
