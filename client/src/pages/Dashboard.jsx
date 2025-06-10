@@ -68,7 +68,7 @@ const Dashboard = () => {
     }));
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <header className="flex justify-between items-center px-6 py-4 bg-white shadow-sm">
         <h1 className="text-2xl font-bold text-gray-800">Hey, {user?.name} 👋</h1>
         <button
