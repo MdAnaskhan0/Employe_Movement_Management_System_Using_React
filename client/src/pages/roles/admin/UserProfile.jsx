@@ -290,7 +290,7 @@ const UserProfile = () => {
     setIsChangingPassword(true);
 
     try {
-      const response = await axios.put(`${baseUrl}/change-password/${userID}`, {
+      const response = await axios.put(`${baseUrl}/users/change-password/${userID}`, {
         newPassword
       });
 
@@ -406,7 +406,7 @@ const UserProfile = () => {
                   {preview && (
                     <button
                       onClick={handleDelete}
-                      className={`mt-3 text-sm flex items-center justify-center md:justify-start text-blue-100 hover:text-white transition-colors ${isUploading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      className={`mt-3 text-sm flex items-center justify-center md:justify-start bg-gray-600 px-4 py-2 rounded-2xl text-blue-100 hover:text-white transition-colors ${isUploading ? 'opacity-50 cursor-not-allowed' : ''}`}
                       disabled={isUploading}
                     >
                       <FaTrash className="mr-1" /> Remove Photo

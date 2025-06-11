@@ -103,26 +103,26 @@ const allMenuItems = {
                 path: '/admin/departments',
                 icon: <FiLayers size={18} />
             },
+            designations: {
+                name: 'Designations',
+                path: '/admin/designations',
+                icon: <FiAward size={18} />
+            },
             branchs: {
                 name: 'Branchs',
                 path: '/admin/branchs',
                 icon: <FiMapPin size={18} />
             },
-            designations: {
-                name: 'Designations',
-                path: '/admin/designations',
-                icon: <FiAward size={18} />
+            parties: {
+                name: 'Parties',
+                path: '/admin/parties',
+                icon: <FiUsers size={18} />
             },
             visitingStatus: {
                 name: 'Visiting Status',
                 path: '/admin/visitingstatus',
                 icon: <FiFlag size={18} />
             },
-            parties: {
-                name: 'Parties',
-                path: '/admin/parties',
-                icon: <FiUsers size={18} />
-            }
         }
     }
 };

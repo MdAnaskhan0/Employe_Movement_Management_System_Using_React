@@ -88,7 +88,7 @@ const MovementReports = () => {
 
         setIsLoading(true);
         try {
-            const res = await axios.get(`${baseUrl}/get_movement/${selectedUser}`);
+            const res = await axios.get(`${baseUrl}/movements/${selectedUser}`);
             const allReports = Array.isArray(res.data) ? res.data : [];
             const filtered = allReports.filter((report) => isDateInRange(report.dateTime, fromDate, toDate));
             setMovementReports(allReports);
