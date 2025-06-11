@@ -19,6 +19,7 @@ const TeamChat = ({ selectedTeam, user, updateUnreadCount }) => {
   const [isTyping, setIsTyping] = useState(false);
   const [typingUser, setTypingUser] = useState('');
   const messagesEndRef = useRef(null);
+  const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
     if (!selectedTeam) return;
@@ -26,7 +27,7 @@ const TeamChat = ({ selectedTeam, user, updateUnreadCount }) => {
     socket.emit('joinTeam', selectedTeam.team_id);
 
     setLoading(true);
-    axios.get(`${import.meta.env.VITE_API_BASE_URL}/messages/${selectedTeam.team_id}`)
+    axios.get(`${baseUrl}/messages/${selectedTeam.team_id}`)
       .then(res => {
         setMessages(res.data);
         if (res.data.length > 0) {

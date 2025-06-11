@@ -23,7 +23,7 @@ const ManageTeam = () => {
     const fetchTeams = async () => {
       try {
         setLoading(true);
-        const res = await axios.get(`${baseUrl}/teams`);
+        const res = await axios.get(`${baseUrl}/teams/teams`);
         const userTeams = res.data.data.filter(
           team => team.team_leader_name === user.name
         );

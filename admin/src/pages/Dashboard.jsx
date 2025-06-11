@@ -59,7 +59,7 @@ const Dashboard = ({ children }) => {
           partyNamesRes
         ] = await Promise.all([
           axios.get(`${baseUrl}/users`),
-          axios.get(`${baseUrl}/movements`),
+          axios.get(`${baseUrl}/movements/get_all_movement`),
           axios.get(`${baseUrl}/teams/teams`),
           axios.get(`${baseUrl}/companynames`),
           axios.get(`${baseUrl}/branchnames`),

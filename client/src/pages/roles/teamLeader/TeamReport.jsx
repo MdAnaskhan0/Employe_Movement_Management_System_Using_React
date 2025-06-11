@@ -27,7 +27,7 @@ const TeamReport = () => {
   useEffect(() => {
     const fetchMovementData = async () => {
       try {
-        const res = await axios.get(`${baseUrl}/get_all_movement`);
+        const res = await axios.get(`${baseUrl}/movements/get_all_movement`);
         setMovementData(res.data);
       } catch (error) {
         toast.error('Failed to load movement data', {
@@ -49,7 +49,7 @@ const TeamReport = () => {
     const fetchTeams = async () => {
       try {
         setLoading(true);
-        const res = await axios.get(`${baseUrl}/teams`);
+        const res = await axios.get(`${baseUrl}/teams/teams`);
         const userTeams = res.data.data.filter(
           team => team.team_leader_name === user.name
         );

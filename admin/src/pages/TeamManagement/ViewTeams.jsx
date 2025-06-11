@@ -19,7 +19,7 @@ const ViewTeams = () => {
     const fetchTeams = async () => {
       setIsLoading(true);
       try {
-        const response = await axios.get(`${baseUrl}/teams`);
+        const response = await axios.get(`${baseUrl}/teams/teams`);
         if (response.data.status === 'ok') {
           setTeams(response.data.data);
         } else {

@@ -84,7 +84,7 @@ const CreateTeams = ({ children }) => {
 
         setIsLoading(true);
         try {
-            const response = await axios.post(`${baseUrl}/assign-team`, { 
+            const response = await axios.post(`${baseUrl}/teams/assign-team`, { 
                 team_name: teamName,
                 team_leader_id: selectedTeamLeader,
                 team_member_ids: selectedMembers,

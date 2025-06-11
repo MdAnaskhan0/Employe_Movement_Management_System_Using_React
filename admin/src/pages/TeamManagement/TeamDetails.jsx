@@ -31,7 +31,7 @@ const TeamDetails = () => {
   useEffect(() => {
     const fetchTeamDetails = async () => {
       try {
-        const response = await axios.get(`${baseUrl}/teams/${teamID}`);
+        const response = await axios.get(`${baseUrl}/teams/teams/${teamID}`);
         console.log(response.data.data);
         setTeamData(response.data.data);
       } catch (err) {
@@ -49,7 +49,7 @@ const TeamDetails = () => {
     if (!window.confirm('Are you sure you want to delete this team?')) return;
 
     try {
-      await axios.delete(`${baseUrl}/teams/${teamID}`);
+      await axios.delete(`${baseUrl}/teams/teams/${teamID}`);
       toast.success('Team deleted successfully');
       navigate('/dashboard/allteam');
     } catch (err) {
@@ -59,7 +59,7 @@ const TeamDetails = () => {
 
   const handleAddMemberClick = async () => {
     try {
-      const response = await axios.get(`${baseUrl}/unassigned-users`);
+      const response = await axios.get(`${baseUrl}/unassigned/unassigned-users`);
       const unassignedUsers = response.data.data;
 
       if (!unassignedUsers || unassignedUsers.length === 0) {
@@ -81,7 +81,7 @@ const TeamDetails = () => {
     }
 
     try {
-      await axios.patch(`${baseUrl}/teams/${teamID}/add-member`, {
+      await axios.patch(`${baseUrl}/teams/teams/${teamID}/add-member`, {
         member_id: selectedUser.userID
       });
 
@@ -89,7 +89,7 @@ const TeamDetails = () => {
       setShowAddModal(false);
       setSelectedUser(null);
 
-      const updatedResponse = await axios.get(`${baseUrl}/teams/${teamID}`);
+      const updatedResponse = await axios.get(`${baseUrl}/teams/teams/${teamID}`);
       setTeamData(updatedResponse.data.data);
     } catch (err) {
       toast.error(`Failed to add member: ${err.response?.data?.message || err.message}`);
@@ -98,7 +98,7 @@ const TeamDetails = () => {
 
   const handleRemoveMemberClick = async () => {
     try {
-      const response = await axios.get(`${baseUrl}/teams/${teamID}`);
+      const response = await axios.get(`${baseUrl}/teams/teams/${teamID}`);
       const teamMembers = response.data.data?.team_members;
 
       if (!teamMembers || teamMembers.length === 0) {
@@ -120,7 +120,7 @@ const TeamDetails = () => {
     }
 
     try {
-      await axios.patch(`${baseUrl}/teams/${teamID}/remove-member`, {
+      await axios.patch(`${baseUrl}/teams/teams/${teamID}/remove-member`, {
         member_id: selectedMember.userID
       });
 
@@ -128,7 +128,7 @@ const TeamDetails = () => {
       setShowRemoveModal(false);
       setSelectedMember(null);
 
-      const updatedResponse = await axios.get(`${baseUrl}/teams/${teamID}`);
+      const updatedResponse = await axios.get(`${baseUrl}/teams/teams/${teamID}`);
       setTeamData(updatedResponse.data.data);
     } catch (err) {
       toast.error(`Failed to remove member: ${err.response?.data?.message || err.message}`);

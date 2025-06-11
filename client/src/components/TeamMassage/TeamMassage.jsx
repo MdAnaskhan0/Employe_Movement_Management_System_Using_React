@@ -22,7 +22,7 @@ const TeamMassage = () => {
     const fetchTeams = async () => {
       try {
         setLoading(true);
-        const res = await axios.get(`${baseUrl}/teams`);
+        const res = await axios.get(`${baseUrl}/teams/teams`);
         const allTeams = res.data.data;
 
         let filteredTeams = [];

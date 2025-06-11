@@ -71,7 +71,7 @@ const LogReport = () => {
         setIsLoading(true);
         const [usersResponse, logsResponse] = await Promise.all([
           axios.get(`${baseUrl}/users`),
-          axios.get(`${baseUrl}/movement_edit_logs`)
+          axios.get(`${baseUrl}/movement-logs`)
         ]);
 
         setUsers(usersResponse.data.data || []);

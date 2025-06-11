@@ -43,7 +43,7 @@ const MovementReports = () => {
   const fetchMovementReports = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.get(`${baseUrl}/movements/`);
+      const response = await axios.get(`${baseUrl}/movements/get_all_movement`);
       const usersResponse = await axios.get(`${baseUrl}/users`);
       setUsers(usersResponse.data.data);
       setMovementReports(response.data);
