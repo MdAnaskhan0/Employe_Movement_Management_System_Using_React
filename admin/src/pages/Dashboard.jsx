@@ -3,9 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { FaBars, FaTimes, FaChartLine } from 'react-icons/fa';
 import Sidebar from '../components/Sidebar/Sidebar';
 import axios from 'axios';
-import { 
-  FaUser, 
-  FaWalking, 
+import {
+  FaUser,
+  FaWalking,
   FaCodeBranch,
   FaUserCog,
   FaBuilding
@@ -35,7 +35,7 @@ const Dashboard = ({ children }) => {
   const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
 
-  
+
   const handleLogout = () => {
     localStorage.removeItem('adminLoggedIn');
     localStorage.removeItem('adminUsername');
@@ -59,8 +59,8 @@ const Dashboard = ({ children }) => {
           partyNamesRes
         ] = await Promise.all([
           axios.get(`${baseUrl}/users`),
-          axios.get(`${baseUrl}/get_all_movement`),
-          axios.get(`${baseUrl}/teams`),
+          axios.get(`${baseUrl}/movements`),
+          axios.get(`${baseUrl}/teams/teams`),
           axios.get(`${baseUrl}/companynames`),
           axios.get(`${baseUrl}/branchnames`),
           axios.get(`${baseUrl}/designations`),
@@ -89,66 +89,67 @@ const Dashboard = ({ children }) => {
     fetchData();
   }, []);
 
+
   const statCards = [
-    { 
-      title: 'Users', 
-      count: stats.users, 
+    {
+      title: 'Users',
+      count: stats.users,
       icon: <FaUser className="text-2xl" />,
       color: 'bg-blue-600',
       path: '/dashboard/alluser'
     },
-    { 
-      title: 'Movement Reports', 
-      count: stats.movementReports, 
+    {
+      title: 'Movement Reports',
+      count: stats.movementReports,
       icon: <FaWalking className="text-2xl" />,
       color: 'bg-green-600',
       path: '/dashboard/movementreports'
     },
-    { 
-      title: 'Teams', 
-      count: stats.teams, 
+    {
+      title: 'Teams',
+      count: stats.teams,
       icon: <RiTeamFill className="text-2xl" />,
       color: 'bg-purple-600',
       path: '/dashboard/allteam'
     },
-    { 
-      title: 'Companies', 
-      count: stats.companyNames, 
+    {
+      title: 'Companies',
+      count: stats.companyNames,
       icon: <FaBuilding className="text-2xl" />,
       color: 'bg-amber-600',
       path: '/dashboard/companynames'
     },
-    { 
-      title: 'Branches', 
-      count: stats.branchNames, 
+    {
+      title: 'Branches',
+      count: stats.branchNames,
       icon: <FaCodeBranch className="text-2xl" />,
       color: 'bg-red-600',
       path: '/dashboard/branchnames'
     },
-    { 
-      title: 'Departments', 
-      count: stats.departments, 
+    {
+      title: 'Departments',
+      count: stats.departments,
       icon: <TbHierarchy className="text-2xl" />,
       color: 'bg-indigo-600',
       path: '/dashboard/departments'
     },
-    { 
-      title: 'Designations', 
-      count: stats.designations, 
+    {
+      title: 'Designations',
+      count: stats.designations,
       icon: <MdDesignServices className="text-2xl" />,
       color: 'bg-pink-600',
       path: '/dashboard/designations'
     },
-    { 
-      title: 'Party Names', 
-      count: stats.partyNames, 
+    {
+      title: 'Party Names',
+      count: stats.partyNames,
       icon: <SiGooglecolab className="text-2xl" />,
       color: 'bg-teal-600',
       path: '/dashboard/partynames'
     },
-    { 
-      title: 'Roles', 
-      count: stats.roles, 
+    {
+      title: 'Roles',
+      count: stats.roles,
       icon: <FaUserCog className="text-2xl" />,
       color: 'bg-cyan-600',
       path: '/dashboard/roles'
@@ -225,8 +226,8 @@ const Dashboard = ({ children }) => {
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                   {statCards.map((card, index) => (
-                    <div 
-                      key={index} 
+                    <div
+                      key={index}
                       onClick={() => navigate(card.path)}
                       className={`bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition cursor-pointer group ease-in-out duration-300 hover:scale-105`}
                     >

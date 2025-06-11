@@ -303,7 +303,7 @@ const UserProfile = () => {
         setIsChangingPassword(true);
 
         try {
-            const response = await axios.put(`${baseUrl}/change-password/${userID}`, {
+            const response = await axios.put(`${baseUrl}/users/change-password/${userID}`, {
                 newPassword
             });
 

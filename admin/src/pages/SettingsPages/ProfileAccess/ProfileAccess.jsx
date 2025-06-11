@@ -58,7 +58,7 @@ const ProfileAccess = () => {
                 const userRes = await axios.get(`${baseUrl}/users/${userID}`);
                 setUser(userRes.data.data);
 
-                const permRes = await axios.get(`${baseUrl}/users/${userID}/permissions`);
+                const permRes = await axios.get(`${baseUrl}/permissions/users/${userID}/permissions`);
 
                 const initialState = {};
                 menuItems.forEach(category => {
@@ -88,7 +88,7 @@ const ProfileAccess = () => {
 
     const handleAccessSave = async () => {
         try {
-            await axios.put(`${baseUrl}/users/${userID}/permissions`, {
+            await axios.put(`${baseUrl}/permissions/users/${userID}/permissions`, {
                 permissions: accessState
             });
             toast.success('Permissions updated successfully');

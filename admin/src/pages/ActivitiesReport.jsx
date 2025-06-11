@@ -83,7 +83,7 @@ const ActivitiesReport = () => {
       try {
         setLoading(true);
         // Replace with your actual delete endpoint
-        await axios.delete(`${baseUrl}/user-activity/${activityId}`);
+        await axios.delete(`${baseUrl}/user-activities/${activityId}`);
         toast.success('Activity deleted successfully');
         // Refresh the activities
         handleSearch();

@@ -43,7 +43,7 @@ const MovementReports = () => {
   const fetchMovementReports = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.get(`${baseUrl}/get_all_movement`);
+      const response = await axios.get(`${baseUrl}/movements/`);
       const usersResponse = await axios.get(`${baseUrl}/users`);
       setUsers(usersResponse.data.data);
       setMovementReports(response.data);
@@ -242,13 +242,6 @@ const MovementReports = () => {
 
     toast.success('CSV download started');
   };
-
-  // // Print Function
-  // const PrintFile = () => {
-  //   console.log("Printing");
-  //   // Print the movement record with user details when user selected Like Name, Employe ID, company, Department, designation and movement data.
-  //   // If user not selected then print only movement data.
-  // };
 
 
 const PrintFile = () => {

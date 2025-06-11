@@ -32,7 +32,7 @@ const Home = () => {
     setError('');
 
     try {
-      const response = await fetch(`${baseUrl}/adminlogin`, { 
+      const response = await fetch(`${baseUrl}/admin/login`, { 
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
