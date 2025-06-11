@@ -141,7 +141,7 @@ export default function Sidebar() {
     useEffect(() => {
         const fetchPermissions = async () => {
             try {
-                const res = await axios.get(`${baseUrl}/users/${user.userID}/permissions`);
+                const res = await axios.get(`${baseUrl}/permissions/users/${user.userID}/permissions`);
                 setPermissions(res.data.data);
             } catch (error) {
                 console.error('Error fetching permissions:', error);

@@ -48,7 +48,7 @@ const UserReport = () => {
             if (!user || !user.userID) return;
             setIsLoading(true);
             try {
-                const movementRes = await axios.get(`${baseUrl}/get_movement/${user.userID}`);
+                const movementRes = await axios.get(`${baseUrl}/movements/${user.userID}`);
                 const movement = movementRes.data;
                 const dataArray = Array.isArray(movement) ? movement : [movement];
                 setMovementData(dataArray);
@@ -136,9 +136,9 @@ const UserReport = () => {
         try {
             const original = movementData.find(m => m.movementID === editRowId);
 
-            await axios.put(`${baseUrl}/update_movement/${editRowId}`, editFormData);
+            await axios.put(`${baseUrl}/movements/${editRowId}`, editFormData);
 
-            await axios.post(`${baseUrl}/movement_edit_logs`, {
+            await axios.post(`${baseUrl}/movement-logs`, {
                 userID: user.userID,
                 movementID: editRowId,
                 originalData: original,

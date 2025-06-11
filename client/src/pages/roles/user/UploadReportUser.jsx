@@ -98,7 +98,7 @@ const UploadReportUser = () => {
     setIsSubmitting(true);
 
     try {
-      const res = await axios.post(`${baseUrl}/add_movement`, formData);
+      const res = await axios.post(`${baseUrl}/movements`, formData);
 
       if (res.status === 201) {
         toast.success('Movement recorded successfully!', {

@@ -50,7 +50,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get(`${baseUrl}/users/${user.userID}/permissions`);
+        const res = await axios.get(`${baseUrl}/permissions/users/${user.userID}/permissions`);
         setPermissionPage(res.data.data || {});
       } catch (err) {
         console.error(err);

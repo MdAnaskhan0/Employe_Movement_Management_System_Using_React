@@ -83,7 +83,7 @@ const Profile = () => {
 
         setIsChanging(true);
         try {
-            await axios.put(`${baseUrl}/change-password/${user.userID}`, {
+            await axios.put(`${baseUrl}/users/change-password/${user.userID}`, {
                 newPassword: passwordData.newPassword
             });
 
