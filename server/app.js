@@ -30,13 +30,7 @@ const app = express();
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors({
   origin: [
-    // 'http://localhost:5173',
-    // 'http://localhost:5174',
-    // 'http://192.168.0.103:5173',
-    // 'http://192.168.0.103:5174',
-    // 'http://192.168.111.140:5173',
-    // 'http://192.168.111.140:5174',
-    'https://employe-movement-management-system.vercel.app/'
+    'https://employe-movement-management-system.vercel.app'
   ],
   credentials: true
 }));
@@ -70,9 +64,17 @@ app.use('/permissions', permissionRoutes);
 
 
 // Error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).send({ status: 'error', message: 'Something broke!' });
+// app.use((err, req, res, next) => {
+//   console.error(err.stack);
+//   res.status(500).send({ status: 'error', message: 'Something broke!' });
+// });
+
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', 'https://employe-movement-management-system.vercel.app');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  next();
 });
+
 
 module.exports = app;
