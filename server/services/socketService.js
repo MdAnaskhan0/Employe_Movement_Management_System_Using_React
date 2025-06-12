@@ -8,7 +8,7 @@ const init = (server) => {
     cors: {
       origin: [
         'https://employe-movement-management-system.vercel.app',
-        'https://employe-movement-management-system-azure.vercel.app/',
+        'https://employe-movement-management-system-sigma.vercel.app/',
       ],
       credentials: true,
     },

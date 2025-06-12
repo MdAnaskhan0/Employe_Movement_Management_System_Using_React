@@ -9,7 +9,7 @@ export const SocketProvider = ({ children }) => {
 
   useEffect(() => {
     // Connect socket with CORS and websocket transport
-    socketRef.current = io('http://localhost:5137', {
+    socketRef.current = io('https://employe-movement-management-system-using.onrender.com', {
       transports: ['websocket'],
       withCredentials: true,
     });

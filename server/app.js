@@ -31,7 +31,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors({
   origin: [
     'https://employe-movement-management-system.vercel.app',
-    'https://employe-movement-management-system-azure.vercel.app/'
+    'https://employe-movement-management-system-sigma.vercel.app/'
   ],
   credentials: true
 }));
@@ -72,7 +72,7 @@ app.use('/permissions', permissionRoutes);
 
 const allowedOrigins = [
   'https://employe-movement-management-system.vercel.app',
-  'https://employe-movement-management-system-azure.vercel.app'
+  'https://employe-movement-management-system-sigma.vercel.app/'
 ];
 
 app.use((req, res, next) => {
