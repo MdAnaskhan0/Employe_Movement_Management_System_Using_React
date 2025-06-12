@@ -30,12 +30,12 @@ const app = express();
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors({
   origin: [
-    'http://localhost:5173',
-    'http://localhost:5174',
-    'http://192.168.0.103:5173',
-    'http://192.168.0.103:5174',
-    'http://192.168.111.140:5173',
-    'http://192.168.111.140:5174',
+    // 'http://localhost:5173',
+    // 'http://localhost:5174',
+    // 'http://192.168.0.103:5173',
+    // 'http://192.168.0.103:5174',
+    // 'http://192.168.111.140:5173',
+    // 'http://192.168.111.140:5174',
     'employe-movement-management-system.vercel.app'
   ],
   credentials: true
