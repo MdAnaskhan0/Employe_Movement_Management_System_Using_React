@@ -43,7 +43,7 @@ const TeamChat = () => {
   useEffect(() => {
     const fetchTeams = async () => {
       try {
-        const res = await axios.get(`${baseUrl}/teams`);
+        const res = await axios.get(`${baseUrl}/teams/teams`);
         const detailsMap = {};
         res.data.data.forEach(team => {
           detailsMap[team.team_id] = team;
