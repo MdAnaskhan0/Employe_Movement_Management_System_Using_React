@@ -36,7 +36,7 @@ app.use(cors({
     // 'http://192.168.0.103:5174',
     // 'http://192.168.111.140:5173',
     // 'http://192.168.111.140:5174',
-    'employe-movement-management-system.vercel.app'
+    'https://employe-movement-management-system.vercel.app/'
   ],
   credentials: true
 }));
