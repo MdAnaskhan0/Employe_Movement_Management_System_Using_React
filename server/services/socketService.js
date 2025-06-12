@@ -1,28 +1,29 @@
 const { Server } = require('socket.io');
-const db = require('../config/db');
-
-let io;
+const db = require('./db'); // Your DB config file
 
 const init = (server) => {
-  io = new Server(server, {
+  const io = new Server(server, {
     cors: {
       origin: [
         'https://employe-movement-management-system.vercel.app',
-        'https://employe-movement-management-system-sigma.vercel.app/',
+        'https://employe-movement-management-system-sigma.vercel.app',
+        'https://employe-movement-management-system-using.onrender.com'
       ],
       credentials: true,
+      methods: ['GET', 'POST']
     },
+    transports: ['websocket', 'polling']
   });
 
   io.on('connection', (socket) => {
+    console.log('Socket connected:', socket.id);
+
     socket.on('joinTeam', (teamId) => {
       socket.join(`team_${teamId}`);
     });
 
     socket.on('sendMessage', (data) => {
       const { team_id, sender_name, message } = data;
-
-      // Save message to DB
       db.query(
         'INSERT INTO team_messages (team_id, sender_name, message) VALUES (?, ?, ?)',
         [team_id, sender_name, message],
@@ -35,22 +36,20 @@ const init = (server) => {
               message,
               created_at: new Date()
             };
-
-            // 🔥 Use team_id here, not undefined teamId
             io.to(`team_${team_id}`).emit('receiveMessage', newMessage);
+          } else {
+            console.error('DB Error:', err);
           }
         }
       );
     });
 
-
     socket.on('disconnect', () => {
-      // Handle disconnect if needed
+      console.log('Socket disconnected:', socket.id);
     });
   });
+
+  return io;
 };
 
-module.exports = {
-  init,
-  getIO: () => io
-};
+module.exports = init;

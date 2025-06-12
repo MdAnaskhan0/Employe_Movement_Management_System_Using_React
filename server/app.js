@@ -1,7 +1,6 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-const multer = require('multer');
 const fs = require('fs');
 
 // Route imports
@@ -26,24 +25,31 @@ const permissionRoutes = require('./routes/permissionRoutes');
 
 const app = express();
 
-// Middleware
-app.use(express.static(path.join(__dirname, 'public')));
+const allowedOrigins = [
+  'https://employe-movement-management-system.vercel.app',
+  'https://employe-movement-management-system-sigma.vercel.app',
+  'https://employe-movement-management-system-using.onrender.com'
+];
+
 app.use(cors({
-  origin: [
-    'https://employe-movement-management-system.vercel.app',
-    'https://employe-movement-management-system-sigma.vercel.app/'
-  ],
+  origin: allowedOrigins,
   credentials: true
 }));
 
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.header('Access-Control-Allow-Origin', origin);
+  }
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  next();
+});
+
 app.use(express.json());
+app.use(express.static(path.join(__dirname, 'public')));
+if (!fs.existsSync('uploads')) fs.mkdirSync('uploads');
 
-// Ensure uploads directory exists
-if (!fs.existsSync('uploads')) {
-  fs.mkdirSync('uploads');
-}
-
-// Routes
 app.use('/admin', adminRoutes);
 app.use('/auth', authRoutes);
 app.use('/users', userRoutes);
@@ -62,31 +68,5 @@ app.use('/visitingstatus', visitingStatusRoutes);
 app.use('/roles', roleRoutes);
 app.use('/teams', teamRoutes);
 app.use('/permissions', permissionRoutes);
-
-
-// Error handling middleware
-// app.use((err, req, res, next) => {
-//   console.error(err.stack);
-//   res.status(500).send({ status: 'error', message: 'Something broke!' });
-// });
-
-const allowedOrigins = [
-  'https://employe-movement-management-system.vercel.app',
-  'https://employe-movement-management-system-sigma.vercel.app/'
-];
-
-app.use((req, res, next) => {
-  const origin = req.headers.origin;
-
-  if (allowedOrigins.includes(origin)) {
-    res.header('Access-Control-Allow-Origin', origin);
-  }
-
-  res.header('Access-Control-Allow-Credentials', 'true');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-  next();
-});
-
-
 
 module.exports = app;
