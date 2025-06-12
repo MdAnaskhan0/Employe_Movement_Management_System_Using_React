@@ -6,10 +6,11 @@ const SocketContext = createContext(null);
 export const SocketProvider = ({ children }) => {
   const socketRef = useRef(null);
   const [connected, setConnected] = useState(false);
+  const baseURL = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
     // Connect socket with CORS and websocket transport
-    socketRef.current = io('https://employe-movement-management-system-using.onrender.com', {
+    socketRef.current = io(`${baseURL}`, {
       transports: ['websocket'],
       withCredentials: true,
     });
