@@ -39,12 +39,14 @@ const init = (server) => {
               message,
               created_at: new Date()
             };
-            // Broadcast to team room
-            io.to(`team_${teamId}`).emit('receiveMessage', newMessage);
+
+            // 🔥 Use team_id here, not undefined teamId
+            io.to(`team_${team_id}`).emit('receiveMessage', newMessage);
           }
         }
       );
     });
+
 
     socket.on('disconnect', () => {
       // Handle disconnect if needed
