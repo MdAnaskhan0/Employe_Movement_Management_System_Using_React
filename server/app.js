@@ -30,7 +30,8 @@ const app = express();
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors({
   origin: [
-    'https://employe-movement-management-system.vercel.app'
+    'https://employe-movement-management-system.vercel.app',
+    'https://employe-movement-management-system-azure.vercel.app/'
   ],
   credentials: true
 }));
@@ -70,7 +71,7 @@ app.use('/permissions', permissionRoutes);
 // });
 
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', 'https://employe-movement-management-system.vercel.app');
+  res.header('Access-Control-Allow-Origin', 'https://employe-movement-management-system.vercel.app', 'https://employe-movement-management-system-azure.vercel.app/');
   res.header('Access-Control-Allow-Credentials', 'true');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
   next();
