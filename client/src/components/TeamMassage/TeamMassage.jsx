@@ -3,7 +3,7 @@ import { useAuth } from '../../auth/AuthContext';
 import axios from 'axios';
 import TeamChat from './TeamChat';
 import { toast } from 'react-toastify';
-import { FaUsers, FaUserShield, FaIdCard, FaListUl, FaBell, FaEllipsisV, FaSearch, FaChevronLeft, FaTimes } from 'react-icons/fa';
+import { FaUsers, FaUserShield, FaListUl, FaEllipsisV, FaSearch, FaChevronLeft, FaTimes } from 'react-icons/fa';
 import { TailSpin } from 'react-loader-spinner';
 import LogoutButton from '../LogoutButton';
 
@@ -39,7 +39,7 @@ const TeamMassage = () => {
         const allTeams = res.data.data;
 
         let filteredTeams = [];
-        if (user.role === 'team leader') {
+        if (user.role === 'user') {
           filteredTeams = allTeams.filter(team => team.team_leader_name === user.name);
         } else if (user.role === 'user') {
           filteredTeams = allTeams.filter(team =>

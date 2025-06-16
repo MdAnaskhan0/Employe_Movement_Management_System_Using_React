@@ -13,12 +13,13 @@ const Teams = () => {
     const [sortConfig, setSortConfig] = useState({ key: 'team_id', direction: 'asc' });
 
     const baseUrl = import.meta.env.VITE_API_BASE_URL;
+    console.log(baseUrl);
 
     useEffect(() => {
         const fetchTeams = async () => {
             setIsLoading(true);
             try {
-                const response = await axios.get(`${baseUrl}/teams`);
+                const response = await axios.get(`${baseUrl}/teams/teams`);
                 if (response.data.status === 'ok') {
                     setTeams(response.data.data);
                 } else {
