@@ -3,7 +3,7 @@ import { useAuth } from '../../auth/AuthContext';
 import axios from 'axios';
 import TeamChat from './TeamChat';
 import { toast } from 'react-toastify';
-import { FaUsers, FaUserShield, FaIdCard, FaListUl, FaBell, FaEllipsisV, FaSearch } from 'react-icons/fa';
+import { FaUsers, FaUserShield, FaIdCard, FaListUl, FaBell, FaEllipsisV, FaSearch, FaChevronLeft, FaTimes } from 'react-icons/fa';
 import { TailSpin } from 'react-loader-spinner';
 import LogoutButton from '../LogoutButton';
 
@@ -15,8 +15,21 @@ const TeamMassage = () => {
   const [selectedTeam, setSelectedTeam] = useState(null);
   const [unreadCounts, setUnreadCounts] = useState({});
   const [showTeamDetails, setShowTeamDetails] = useState(false);
-  const [showTeamList, setShowTeamList] = useState(false);
+  const [showTeamList, setShowTeamList] = useState(true); // Default true for mobile
   const [searchTerm, setSearchTerm] = useState('');
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+      if (window.innerWidth >= 768) {
+        setShowTeamList(true);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     const fetchTeams = async () => {
@@ -56,7 +69,9 @@ const TeamMassage = () => {
   const handleTeamSelect = (team) => {
     setSelectedTeam(team);
     setShowTeamDetails(false);
-    setShowTeamList(false);
+    if (isMobile) {
+      setShowTeamList(false);
+    }
 
     setUnreadCounts(prev => ({
       ...prev,
@@ -106,16 +121,104 @@ const TeamMassage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="flex justify-between items-center p-4 bg-white shadow-sm">
+      {/* Desktop Header */}
+      <div className="hidden md:flex justify-between items-center p-4 bg-white shadow-sm">
         <h1 className="text-xl font-bold text-gray-800">Team Chat</h1>
         <div className="flex items-center space-x-4">
           <LogoutButton />
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto p-4 flex flex-col md:flex-row gap-4">
-        {/* Team List Sidebar */}
-        <div className={`${showTeamList ? 'block' : 'hidden'} md:block w-full md:w-80 bg-white rounded-xl shadow-sm overflow-hidden`}>
+      {/* Mobile Header */}
+      <div className="md:hidden flex justify-between items-center p-3 bg-white shadow-sm sticky top-0 z-10">
+        {!showTeamList && selectedTeam ? (
+          <>
+            <button
+              onClick={() => setShowTeamList(true)}
+              className="text-blue-600 p-2 rounded-lg"
+            >
+              <FaChevronLeft className="text-xl" />
+            </button>
+            <h1 className="text-lg font-semibold text-gray-800 truncate max-w-xs">
+              {selectedTeam.team_name}
+            </h1>
+            <button
+              onClick={toggleTeamDetails}
+              className="text-gray-600 p-2 rounded-lg"
+            >
+              <FaEllipsisV />
+            </button>
+          </>
+        ) : (
+          <>
+            <h1 className="text-lg font-semibold text-gray-800">Teams</h1>
+            <LogoutButton mobile />
+          </>
+        )}
+      </div>
+
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row h-[calc(100vh-64px)] md:h-[calc(100vh-72px)]">
+        {/* Team List Sidebar - Mobile */}
+        {isMobile && showTeamList && (
+          <div className="w-full bg-white h-full overflow-hidden flex flex-col">
+            <div className="p-3 border-b border-gray-100 sticky top-0 bg-white z-10">
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Search teams..."
+                  className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                <FaSearch className="absolute left-3 top-3 text-gray-400" />
+                <button
+                  onClick={() => setSearchTerm('')}
+                  className={`absolute right-3 top-3 text-gray-400 ${!searchTerm ? 'hidden' : ''}`}
+                >
+                  <FaTimes />
+                </button>
+              </div>
+            </div>
+
+            <div className="flex-1 overflow-y-auto">
+              <div className="p-2">
+                <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2 px-2">
+                  Your Teams ({filteredTeams.length})
+                </h3>
+                <div className="space-y-1">
+                  {filteredTeams.map(team => (
+                    <div
+                      key={team.team_id}
+                      onClick={() => handleTeamSelect(team)}
+                      className={`p-3 rounded-lg cursor-pointer transition-all flex justify-between items-center
+                        ${selectedTeam?.team_id === team.team_id
+                          ? 'bg-blue-50 border-l-4 border-blue-500'
+                          : 'hover:bg-gray-50'}`}
+                    >
+                      <div className="flex items-center">
+                        <div className="bg-blue-100 p-2 rounded-lg mr-3">
+                          <FaUsers className="text-blue-600" />
+                        </div>
+                        <div className="truncate">
+                          <h4 className="font-medium text-gray-800 truncate">{team.team_name}</h4>
+                          <p className="text-xs text-gray-500 truncate">{team.team_leader_name}</p>
+                        </div>
+                      </div>
+                      {unreadCounts[team.team_id] > 0 && (
+                        <span className="bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                          {unreadCounts[team.team_id]}
+                        </span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Team List Sidebar - Desktop */}
+        <div className={`hidden md:block w-80 bg-white rounded-xl shadow-sm overflow-hidden h-full`}>
           <div className="p-4 border-b border-gray-100">
             <div className="relative">
               <input
@@ -129,15 +232,17 @@ const TeamMassage = () => {
             </div>
           </div>
 
-          <div className="p-2">
-            <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2 px-2">Your Teams ({filteredTeams.length})</h3>
-            <div className="space-y-1 max-h-[calc(100vh-180px)] overflow-y-auto">
+          <div className="p-2 h-[calc(100%-72px)] overflow-y-auto">
+            <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2 px-2">
+              Your Teams ({filteredTeams.length})
+            </h3>
+            <div className="space-y-1">
               {filteredTeams.map(team => (
                 <div
                   key={team.team_id}
                   onClick={() => handleTeamSelect(team)}
                   className={`p-3 rounded-lg cursor-pointer transition-all flex justify-between items-center
-                  ${selectedTeam?.team_id === team.team_id
+                    ${selectedTeam?.team_id === team.team_id
                       ? 'bg-blue-50 border-l-4 border-blue-500'
                       : 'hover:bg-gray-50'}`}
                 >
@@ -162,97 +267,89 @@ const TeamMassage = () => {
         </div>
 
         {/* Main Chat Area */}
-        <div className="flex-1 bg-white rounded-xl shadow-sm overflow-hidden">
-          {/* Mobile header */}
-          <div className="md:hidden flex items-center justify-between p-4 border-b border-gray-100">
-            <button
-              onClick={toggleTeamList}
-              className="text-blue-600 p-2 rounded-lg hover:bg-blue-50"
-            >
-              <FaUsers className="text-xl" />
-            </button>
-            <h3 className="text-lg font-semibold text-gray-800">
-              {selectedTeam ? selectedTeam.team_name : 'Select a Team'}
-            </h3>
-            <div className="w-8"></div>
+        {(!isMobile || !showTeamList) && (
+          <div className="flex-1 bg-white rounded-xl shadow-sm overflow-hidden h-full flex flex-col">
+            {selectedTeam ? (
+              <>
+                {/* Desktop Team Header */}
+                <div className="hidden md:flex justify-between items-center p-4 border-b border-gray-100">
+                  <div className="flex items-center">
+                    <div className="bg-blue-100 p-2 rounded-lg mr-3">
+                      <FaUsers className="text-blue-600" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-800">{selectedTeam.team_name}</h3>
+                      <p className="text-xs text-gray-500">
+                        {selectedTeam.team_members.split(',').length} members
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={toggleTeamDetails}
+                    className="text-gray-500 hover:text-blue-600 p-2 rounded-full hover:bg-gray-100"
+                  >
+                    <FaEllipsisV />
+                  </button>
+                </div>
+
+                {/* Team Details Panel */}
+                {showTeamDetails && (
+                  <div className="bg-blue-50 p-4 border-b border-blue-100">
+                    <div className="flex flex-col md:flex-row gap-4 items-start w-full">
+                      <div className="bg-white p-3 rounded-lg shadow-xs w-full md:w-auto">
+                        <div className="flex items-center mb-2">
+                          <FaUserShield className="text-blue-500 mr-2" />
+                          <h4 className="font-medium text-gray-700">Team Leader</h4>
+                        </div>
+                        <p className="text-sm text-gray-600">{selectedTeam.team_leader_name}</p>
+                      </div>
+
+                      <div className="bg-white p-3 rounded-lg shadow-xs w-full">
+                        <div className="flex items-center mb-2">
+                          <FaListUl className="text-blue-500 mr-2" />
+                          <h4 className="font-medium text-gray-700">Members</h4>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {selectedTeam.team_members.split(',').map((member, index) => (
+                            <span key={index} className="bg-gray-100 px-3 py-1 rounded-full text-sm text-gray-700">
+                              {member.trim()}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                <TeamChat
+                  selectedTeam={selectedTeam}
+                  user={user}
+                  updateUnreadCount={updateUnreadCount}
+                />
+              </>
+            ) : (
+              <div className="flex flex-col items-center justify-center h-full text-gray-500 p-4">
+                <div className="bg-blue-100 p-6 rounded-full mb-4">
+                  <FaUsers className="text-4xl text-blue-500" />
+                </div>
+                <h3 className="text-lg font-medium text-gray-700 mb-1">
+                  {isMobile ? 'Select a team to chat' : 'No Team Selected'}
+                </h3>
+                <p className="text-sm text-center">
+                  {isMobile ? 'Choose from your team list' : 'Select a team from the sidebar to start chatting'}
+                </p>
+                {isMobile && (
+                  <button
+                    onClick={() => setShowTeamList(true)}
+                    className="mt-4 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
+                  >
+                    Browse Teams
+                  </button>
+                )}
+              </div>
+            )}
           </div>
-
-          {selectedTeam ? (
-            <>
-              <div className="flex justify-between items-center p-4 border-b border-gray-100">
-                <div className="flex items-center">
-                  <div className="bg-blue-100 p-2 rounded-lg mr-3">
-                    <FaUsers className="text-blue-600" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-800">{selectedTeam.team_name}</h3>
-                    <p className="text-xs text-gray-500">
-                      {selectedTeam.team_members.split(',').length} members
-                    </p>
-                  </div>
-                </div>
-                <button
-                  onClick={toggleTeamDetails}
-                  className="text-gray-500 hover:text-blue-600 p-2 rounded-full hover:bg-gray-100"
-                >
-                  <FaEllipsisV />
-                </button>
-              </div>
-
-              {showTeamDetails && (
-                <div className="bg-blue-50 p-4 border-b border-blue-100">
-                  <div className="flex flex-row gap-4 items-center w-full">
-
-                    {/* Team leader info */}
-                    <div className="bg-white p-3 rounded-lg shadow-xs">
-                      <div className="flex items-center mb-2">
-                        <FaUserShield className="text-blue-500 mr-2" />
-                        <h4 className="font-medium text-gray-700">Team Leader</h4>
-                      </div>
-                      <p className="text-sm text-gray-600">{selectedTeam.team_leader_name}</p>
-                    </div>
-
-                    {/* Team members info */}
-                    <div className="bg-white p-3 rounded-lg shadow-xs col-span-2">
-                      <div className="flex items-center mb-2">
-                        <FaListUl className="text-blue-500 mr-2" />
-                        <h4 className="font-medium text-gray-700">Members</h4>
-                      </div>
-                      <div className="flex flex-wrap gap-2">
-                        {selectedTeam.team_members.split(',').map((member, index) => (
-                          <span key={index} className="bg-gray-100 px-3 py-1 rounded-full text-sm text-gray-700">
-                            {member.trim()}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-
-                  </div>
-                </div>
-              )}
-
-              <TeamChat
-                selectedTeam={selectedTeam}
-                user={user}
-                updateUnreadCount={updateUnreadCount}
-              />
-            </>
-          ) : (
-            <div className="flex flex-col items-center justify-center h-[70vh] text-gray-500">
-              <div className="bg-blue-100 p-6 rounded-full mb-4">
-                <FaUsers className="text-4xl text-blue-500" />
-              </div>
-              <h3 className="text-lg font-medium text-gray-700 mb-1">No Team Selected</h3>
-              <p className="text-sm">Select a team from the sidebar to start chatting</p>
-              <button
-                onClick={toggleTeamList}
-                className="mt-4 md:hidden bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
-              >
-                Browse Teams
-              </button>
-            </div>
-          )}
-        </div>
+        )}
       </div>
     </div>
   );

@@ -24,6 +24,7 @@ const menuItems = [
     {
         category: "Team Management",
         items: [
+            { name: "Create Team (Admin)", path: "/admin/teams/create-team" },
             { name: "All Teams (Admin)", path: "/admin/teams" },
             { name: "Team Report (Team Leader)", path: "/team/team-report" },
             { name: "Team Information (Team Leader)", path: "/team/manage-team" },

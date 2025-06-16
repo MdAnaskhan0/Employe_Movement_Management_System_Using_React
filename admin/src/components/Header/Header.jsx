@@ -12,7 +12,7 @@ export default function Header() {
 
     return (
         <div className="bg-gray-100 py-2 px-6 shadow-md">
-            <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
+            <div className="flex flex-col md:flex-row items-center justify-between md:space-y-0">
 
                 {/* Logo */}
                 <div className="w-full md:w-1/2 flex justify-center md:justify-start items-center cursor-pointer">
@@ -25,7 +25,7 @@ export default function Header() {
                 </div>
 
                 {/* Management System */}
-                <div className="w-full md:w-1/2 text-center md:text-right">
+                <div className="w-full md:w-1/2 text-center md:text-right mb-2 md:mb-0">
                     <h1 className="text-sm md:text-3xl font-bold text-gray-800">
                         Employee Movement Management System
                     </h1>

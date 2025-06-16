@@ -26,6 +26,7 @@ import ActivitiesReport from './pages/ActivitiesReport';
 import LogReport from './pages/LogReport';
 import TeamChat from './pages/TeamManagement/TeamChat';
 import InactivityHandeler from './components/Private/InactivityHandler';
+import AdminProfile from './pages/AdminProfile';
 
 const App = () => {
   return (
@@ -55,6 +56,7 @@ const App = () => {
             }
           >
             <Route index element={<Dashboard />} />
+            <Route path='profile' element={<AdminProfile />} />
             <Route path="createuser" element={<CreateUser />} />
             <Route path="alluser" element={<AllUser />} />
             <Route path="user-activity" element={<ActivitiesReport />} />

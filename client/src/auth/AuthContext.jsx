@@ -5,18 +5,40 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true); // NEW
+  const [loading, setLoading] = useState(true);
   const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
   const timeoutRef = useRef(null);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-    setLoading(false); // Done checking
-  }, []);
+    const initializeAuth = async () => {
+      const storedUser = localStorage.getItem('user');
+      if (storedUser) {
+        const parsedUser = JSON.parse(storedUser);
+        
+        // Fetch permissions if not already in user object
+        if (!parsedUser.permissions && parsedUser.userID) {
+          try {
+            const res = await axios.get(`${baseUrl}/permissions/users/${parsedUser.userID}/permissions`);
+            const userWithPermissions = {
+              ...parsedUser,
+              permissions: res.data.data
+            };
+            setUser(userWithPermissions);
+            localStorage.setItem('user', JSON.stringify(userWithPermissions));
+          } catch (error) {
+            console.error('Error fetching permissions:', error);
+            setUser(parsedUser);
+          }
+        } else {
+          setUser(parsedUser);
+        }
+      }
+      setLoading(false);
+    };
+
+    initializeAuth();
+  }, [baseUrl]);
 
   useEffect(() => {
     if (user) {
@@ -47,8 +69,16 @@ export const AuthProvider = ({ children }) => {
     try {
       const res = await axios.post(`${baseUrl}/auth/login`, { username, password });
       if (res.data.status === 'success') {
-        setUser(res.data.user);
-        localStorage.setItem('user', JSON.stringify(res.data.user));
+        // Fetch permissions after login
+        const permissionsRes = await axios.get(`${baseUrl}/permissions/users/${res.data.user.userID}/permissions`);
+        
+        const userWithPermissions = {
+          ...res.data.user,
+          permissions: permissionsRes.data.data
+        };
+        
+        setUser(userWithPermissions);
+        localStorage.setItem('user', JSON.stringify(userWithPermissions));
         return { success: true, role: res.data.user.role };
       } else {
         return { success: false, message: 'Login failed' };
@@ -73,6 +103,5 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
-
 
 export const useAuth = () => useContext(AuthContext);

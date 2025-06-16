@@ -50,11 +50,7 @@ const CreateTeams = ({ children }) => {
         fetchAllUsers();
     }, []);
 
-    const handleLogout = () => {
-        localStorage.removeItem('adminLoggedIn');
-        localStorage.removeItem('adminUsername');
-        navigate('/');
-    };
+    
 
     const toggleMember = (memberId) => {
         setSelectedMembers(prev =>
@@ -111,6 +107,12 @@ const CreateTeams = ({ children }) => {
     const filteredUsers = userCategory.filter(user =>
         user.Name.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
+    const handleLogout = () => {
+        localStorage.removeItem('adminLoggedIn');
+        localStorage.removeItem('adminUsername');
+        navigate('/');
+    };
 
     return (
         <div className="flex h-screen bg-gray-50 overflow-hidden">

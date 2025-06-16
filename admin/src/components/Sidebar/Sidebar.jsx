@@ -89,10 +89,10 @@ const Sidebar = ({ sidebarOpen, handleLogout }) => {
       aria-label="Sidebar"
     >
       {/* Logo/Header */}
-      <div className="flex items-center justify-center h-16 border-b border-gray-700 font-bold text-2xl bg-gradient-to-r from-green-700 to-green-900">
+      <div className="flex items-center justify-center h-16 border-b border-gray-700 font-bold text-xl bg-gradient-to-r from-green-700 to-green-900 px-2">
         <span className="flex items-center">
           <FaUserShield className="mr-2" />
-          Admin Panel
+          Super Admin Panel
         </span>
       </div>
 

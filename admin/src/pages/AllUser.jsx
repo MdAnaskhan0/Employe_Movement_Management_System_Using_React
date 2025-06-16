@@ -13,14 +13,14 @@ const AllUser = () => {
   const [error, setError] = useState(null);
   const [searchText, setSearchText] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const usersPerPage = 5;
+  const [usersPerPage, setUsersPerPage] = useState(10); // Default to 10 rows per page
   const navigate = useNavigate();
   const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get(`${baseUrl}/users`); 
+        const response = await axios.get(`${baseUrl}/users`);
         setUsers(response.data.data);
       } catch (err) {
         setError(err.message);
@@ -61,6 +61,11 @@ const AllUser = () => {
 
   const handlePageClick = (pageNum) => {
     setCurrentPage(pageNum);
+  };
+
+  const handleRowsPerPageChange = (e) => {
+    setUsersPerPage(Number(e.target.value));
+    setCurrentPage(1); // Reset to first page when changing rows per page
   };
 
   const handleLogout = () => {
@@ -162,26 +167,45 @@ const AllUser = () => {
         </header>
 
         <main className="flex-grow overflow-auto p-4 md:p-6 bg-gray-50">
-          <div className="relative max-w-md py-2">
+          <div className="flex justify-between items-center mb-4">
+            <div className="relative max-w-md">
+              <div className="flex items-center">
+                <input
+                  type="text"
+                  placeholder="Search by username, email, ID, name..."
+                  className="w-full py-2 pl-4 pr-10 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-transparent"
+                  value={searchText}
+                  onChange={(e) => {
+                    setSearchText(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                />
+                {searchText && (
+                  <button
+                    className="absolute right-3 text-gray-400 hover:text-gray-600"
+                    onClick={() => setSearchText('')}
+                  >
+                    <FaTimes />
+                  </button>
+                )}
+              </div>
+            </div>
+            
             <div className="flex items-center">
-              <input
-                type="text"
-                placeholder="Search by username, email, ID, name..."
-                className="w-full py-2 pl-4 pr-10 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-transparent"
-                value={searchText}
-                onChange={(e) => {
-                  setSearchText(e.target.value);
-                  setCurrentPage(1);
-                }}
-              />
-              {searchText && (
-                <button 
-                  className="absolute right-3 text-gray-400 hover:text-gray-600" 
-                  onClick={() => setSearchText('')}
-                >
-                  <FaTimes />
-                </button>
-              )}
+              <label htmlFor="rowsPerPage" className="mr-2 text-sm text-gray-600">Users per page:</label>
+              <select
+                id="rowsPerPage"
+                value={usersPerPage}
+                onChange={handleRowsPerPageChange}
+                className="py-2 pl-2 pr-8 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-transparent"
+              >
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+                <option value="200">200</option>
+                <option value="500">500</option>
+              </select>
             </div>
           </div>
 
@@ -192,12 +216,12 @@ const AllUser = () => {
                   <tr>
                     <th className='px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider'>No.</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Username</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Email</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">E-ID</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Name</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Designation</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Department</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Company</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Department</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Designation</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Email</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Phone</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Actions</th>
                   </tr>
@@ -206,17 +230,12 @@ const AllUser = () => {
                   {paginatedUsers.map((user, index) => (
                     <tr key={user.userID}>
                       <td className="px-4 py-4 text-sm text-gray-900 font-medium">
-                        {index + 1}
+                        {index + 1 + (currentPage - 1) * usersPerPage}
                       </td>
                       <td className="px-4 py-4 text-sm text-gray-900">
                         {editingId === user.userID ? (
                           <input name="username" value={editData.username} onChange={handleEditChange} className="w-full px-2 py-1 border rounded text-sm" />
                         ) : user.username}
-                      </td>
-                      <td className="px-4 py-4 text-sm text-gray-900">
-                        {editingId === user.userID ? (
-                          <input name="email" type="email" value={editData.email} onChange={handleEditChange} className="w-full px-2 py-1 border rounded text-sm" />
-                        ) : user.email}
                       </td>
                       <td className="px-4 py-4 text-sm text-gray-500">
                         {editingId === user.userID ? (
@@ -230,8 +249,8 @@ const AllUser = () => {
                       </td>
                       <td className="px-4 py-4 text-sm text-gray-500">
                         {editingId === user.userID ? (
-                          <input name="designation" value={editData.designation} onChange={handleEditChange} className="w-full px-2 py-1 border rounded text-sm" />
-                        ) : user.Designation}
+                          <input name="company_name" value={editData.company_name} onChange={handleEditChange} className="w-full px-2 py-1 border rounded text-sm" />
+                        ) : user.Company_name}
                       </td>
                       <td className="px-4 py-4 text-sm text-gray-500">
                         {editingId === user.userID ? (
@@ -240,8 +259,13 @@ const AllUser = () => {
                       </td>
                       <td className="px-4 py-4 text-sm text-gray-500">
                         {editingId === user.userID ? (
-                          <input name="company_name" value={editData.company_name} onChange={handleEditChange} className="w-full px-2 py-1 border rounded text-sm" />
-                        ) : user.Company_name}
+                          <input name="designation" value={editData.designation} onChange={handleEditChange} className="w-full px-2 py-1 border rounded text-sm" />
+                        ) : user.Designation}
+                      </td>
+                      <td className="px-4 py-4 text-sm text-gray-900">
+                        {editingId === user.userID ? (
+                          <input name="email" type="email" value={editData.email} onChange={handleEditChange} className="w-full px-2 py-1 border rounded text-sm" />
+                        ) : user.email}
                       </td>
                       <td className="px-4 py-4 text-sm text-gray-500">
                         {editingId === user.userID ? (
@@ -267,31 +291,36 @@ const AllUser = () => {
 
           {/* Pagination Controls */}
           <div className="flex justify-between items-center mt-4">
-            <button
-              onClick={() => handlePageChange('prev')}
-              disabled={currentPage === 1}
-              className="px-3 py-1 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
-            >
-              <FaChevronLeft />
-            </button>
-            <div className="flex space-x-1">
-              {Array.from({ length: totalPages }, (_, i) => (
-                <button
-                  key={i}
-                  onClick={() => handlePageClick(i + 1)}
-                  className={`px-3 py-1 rounded ${currentPage === i + 1 ? 'bg-blue-800 text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
-                >
-                  {i + 1}
-                </button>
-              ))}
+            <div className="text-sm text-gray-600">
+              Showing {((currentPage - 1) * usersPerPage) + 1} to {Math.min(currentPage * usersPerPage, filteredUsers.length)} of {filteredUsers.length} entries
             </div>
-            <button
-              onClick={() => handlePageChange('next')}
-              disabled={currentPage === totalPages}
-              className="px-3 py-1 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
-            >
-              <FaChevronRight />
-            </button>
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={() => handlePageChange('prev')}
+                disabled={currentPage === 1}
+                className="px-3 py-1 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
+              >
+                <FaChevronLeft />
+              </button>
+              <div className="flex space-x-1">
+                {Array.from({ length: totalPages }, (_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => handlePageClick(i + 1)}
+                    className={`px-3 py-1 rounded ${currentPage === i + 1 ? 'bg-blue-800 text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
+                  >
+                    {i + 1}
+                  </button>
+                ))}
+              </div>
+              <button
+                onClick={() => handlePageChange('next')}
+                disabled={currentPage === totalPages}
+                className="px-3 py-1 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
+              >
+                <FaChevronRight />
+              </button>
+            </div>
           </div>
         </main>
       </div>

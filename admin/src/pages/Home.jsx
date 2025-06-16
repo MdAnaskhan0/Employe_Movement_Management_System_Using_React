@@ -45,6 +45,7 @@ const Home = () => {
       if (response.ok && data.status === 'ok') {
         localStorage.setItem('adminLoggedIn', 'true');
         localStorage.setItem('adminUsername', data.username);
+        localStorage.setItem('adminID', data.adminID);
 
         toast.success('Login successful! Redirecting...', {
           position: "top-center",

@@ -5,7 +5,7 @@ import {
     FiMenu, FiX, FiChevronDown, FiChevronRight,
     FiHome, FiUser, FiUpload, FiFileText, FiActivity,
     FiUserPlus, FiUsers, FiMessageSquare, FiBriefcase,
-    FiLayers, FiMapPin, FiAward, FiFlag, FiSettings
+    FiLayers, FiMapPin, FiAward, FiFlag, FiSettings,
 } from 'react-icons/fi';
 import axios from 'axios';
 import { FaAccusoft, FaTeamspeak } from 'react-icons/fa';
@@ -66,6 +66,11 @@ const allMenuItems = {
         name: 'Teams',
         icon: <FaTeamspeak size={18} />,
         submenu: {
+            createTeam: {
+                name: 'Create Team',
+                path: '/admin/teams/create-team',
+                icon: <FiUserPlus size={18} />
+            },
             teamInformation: {
                 name: "Team Information",
                 path: "/team/manage-team",
@@ -147,7 +152,7 @@ export default function Sidebar() {
                 console.error('Error fetching permissions:', error);
             }
         };
-        
+
         if (user?.userID) {
             fetchPermissions();
         }
@@ -171,7 +176,7 @@ export default function Sidebar() {
                 setIsOpen(true);
             }
         };
-        
+
         handleResize();
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
@@ -213,9 +218,8 @@ export default function Sidebar() {
                 <li key={key}>
                     <button
                         onClick={() => toggleSubmenu(key)}
-                        className={`w-full flex justify-between items-center px-4 py-3 rounded-lg transition-colors ${
-                            openSubmenus[key] ? 'bg-gray-700' : 'hover:bg-gray-700'
-                        }`}
+                        className={`w-full flex justify-between items-center px-4 py-3 rounded-lg transition-colors ${openSubmenus[key] ? 'bg-gray-700' : 'hover:bg-gray-700'
+                            }`}
                     >
                         <span className="flex items-center">
                             {item.icon && <span className="mr-3 text-indigo-400">{item.icon}</span>}
@@ -231,11 +235,10 @@ export default function Sidebar() {
                                         <Link
                                             to={subItem.path}
                                             onClick={handleLinkClick}
-                                            className={`block px-4 py-2 rounded-lg transition-colors ${
-                                                location.pathname === subItem.path
+                                            className={`block px-4 py-2 rounded-lg transition-colors ${location.pathname === subItem.path
                                                     ? 'bg-indigo-600 text-white font-medium'
                                                     : 'text-gray-300 hover:bg-gray-700'
-                                            }`}
+                                                }`}
                                         >
                                             <span className="flex items-center">
                                                 {subItem.icon && <span className="mr-3 text-indigo-400">{subItem.icon}</span>}
@@ -257,11 +260,10 @@ export default function Sidebar() {
                     <Link
                         to={item.path}
                         onClick={handleLinkClick}
-                        className={`block px-4 py-3 rounded-lg transition-colors ${
-                            location.pathname === item.path
+                        className={`block px-4 py-3 rounded-lg transition-colors ${location.pathname === item.path
                                 ? 'bg-indigo-600 text-white font-medium'
                                 : 'text-gray-300 hover:bg-gray-700'
-                        }`}
+                            }`}
                     >
                         <span className="flex items-center">
                             {item.icon && <span className="mr-3 text-indigo-400">{item.icon}</span>}
@@ -307,9 +309,8 @@ export default function Sidebar() {
 
             <aside
                 ref={sidebarRef}
-                className={`fixed md:relative inset-y-0 left-0 z-50 w-72 bg-gray-800 text-gray-100 p-4 shadow-xl transition-transform duration-300 ease-in-out ${
-                    isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
-                }`}
+                className={`fixed md:relative inset-y-0 left-0 z-50 w-72 bg-gray-800 text-gray-100 p-4 shadow-xl transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+                    }`}
             >
                 <div className="flex flex-col h-full">
                     {/* Profile */}

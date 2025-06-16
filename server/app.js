@@ -30,8 +30,8 @@ const app = express();
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors({
   origin: [
-    'https://employe-movement-management-system.vercel.app',
-    'https://employe-movement-management-system-azure.vercel.app/'
+    'http://192.168.111.140:5173',
+    'http://192.168.111.140:5174'
   ],
   credentials: true
 }));

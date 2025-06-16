@@ -1,7 +1,13 @@
-// config/multer.js
-const multer = require("multer");
+const multer = require('multer');
 
-const storage = multer.memoryStorage(); // store in RAM, not disk
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/');
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + '-' + file.originalname);
+  }
+});
 
 const upload = multer({ storage });
 

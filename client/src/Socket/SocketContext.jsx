@@ -1,16 +1,16 @@
-import React, { createContext, useRef, useState, useEffect } from 'react';
+import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { io } from 'socket.io-client';
 
-export const SocketContext = createContext(null);
+const SocketContext = createContext(null);
 
 export const SocketProvider = ({ children }) => {
   const socketRef = useRef(null);
   const [connected, setConnected] = useState(false);
-  const baseURL = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
-    socketRef.current = io(baseURL, {
-      transports: ['websocket', 'polling'],
+    // Connect socket with CORS and websocket transport
+    socketRef.current = io('http://localhost:5137', {
+      transports: ['websocket'],
       withCredentials: true,
     });
 
@@ -27,7 +27,7 @@ export const SocketProvider = ({ children }) => {
     return () => {
       socketRef.current.disconnect();
     };
-  }, [baseURL]);
+  }, []);
 
   return (
     <SocketContext.Provider value={socketRef.current}>
@@ -35,3 +35,5 @@ export const SocketProvider = ({ children }) => {
     </SocketContext.Provider>
   );
 };
+
+export const useSocket = () => useContext(SocketContext);
