@@ -22,28 +22,6 @@ const allMenuItems = {
         path: '/user/profile',
         icon: <FiUser size={18} />
     },
-    // Movement Submenu
-    movement: {
-        name: 'Movement Report',
-        icon: <FaAccusoft size={18} />,
-        submenu: {
-            uploadReport: {
-                name: 'Upload Report',
-                path: '/user/upload-report',
-                icon: <FiUpload size={18} />
-            },
-            userReport: {
-                name: 'My Reports',
-                path: '/user/UserReport',
-                icon: <FiFileText size={18} />
-            },
-            movementReports: {
-                name: 'Movement Reports',
-                path: '/admin/movement-reports',
-                icon: <FiActivity size={18} />
-            },
-        }
-    },
     // Users Submenu 
     users: {
         name: 'Users',
@@ -59,6 +37,28 @@ const allMenuItems = {
                 path: '/admin/Users',
                 icon: <FiUsers size={18} />
             }
+        }
+    },
+    // Movement Submenu
+    movement: {
+        name: 'Movement Report',
+        icon: <FaAccusoft size={18} />,
+        submenu: {
+            uploadReport: {
+                name: 'Movement Status',
+                path: '/user/upload-report',
+                icon: <FiUpload size={18} />
+            },
+            userReport: {
+                name: 'My Reports',
+                path: '/user/UserReport',
+                icon: <FiFileText size={18} />
+            },
+            movementReports: {
+                name: 'All Movement Reports',
+                path: '/admin/movement-reports',
+                icon: <FiActivity size={18} />
+            },
         }
     },
     // Teams Submenu

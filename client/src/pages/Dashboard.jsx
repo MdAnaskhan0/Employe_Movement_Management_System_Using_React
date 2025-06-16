@@ -13,7 +13,7 @@ import { IoIosArrowForward } from 'react-icons/io';
 const allDashboardMenuItems = [
   { name: 'Dashboard', path: '/dashboard', icon: <FiHome size={20} />, color: 'bg-blue-500' },
   { name: 'Profile', path: '/user/profile', icon: <FiUser size={20} />, color: 'bg-purple-500' },
-  { name: 'Upload Report', path: '/user/upload-report', icon: <FiUpload size={20} />, color: 'bg-green-500' },
+  { name: 'Movement Status', path: '/user/upload-report', icon: <FiUpload size={20} />, color: 'bg-green-500' },
   { name: 'My Reports', path: '/user/UserReport', icon: <FiFileText size={20} />, color: 'bg-yellow-500' },
   { name: 'Movement Reports', path: '/admin/movement-reports', icon: <FiActivity size={20} />, color: 'bg-red-500' },
   { name: 'Create User', path: '/admin/create-user', icon: <FiUserPlus size={20} />, color: 'bg-indigo-500' },

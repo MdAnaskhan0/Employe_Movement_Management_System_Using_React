@@ -1,33 +1,33 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { 
-  FaHome, FaUsers, FaChartBar, FaUserFriends, 
-  FaUserPlus, FaChevronDown, FaChevronRight, 
-  FaSignOutAlt, FaRegBuilding, FaCog 
+import {
+  FaHome, FaUsers, FaChartBar, FaUserFriends,
+  FaUserPlus, FaChevronDown, FaChevronRight,
+  FaSignOutAlt, FaRegBuilding, FaCog
 } from 'react-icons/fa';
-import { 
-  HiUserAdd, HiOutlineUserGroup, HiOutlineDocumentReport 
+import {
+  HiUserAdd, HiOutlineUserGroup, HiOutlineDocumentReport
 } from 'react-icons/hi';
-import { 
-  TbGitBranch, TbUsers 
+import {
+  TbGitBranch, TbUsers
 } from 'react-icons/tb';
-import { 
-  CgIfDesign, CgPerformance 
+import {
+  CgIfDesign, CgPerformance
 } from 'react-icons/cg';
-import { 
-  FaTransgender, FaUserShield 
+import {
+  FaTransgender, FaUserShield
 } from 'react-icons/fa6';
-import { 
-  LiaUserFriendsSolid, LiaBusinessTimeSolid 
+import {
+  LiaUserFriendsSolid, LiaBusinessTimeSolid
 } from 'react-icons/lia';
-import { 
-  MdPeopleAlt, MdTaskAlt, MdEditOff, MdOutlineChat 
+import {
+  MdPeopleAlt, MdTaskAlt, MdEditOff, MdOutlineChat
 } from 'react-icons/md';
-import { 
-  LuSquareActivity, LuSettings2 
+import {
+  LuSquareActivity, LuSettings2
 } from 'react-icons/lu';
-import { 
-  RiTeamLine 
+import {
+  RiTeamLine
 } from 'react-icons/ri';
 
 const Sidebar = ({ sidebarOpen, handleLogout }) => {
@@ -54,9 +54,9 @@ const Sidebar = ({ sidebarOpen, handleLogout }) => {
     if (path.includes('/dashboard/createteam') || path.includes('/dashboard/allteam') || path.includes('/dashboard/all-team-chat')) {
       menus.team = true;
     }
-    if (path.includes('/dashboard/companynames') || path.includes('/dashboard/branchnames') || path.includes('/dashboard/designations') || 
-        path.includes('/dashboard/departments') || path.includes('/dashboard/partynames') || path.includes('/dashboard/visitingstatus') || 
-        path.includes('/dashboard/roles')) {
+    if (path.includes('/dashboard/companynames') || path.includes('/dashboard/branchnames') || path.includes('/dashboard/designations') ||
+      path.includes('/dashboard/departments') || path.includes('/dashboard/partynames') || path.includes('/dashboard/visitingstatus') ||
+      path.includes('/dashboard/roles')) {
       menus.settings = true;
     }
 
@@ -131,20 +131,20 @@ const Sidebar = ({ sidebarOpen, handleLogout }) => {
 
           {expandedMenus.users && (
             <div className="space-y-1 pl-12">
-              <Link 
-                to="/dashboard/createuser" 
+              <Link
+                to="/dashboard/createuser"
                 className={`flex items-center py-2 px-4 rounded text-sm transition ${isSubmenuActive('/dashboard/createuser')}`}
               >
                 <HiUserAdd className="mr-2" /> Create User
               </Link>
-              <Link 
-                to="/dashboard/alluser" 
+              <Link
+                to="/dashboard/alluser"
                 className={`flex items-center py-2 px-4 rounded text-sm transition ${isSubmenuActive('/dashboard/alluser')}`}
               >
                 <FaUsers className="mr-2" /> All Users
               </Link>
-              <Link 
-                to="/dashboard/user-activity" 
+              <Link
+                to="/dashboard/user-activity"
                 className={`flex items-center py-2 px-4 rounded text-sm transition ${isSubmenuActive('/dashboard/user-activity')}`}
               >
                 <CgPerformance className="mr-2" /> User Activity
@@ -172,14 +172,14 @@ const Sidebar = ({ sidebarOpen, handleLogout }) => {
 
           {expandedMenus.reports && (
             <div className="space-y-1 pl-12">
-              <Link 
-                to="/dashboard/movementreports" 
+              <Link
+                to="/dashboard/movementreports"
                 className={`flex items-center py-2 px-4 rounded text-sm transition ${isSubmenuActive('/dashboard/movementreports')}`}
               >
                 <FaChartBar className="mr-2" /> Movement Reports
               </Link>
-              <Link 
-                to="/dashboard/log-report" 
+              <Link
+                to="/dashboard/log-report"
                 className={`flex items-center py-2 px-4 rounded text-sm transition ${isSubmenuActive('/dashboard/log-report')}`}
               >
                 <MdEditOff className="mr-2" /> Log Reports
@@ -207,20 +207,20 @@ const Sidebar = ({ sidebarOpen, handleLogout }) => {
 
           {expandedMenus.team && (
             <div className="space-y-1 pl-12">
-              <Link 
-                to="/dashboard/createteam" 
+              <Link
+                to="/dashboard/createteam"
                 className={`flex items-center py-2 px-4 rounded text-sm transition ${isSubmenuActive('/dashboard/createteam')}`}
               >
                 <FaUserPlus className="mr-2" /> Create Team
               </Link>
-              <Link 
-                to="/dashboard/allteam" 
+              <Link
+                to="/dashboard/allteam"
                 className={`flex items-center py-2 px-4 rounded text-sm transition ${isSubmenuActive('/dashboard/allteam')}`}
               >
                 <HiOutlineUserGroup className="mr-2" /> Manage Team
               </Link>
-              <Link 
-                to="/dashboard/all-team-chat" 
+              <Link
+                to="/dashboard/all-team-chat"
                 className={`flex items-center py-2 px-4 rounded text-sm transition ${isSubmenuActive('/dashboard/all-team-chat')}`}
               >
                 <MdOutlineChat className="mr-2" /> Team Chat
@@ -248,44 +248,44 @@ const Sidebar = ({ sidebarOpen, handleLogout }) => {
 
           {expandedMenus.settings && (
             <div className="grid grid-cols-1 gap-1 pl-12">
-              <Link 
-                to="/dashboard/companynames" 
+              <Link
+                to="/dashboard/companynames"
                 className={`flex items-center py-2 px-4 rounded text-sm transition ${isSubmenuActive('/dashboard/companynames')}`}
               >
                 <FaRegBuilding className="mr-2" /> Company
               </Link>
-              <Link 
-                to="/dashboard/branchnames" 
+              <Link
+                to="/dashboard/branchnames"
                 className={`flex items-center py-2 px-4 rounded text-sm transition ${isSubmenuActive('/dashboard/branchnames')}`}
               >
                 <TbGitBranch className="mr-2" /> Branches
               </Link>
-              <Link 
-                to="/dashboard/designations" 
-                className={`flex items-center py-2 px-4 rounded text-sm transition ${isSubmenuActive('/dashboard/designations')}`}
-              >
-                <CgIfDesign className="mr-2" /> Designations
-              </Link>
-              <Link 
-                to="/dashboard/departments" 
+              <Link
+                to="/dashboard/departments"
                 className={`flex items-center py-2 px-4 rounded text-sm transition ${isSubmenuActive('/dashboard/departments')}`}
               >
                 <FaTransgender className="mr-2" /> Departments
               </Link>
-              <Link 
-                to="/dashboard/partynames" 
+              <Link
+                to="/dashboard/designations"
+                className={`flex items-center py-2 px-4 rounded text-sm transition ${isSubmenuActive('/dashboard/designations')}`}
+              >
+                <CgIfDesign className="mr-2" /> Designations
+              </Link>
+              <Link
+                to="/dashboard/partynames"
                 className={`flex items-center py-2 px-4 rounded text-sm transition ${isSubmenuActive('/dashboard/partynames')}`}
               >
                 <LiaBusinessTimeSolid className="mr-2" /> Parties
               </Link>
-              <Link 
-                to="/dashboard/visitingstatus" 
+              <Link
+                to="/dashboard/visitingstatus"
                 className={`flex items-center py-2 px-4 rounded text-sm transition ${isSubmenuActive('/dashboard/visitingstatus')}`}
               >
                 <MdPeopleAlt className="mr-2" /> Visit Status
               </Link>
-              <Link 
-                to="/dashboard/roles" 
+              <Link
+                to="/dashboard/roles"
                 className={`flex items-center py-2 px-4 rounded text-sm transition ${isSubmenuActive('/dashboard/roles')}`}
               >
                 <MdTaskAlt className="mr-2" /> Roles

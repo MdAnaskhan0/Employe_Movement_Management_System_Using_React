@@ -121,16 +121,39 @@ const teamController = {
     });
   },
 
+  // addTeamMember: (req, res) => {
+  //   const teamId = req.params.id;
+  //   const { member_id } = req.body;
+
+  //   const query = 'INSERT INTO team_assignments (team_id, team_leader_id, team_member_id) SELECT ?, team_leader_id, ? FROM team_assignments WHERE team_id = ? LIMIT 1';
+  //   db.query(query, [teamId, member_id, teamId], (err) => {
+  //     if (err) return res.status(500).json({ status: 'error', message: err.message });
+  //     res.json({ status: 'ok', message: 'Member added' });
+  //   });
+  // },
+
   addTeamMember: (req, res) => {
     const teamId = req.params.id;
     const { member_id } = req.body;
 
-    const query = 'INSERT INTO team_assignments (team_id, team_leader_id, team_member_id) SELECT ?, team_leader_id, ? FROM team_assignments WHERE team_id = ? LIMIT 1';
-    db.query(query, [teamId, member_id, teamId], (err) => {
-      if (err) return res.status(500).json({ status: 'error', message: err.message });
-      res.json({ status: 'ok', message: 'Member added' });
+    const query = `
+    INSERT INTO team_assignments (team_id, team_leader_id, team_member_id, team_name)
+    SELECT team_id, team_leader_id, ?, team_name 
+    FROM team_assignments 
+    WHERE team_id = ? 
+    LIMIT 1
+  `;
+
+    db.query(query, [member_id, teamId], (err) => {
+      if (err) {
+        console.error("SQL Error: ", err); // For debugging in backend logs
+        return res.status(500).json({ status: 'error', message: err.message });
+      }
+      res.json({ status: 'ok', message: 'Member added successfully!' });
     });
   },
+
+
 
   removeTeamMember: (req, res) => {
     const { id: teamID } = req.params;

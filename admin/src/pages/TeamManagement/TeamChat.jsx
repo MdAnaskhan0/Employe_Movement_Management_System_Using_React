@@ -21,7 +21,7 @@ const TeamChat = () => {
   const [selectedTeam, setSelectedTeam] = useState(null);
   const [teamDetails, setTeamDetails] = useState({});
   const [searchQuery, setSearchQuery] = useState('');
-  const [showTeamsList, setShowTeamsList] = useState(false); // New state for mobile teams list toggle
+  const [showTeamsList, setShowTeamsList] = useState(false);
   const messagesEndRef = useRef(null);
   const baseUrl = import.meta.env.VITE_API_BASE_URL;
 

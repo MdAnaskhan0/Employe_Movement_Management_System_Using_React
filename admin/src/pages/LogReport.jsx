@@ -18,7 +18,7 @@ import Sidebar from '../components/Sidebar/Sidebar';
 import axios from 'axios';
 import ReactPaginate from 'react-paginate';
 import { format, parseISO } from 'date-fns';
-import { CSVLink } from 'react-csv';
+import { utils, writeFile } from 'xlsx';
 
 const LogReport = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -144,54 +144,117 @@ const LogReport = () => {
     }
   };
 
-  const prepareCSVData = () => {
-    const headers = [
-      { label: 'No', key: 'index' },
-      { label: 'User', key: 'username' },
-      { label: 'Edit Time', key: 'editTime' },
+  const exportToExcel = () => {
+    if (filteredLogs.length === 0) {
+      toast.warning("No data to export");
+      return;
+    }
+
+    // Prepare the data with headers
+    const data = [
+      // First row - main headers
+      [
+        'No',
+        'User',
+        'Edit Time',
+        'Original Data',
+        '', '', '', '', '', '', '', // Placeholders for original data columns
+        'Updated Data',
+        '', '', '', '', '', '', ''  // Placeholders for updated data columns
+      ],
+      // Second row - field headers
+      [
+        '', '', '', // Empty for No, User, Edit Time
+        // Original Data fields
+        'Date Time', 'Visiting Status', 'Place Name', 'Party Name', 'Purpose', 'Remark', 'Punch Time', 'Punching Time',
+        // Updated Data fields
+        'Date Time', 'Visiting Status', 'Place Name', 'Party Name', 'Purpose', 'Remark', 'Punch Time', 'Punching Time'
+      ],
+      // Third row onwards - actual data
+      ...filteredLogs.map((log, index) => {
+        const user = users.find(u => u.userID === log.userID);
+        const row = [
+          index + 1,
+          user ? user.username : 'Unknown',
+          formatDateDisplay(log.editTime)
+        ];
+
+        try {
+          const original = JSON.parse(log.originalData);
+          const updated = JSON.parse(log.updatedData);
+
+          // Add original data fields
+          displayFields.forEach(field => {
+            row.push(
+              field.key.includes('Time') || field.key.includes('date')
+                ? formatDateDisplay(original[field.key])
+                : original[field.key] || '-'
+            );
+          });
+
+          // Add updated data fields
+          displayFields.forEach(field => {
+            row.push(
+              field.key.includes('Time') || field.key.includes('date')
+                ? formatDateDisplay(updated[field.key])
+                : updated[field.key] || '-'
+            );
+          });
+        } catch (e) {
+          console.error('Error parsing log data:', e);
+          // Fill with empty values if there's an error
+          row.push(...Array(displayFields.length * 2).fill('Error'));
+        }
+
+        return row;
+      })
     ];
 
-    // Add original and updated field columns
-    displayFields.forEach(field => {
-      headers.push(
-        { label: `${field.label} (Original)`, key: `original_${field.key}` },
-        { label: `${field.label} (Updated)`, key: `updated_${field.key}` }
-      );
+    // Create worksheet
+    const ws = utils.aoa_to_sheet(data);
+
+    // Create workbook
+    const wb = utils.book_new();
+    utils.book_append_sheet(wb, ws, "Logs");
+
+    // Calculate merge ranges for group headers
+    const originalDataStartCol = 3; // Column D
+    const originalDataEndCol = originalDataStartCol + displayFields.length - 1;
+    const updatedDataStartCol = originalDataEndCol + 1;
+    const updatedDataEndCol = updatedDataStartCol + displayFields.length - 1;
+
+    // Add merged headers
+    if (!ws['!merges']) ws['!merges'] = [];
+
+    // Merge "Original Data" header (D1 to K1)
+    ws['!merges'].push({
+      s: { r: 0, c: originalDataStartCol },
+      e: { r: 0, c: originalDataEndCol }
     });
 
-    const data = filteredLogs.map((log, index) => {
-      const user = users.find(u => u.userID === log.userID);
-      const row = {
-        index: index + 1,
-        username: user ? user.username : 'Unknown',
-        editTime: formatDateDisplay(log.editTime)
-      };
-
-      try {
-        const original = JSON.parse(log.originalData);
-        const updated = JSON.parse(log.updatedData);
-
-        displayFields.forEach(field => {
-          row[`original_${field.key}`] = field.key.includes('Time') || field.key.includes('date')
-            ? formatDateDisplay(original[field.key])
-            : original[field.key] || '-';
-          row[`updated_${field.key}`] = field.key.includes('Time') || field.key.includes('date')
-            ? formatDateDisplay(updated[field.key])
-            : updated[field.key] || '-';
-        });
-      } catch (e) {
-        console.error('Error parsing log data:', e);
-      }
-
-      return row;
+    // Merge "Updated Data" header (L1 to S1)
+    ws['!merges'].push({
+      s: { r: 0, c: updatedDataStartCol },
+      e: { r: 0, c: updatedDataEndCol }
     });
 
-    return { data, headers };
+    // Style the headers
+    const headerStyle = {
+      font: { bold: true },
+      alignment: { horizontal: 'center' }
+    };
+
+    // Apply style to group headers
+    utils.sheet_add_aoa(ws, [['Original Data']], { origin: { r: 0, c: originalDataStartCol } });
+    utils.sheet_add_aoa(ws, [['Updated Data']], { origin: { r: 0, c: updatedDataStartCol } });
+
+    // Write the file
+    writeFile(wb, `user-activity-logs-${new Date().toISOString().slice(0, 10)}.xlsx`);
   };
 
   const renderLogRow = (log, index) => {
     const user = users.find(u => u.userID === log.userID);
-    
+
     try {
       const original = JSON.parse(log.originalData);
       const updated = JSON.parse(log.updatedData);
@@ -207,11 +270,11 @@ const LogReport = () => {
           <td className="sticky left-32 bg-white px-6 py-4 whitespace-nowrap text-sm text-gray-500 z-10">
             {formatDateDisplay(log.editTime)}
           </td>
-          
+
           {/* Original Data Columns */}
           {displayFields.map(field => (
-            <td 
-              key={`original_${field.key}`} 
+            <td
+              key={`original_${field.key}`}
               className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
             >
               {field.key.includes('Time') || field.key.includes('date')
@@ -219,17 +282,11 @@ const LogReport = () => {
                 : original[field.key] || '-'}
             </td>
           ))}
-          
-          {/* Vertical separator */}
-          {/* <td className="border-l-2 border-gray-200 bg-gray-50"></td> */}
-          
-          {/* Updated Data Columns */}
           {displayFields.map(field => (
-            <td 
-              key={`updated_${field.key}`} 
-              className={`px-6 py-4 whitespace-nowrap text-sm ${
-                original[field.key] !== updated[field.key] ? 'bg-green-100 text-green-700 font-semibold' : 'text-gray-500' 
-              }`}
+            <td
+              key={`updated_${field.key}`}
+              className={`px-6 py-4 whitespace-nowrap text-sm ${original[field.key] !== updated[field.key] ? 'bg-green-100 text-green-700 font-semibold' : 'text-gray-500'
+                }`}
             >
               {field.key.includes('Time') || field.key.includes('date')
                 ? formatDateDisplay(updated[field.key])
@@ -309,7 +366,7 @@ const LogReport = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
               <div className="space-y-1">
-                <label className="block text-sm font-medium text-gray-700 flex items-center">
+                <label className="text-sm font-medium text-gray-700 flex items-center">
                   <FaUser className="mr-2 text-blue-800" /> User
                 </label>
                 <select
@@ -328,7 +385,7 @@ const LogReport = () => {
               </div>
 
               <div className="space-y-1">
-                <label className="block text-sm font-medium text-gray-700 flex items-center">
+                <label className="text-sm font-medium text-gray-700 flex items-center">
                   <FaCalendarAlt className="mr-2 text-blue-800" /> From Date
                 </label>
                 <input
@@ -341,7 +398,7 @@ const LogReport = () => {
               </div>
 
               <div className="space-y-1">
-                <label className="block text-sm font-medium text-gray-700 flex items-center">
+                <label className="text-sm font-medium text-gray-700 flex items-center">
                   <FaCalendarAlt className="mr-2 text-blue-800" /> To Date
                 </label>
                 <input
@@ -385,13 +442,12 @@ const LogReport = () => {
                 </div>
 
                 {filteredLogs.length > 0 && (
-                  <CSVLink
-                    {...prepareCSVData()}
-                    filename={`user-activity-logs-${new Date().toISOString().slice(0, 10)}.csv`}
+                  <button
+                    onClick={exportToExcel}
                     className="flex items-center px-3 py-1.5 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm"
                   >
                     <FaFileExport className="mr-1" /> Export
-                  </CSVLink>
+                  </button>
                 )}
               </div>
             </div>
@@ -418,15 +474,15 @@ const LogReport = () => {
                           <tr>
                             <th rowSpan="2" className="sticky left-0 bg-gray-50 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider z-20">No.</th>
                             <th rowSpan="2" className="sticky left-12 bg-gray-50 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider z-20">User</th>
-                            <th rowSpan="2" className="sticky left-32 bg-gray-50 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider z-20">Edit Time</th>
-                            <th colSpan={displayFields.length} className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider border-r-2 border-gray-200">Original Data</th>
-                            <th colSpan={displayFields.length} className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Updated Data</th>
+                            <th rowSpan="2" className="sticky left-32 bg-gray-50 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider z-20 border-r-2 border-gray-200">Edit Time</th>
+                            <th colSpan={displayFields.length} className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider border-r-2 border-b-2 border-gray-200">Original Data</th>
+                            <th colSpan={displayFields.length} className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-200">Updated Data</th>
                           </tr>
                           <tr>
                             {/* Original Data Field Headers */}
                             {displayFields.map(field => (
-                              <th 
-                                key={`original_header_${field.key}`} 
+                              <th
+                                key={`original_header_${field.key}`}
                                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r-2 border-gray-200"
                               >
                                 {field.label}
@@ -434,8 +490,8 @@ const LogReport = () => {
                             ))}
                             {/* Updated Data Field Headers */}
                             {displayFields.map(field => (
-                              <th 
-                                key={`updated_header_${field.key}`} 
+                              <th
+                                key={`updated_header_${field.key}`}
                                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                               >
                                 {field.label}

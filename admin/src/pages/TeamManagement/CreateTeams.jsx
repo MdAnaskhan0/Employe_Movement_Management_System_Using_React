@@ -11,11 +11,10 @@ const CreateTeams = ({ children }) => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const navigate = useNavigate();
     const [teamName, setTeamName] = useState('');
-    const [userCategory, setUserCategory] = useState([]);
-    const [teamLeaderCategory, setTeamLeaderCategory] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);
+    const [allUsers, setAllUsers] = useState([]);
     const [selectedTeamLeader, setSelectedTeamLeader] = useState('');
     const [selectedMembers, setSelectedMembers] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
@@ -24,22 +23,11 @@ const CreateTeams = ({ children }) => {
             setIsLoading(true);
             try {
                 const res = await axios.get(`${baseUrl}/users`);
-                const allUsers = res.data.data;
-
-                // Normalize roles to lowercase for consistent filtering
-                const normalized = allUsers.map(user => ({
+                const users = res.data.data.map(user => ({
                     ...user,
                     Role: user.Role?.toLowerCase() || ''
                 }));
-
-                const leaders = normalized.filter(user => user.Role === 'user');
-                const members = normalized.filter(user => user.Role === 'user');
-
-                console.log("leaders", leaders);
-                console.log("members", members);
-
-                setTeamLeaderCategory(leaders);
-                setUserCategory(members);
+                setAllUsers(users);
             } catch (err) {
                 toast.error('Failed to fetch users');
             } finally {
@@ -50,13 +38,43 @@ const CreateTeams = ({ children }) => {
         fetchAllUsers();
     }, []);
 
-    
+    const handleTeamLeaderChange = (userId) => {
+        // First remove from members if currently selected
+        const newMembers = selectedMembers.filter(memberId => memberId !== userId);
+        setSelectedMembers(newMembers);
 
-    const toggleMember = (memberId) => {
+        // Then set as leader
+        setSelectedTeamLeader(userId);
+    };
+
+    const toggleMember = (userId) => {
+        // Double-check that we're not adding the team leader
+        if (userId === selectedTeamLeader) {
+            toast.warning('Team leader cannot be a member');
+            return;
+        }
+
         setSelectedMembers(prev =>
-            prev.includes(memberId)
-                ? prev.filter(id => id !== memberId)
-                : [...prev, memberId]
+            prev.includes(userId)
+                ? prev.filter(id => id !== userId)
+                : [...prev, userId]
+        );
+    };
+
+    // Get filtered members (excluding team leader and already selected members)
+    const getFilteredMembers = () => {
+        return allUsers.filter(user =>
+        (user.Name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            user.Email.toLowerCase().includes(searchTerm.toLowerCase())
+        )).filter(user =>
+            user.userID !== selectedTeamLeader
+        );
+    };
+
+    // Get available leaders (excluding selected members)
+    const getAvailableLeaders = () => {
+        return allUsers.filter(user =>
+            !selectedMembers.includes(user.userID)
         );
     };
 
@@ -78,9 +96,15 @@ const CreateTeams = ({ children }) => {
             return;
         }
 
+        // Final validation - ensure team leader isn't in members
+        if (selectedMembers.includes(selectedTeamLeader)) {
+            toast.error('Team leader cannot be a member');
+            return;
+        }
+
         setIsLoading(true);
         try {
-            const response = await axios.post(`${baseUrl}/teams/assign-team`, { 
+            const response = await axios.post(`${baseUrl}/teams/assign-team`, {
                 team_name: teamName,
                 team_leader_id: selectedTeamLeader,
                 team_member_ids: selectedMembers,
@@ -88,7 +112,6 @@ const CreateTeams = ({ children }) => {
 
             if (response.data.status === 'ok') {
                 toast.success('Team created successfully!');
-                // Clear all inputs after success
                 setTeamName('');
                 setSelectedTeamLeader('');
                 setSelectedMembers([]);
@@ -103,10 +126,6 @@ const CreateTeams = ({ children }) => {
             setIsLoading(false);
         }
     };
-
-    const filteredUsers = userCategory.filter(user =>
-        user.Name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
 
     const handleLogout = () => {
         localStorage.removeItem('adminLoggedIn');
@@ -184,18 +203,18 @@ const CreateTeams = ({ children }) => {
                                         />
                                     </div>
                                     <div>
-                                        <label className="block mb-2 font-medium text-gray-700 flex items-center">
+                                        <label className="mb-2 font-medium text-gray-700 flex items-center">
                                             <FaUserShield className="mr-2 text-blue-800" />
                                             Team Leader
                                         </label>
                                         <select
                                             value={selectedTeamLeader}
-                                            onChange={(e) => setSelectedTeamLeader(e.target.value)}
+                                            onChange={(e) => handleTeamLeaderChange(e.target.value)}
                                             className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition"
                                             required
                                         >
                                             <option value="">Select Team Leader</option>
-                                            {teamLeaderCategory.map((leader) => (
+                                            {getAvailableLeaders().map((leader) => (
                                                 <option key={leader.userID} value={leader.userID}>
                                                     {leader.Name}
                                                 </option>
@@ -204,7 +223,7 @@ const CreateTeams = ({ children }) => {
                                     </div>
 
                                     <div>
-                                        <label className="block mb-2 font-medium text-gray-700 flex items-center">
+                                        <label className="mb-2 font-medium text-gray-700 flex items-center">
                                             <FaUsers className="mr-2 text-blue-800" />
                                             Search Members
                                         </label>
@@ -223,9 +242,9 @@ const CreateTeams = ({ children }) => {
                                         Selected Members: {selectedMembers.length}
                                     </label>
                                     <div className="border border-gray-300 rounded-lg overflow-hidden bg-white">
-                                        {filteredUsers.length > 0 ? (
+                                        {getFilteredMembers().length > 0 ? (
                                             <div className="max-h-60 overflow-y-auto p-2">
-                                                {filteredUsers.map((user) => (
+                                                {getFilteredMembers().map((user) => (
                                                     <div
                                                         key={user.userID}
                                                         className={`flex items-center justify-between p-3 rounded-lg mb-2 cursor-pointer ${selectedMembers.includes(user.userID)
@@ -252,7 +271,7 @@ const CreateTeams = ({ children }) => {
                                             </div>
                                         ) : (
                                             <div className="p-4 text-center text-gray-500">
-                                                No members found
+                                                {searchTerm ? 'No matching members found' : 'No members available'}
                                             </div>
                                         )}
                                     </div>
@@ -292,13 +311,13 @@ const CreateTeams = ({ children }) => {
                                     <FaUserShield className="mr-2 text-blue-500" />
                                     Selected Team Leader
                                 </h3>
-                                {teamLeaderCategory
-                                    .filter(leader => leader.userID === selectedTeamLeader)
+                                {allUsers
+                                    .filter(leader => leader.userID == selectedTeamLeader)
                                     .map(leader => (
                                         <div key={leader.userID} className="flex items-center space-x-4 p-3 bg-blue-50 rounded-lg">
                                             <div className="flex-shrink-0">
                                                 <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-medium">
-                                                    {leader.Name.charAt(0)}
+                                                    {leader.Name.charAt(0).toUpperCase()}
                                                 </div>
                                             </div>
                                             <div>
@@ -306,6 +325,32 @@ const CreateTeams = ({ children }) => {
                                             </div>
                                         </div>
                                     ))}
+                            </div>
+                        )}
+
+                        {selectedMembers.length > 0 && (
+                            <div className="bg-white rounded-lg shadow-sm p-6 mt-6">
+                                <h3 className="text-lg font-medium text-gray-800 mb-4 flex items-center">
+                                    <FaUsers className="mr-2 text-blue-500" />
+                                    Selected Team Members ({selectedMembers.length})
+                                </h3>
+                                <div className="space-y-3">
+                                    {allUsers
+                                        .filter(user => selectedMembers.includes(user.userID))
+                                        .map(user => (
+                                            <div key={user.userID} className="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg">
+                                                <div className="flex-shrink-0">
+                                                    <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-medium">
+                                                        {user.Name.charAt(0)}
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <p className="font-medium text-gray-800">{user.Name}</p>
+                                                    <p className="text-sm text-gray-500">{user.Email}</p>
+                                                </div>
+                                            </div>
+                                        ))}
+                                </div>
                             </div>
                         )}
                     </div>

@@ -282,7 +282,7 @@ const AllUser = () => {
                             onClick={() => navigate(`/dashboard/userprofile/${user.userID}`)}
                             className="flex items-center justify-center px-3 py-1 bg-blue-800 text-white rounded hover:bg-blue-900  text-xs cursor-pointer transition duration-300"
                           >
-                            <FaUser className="mr-1" /> View Profile
+                            <FaUser className="mr-1" /> View
                           </button>
                         </div>
                       </td>

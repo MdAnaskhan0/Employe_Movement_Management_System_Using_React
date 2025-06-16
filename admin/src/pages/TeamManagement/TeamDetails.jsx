@@ -32,7 +32,6 @@ const TeamDetails = () => {
     const fetchTeamDetails = async () => {
       try {
         const response = await axios.get(`${baseUrl}/teams/teams/${teamID}`);
-        console.log(response.data.data);
         setTeamData(response.data.data);
       } catch (err) {
         setError('Failed to fetch team details');
@@ -59,18 +58,26 @@ const TeamDetails = () => {
 
   const handleAddMemberClick = async () => {
     try {
-      const response = await axios.get(`${baseUrl}/unassigned/unassigned-users`);
-      const unassignedUsers = response.data.data;
+      // Fetch all users
+      const allUsersResponse = await axios.get(`${baseUrl}/users`);
+      const allUsers = allUsersResponse.data.data;
 
-      if (!unassignedUsers || unassignedUsers.length === 0) {
-        toast.info("No unassigned users available.");
-        return;
-      }
+      // Filter out users already in the team (leader or members)
+      const unassignedUsers = allUsers.filter(user => {
+        const isLeader = teamData.team_leader.userID === user.userID;
+        const isMember = teamData.team_members.some(member => member.userID === user.userID);
+        return !isLeader && !isMember;
+      });
 
       setUsersToAdd(unassignedUsers);
       setShowAddModal(true);
+
+      if (unassignedUsers.length === 0) {
+        toast.info("No available users to add to this team");
+      }
     } catch (err) {
-      toast.error('Failed to load unassigned users');
+      toast.error('Failed to load users');
+      console.error("Error fetching users:", err);
     }
   };
 
@@ -232,7 +239,6 @@ const TeamDetails = () => {
                                 </div>
                                 <div className="ml-3">
                                   <p className="text-sm font-medium text-gray-800">{member.name}</p>
-                                  {/* <p className="text-xs text-gray-500">ID: {member.userID}</p> */}
                                 </div>
                               </li>
                             ))}
@@ -297,8 +303,8 @@ const TeamDetails = () => {
                   <div
                     key={user.userID}
                     className={`p-3 rounded-md cursor-pointer transition-colors ${selectedUser?.userID === user.userID
-                        ? 'bg-blue-50 border border-blue-200'
-                        : 'hover:bg-gray-50 border border-transparent'
+                      ? 'bg-blue-50 border border-blue-200'
+                      : 'hover:bg-gray-50 border border-transparent'
                       }`}
                     onClick={() => setSelectedUser(user)}
                   >
@@ -335,8 +341,8 @@ const TeamDetails = () => {
                   onClick={confirmAddMember}
                   disabled={!selectedUser}
                   className={`px-4 py-2 rounded-md text-sm font-medium text-white ${selectedUser
-                      ? 'bg-green-600 hover:bg-green-700'
-                      : 'bg-green-300 cursor-not-allowed'
+                    ? 'bg-green-600 hover:bg-green-700'
+                    : 'bg-green-300 cursor-not-allowed'
                     }`}
                 >
                   Add Member
@@ -359,8 +365,8 @@ const TeamDetails = () => {
                   <div
                     key={member.userID}
                     className={`p-3 rounded-md cursor-pointer transition-colors ${selectedMember?.userID === member.userID
-                        ? 'bg-blue-50 border border-blue-200'
-                        : 'hover:bg-gray-50 border border-transparent'
+                      ? 'bg-blue-50 border border-blue-200'
+                      : 'hover:bg-gray-50 border border-transparent'
                       }`}
                     onClick={() => setSelectedMember(member)}
                   >
@@ -397,8 +403,8 @@ const TeamDetails = () => {
                   onClick={confirmRemoveMember}
                   disabled={!selectedMember}
                   className={`px-4 py-2 rounded-md text-sm font-medium text-white ${selectedMember
-                      ? 'bg-red-600 hover:bg-red-700'
-                      : 'bg-red-300 cursor-not-allowed'
+                    ? 'bg-red-600 hover:bg-red-700'
+                    : 'bg-red-300 cursor-not-allowed'
                     }`}
                 >
                   Remove Member
