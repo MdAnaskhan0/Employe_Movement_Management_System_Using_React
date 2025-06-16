@@ -32,7 +32,7 @@ const CreateTeams = ({ children }) => {
                     Role: user.Role?.toLowerCase() || ''
                 }));
 
-                const leaders = normalized.filter(user => user.Role === 'team leader');
+                const leaders = normalized.filter(user => user.Role === 'user');
                 const members = normalized.filter(user => user.Role === 'user');
 
                 console.log("leaders", leaders);
