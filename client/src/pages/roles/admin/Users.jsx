@@ -10,6 +10,7 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from '@tanstack/react-table';
+import { toast } from 'react-toastify';
 
 const Users = () => {
   const { user } = useAuth();
@@ -36,8 +37,6 @@ const Users = () => {
 
     fetchData();
   }, [baseUrl]);
-
-  console.log(user);
 
   const columns = useMemo(
     () => [
@@ -88,7 +87,7 @@ const Users = () => {
             onClick={() => {
               if (user.role === 'admin') {
                 navigate(`/admin/user-profile/${info.getValue()}`);
-              } else if (user.role === 'manager') {
+              } else if (user.role === 'user') {
                 navigate(`/manager/user-profile/${info.getValue()}`);
               } else {
                 toast.warning('Role not supported');

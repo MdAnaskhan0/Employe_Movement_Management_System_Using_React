@@ -48,45 +48,6 @@ const TeamDetails = () => {
         }
     };
 
-    const handleAddMemberClick = async () => {
-        try {
-            const response = await axios.get(`${baseUrl}/unassigned-users`);
-            const unassignedUsers = response.data.data;
-
-            if (!unassignedUsers || unassignedUsers.length === 0) {
-                toast.info("No unassigned users available.");
-                return;
-            }
-
-            setUsersToAdd(unassignedUsers);
-            setShowAddModal(true);
-        } catch (err) {
-            toast.error('Failed to load unassigned users');
-        }
-    };
-
-    const confirmAddMember = async () => {
-        if (!selectedUser) {
-            toast.warn("Please select a user to add");
-            return;
-        }
-
-        try {
-            await axios.patch(`${baseUrl}/teams/${teamID}/add-member`, {
-                member_id: selectedUser.userID
-            });
-
-            toast.success(`${selectedUser.Name} added successfully`);
-            setShowAddModal(false);
-            setSelectedUser(null);
-
-            const updatedResponse = await axios.get(`${baseUrl}/teams/${teamID}`);
-            setTeamData(updatedResponse.data.data);
-        } catch (err) {
-            toast.error(`Failed to add member: ${err.response?.data?.message || err.message}`);
-        }
-    };
-
     const handleRemoveMemberClick = async () => {
         try {
             const response = await axios.get(`${baseUrl}/teams/${teamID}`);
@@ -130,8 +91,8 @@ const TeamDetails = () => {
         <div className="min-h-screen bg-gray-50">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <div className="flex justify-between items-center mb-8">
-                    <button 
-                        onClick={() => navigate(-1)} 
+                    <button
+                        onClick={() => navigate(-1)}
                         className="flex items-center text-gray-600 hover:text-gray-800 transition-colors"
                     >
                         <FaChevronLeft className="mr-2" />
@@ -153,7 +114,7 @@ const TeamDetails = () => {
                         <div className="bg-white shadow overflow-hidden rounded-lg">
                             <div className="px-6 py-5 border-b border-gray-200 bg-gray-50">
                                 <h2 className="text-2xl font-semibold text-gray-800 flex items-center">
-                                    <FaUsers className="mr-3 text-blue-600" /> 
+                                    <FaUsers className="mr-3 text-blue-600" />
                                     Team Information
                                 </h2>
                             </div>
@@ -200,20 +161,20 @@ const TeamDetails = () => {
                         </div>
 
                         <div className="flex flex-wrap gap-4">
-                            <button 
-                                onClick={handleAddMemberClick} 
+                            <button
+                                onClick={handleAddMemberClick}
                                 className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                             >
                                 <FaUserPlus className="mr-2" /> Add Member
                             </button>
-                            <button 
-                                onClick={handleRemoveMemberClick} 
+                            <button
+                                onClick={handleRemoveMemberClick}
                                 className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500"
                             >
                                 <FaUserMinus className="mr-2" /> Remove Member
                             </button>
-                            <button 
-                                onClick={handleDeleteTeam} 
+                            <button
+                                onClick={handleDeleteTeam}
                                 className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
                             >
                                 <FaTrash className="mr-2" /> Delete Team
@@ -233,8 +194,8 @@ const TeamDetails = () => {
                                 {usersToAdd.length > 0 ? (
                                     <ul className="divide-y divide-gray-200">
                                         {usersToAdd.map(user => (
-                                            <li 
-                                                key={user.userID} 
+                                            <li
+                                                key={user.userID}
                                                 onClick={() => setSelectedUser(user)}
                                                 className={`px-4 py-3 cursor-pointer ${selectedUser?.userID === user.userID ? 'bg-blue-50' : 'hover:bg-gray-50'}`}
                                             >
@@ -257,14 +218,14 @@ const TeamDetails = () => {
                                 )}
                             </div>
                             <div className="px-6 py-3 border-t border-gray-200 flex justify-end space-x-3">
-                                <button 
-                                    onClick={() => setShowAddModal(false)} 
+                                <button
+                                    onClick={() => setShowAddModal(false)}
                                     className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                                 >
                                     Cancel
                                 </button>
-                                <button 
-                                    onClick={confirmAddMember} 
+                                <button
+                                    onClick={confirmAddMember}
                                     className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                                 >
                                     Add Member
@@ -285,8 +246,8 @@ const TeamDetails = () => {
                                 {membersToRemove.length > 0 ? (
                                     <ul className="divide-y divide-gray-200">
                                         {membersToRemove.map(member => (
-                                            <li 
-                                                key={member.userID} 
+                                            <li
+                                                key={member.userID}
                                                 onClick={() => setSelectedMember(member)}
                                                 className={`px-4 py-3 cursor-pointer ${selectedMember?.userID === member.userID ? 'bg-red-50' : 'hover:bg-gray-50'}`}
                                             >
@@ -311,14 +272,14 @@ const TeamDetails = () => {
                                 )}
                             </div>
                             <div className="px-6 py-3 border-t border-gray-200 flex justify-end space-x-3">
-                                <button 
-                                    onClick={() => setShowRemoveModal(false)} 
+                                <button
+                                    onClick={() => setShowRemoveModal(false)}
                                     className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                                 >
                                     Cancel
                                 </button>
-                                <button 
-                                    onClick={confirmRemoveMember} 
+                                <button
+                                    onClick={confirmRemoveMember}
                                     className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
                                     disabled={!selectedMember || selectedMember?.userID === teamData?.team_leader?.userID}
                                 >
