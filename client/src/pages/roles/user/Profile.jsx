@@ -198,9 +198,9 @@ const Profile = () => {
                                                     </div>
 
                                                     <div>
-                                                        <label className="block text-sm font-medium text-gray-700 mb-1">Designation</label>
+                                                        <label className="block text-sm font-medium text-gray-700 mb-1">Employee ID</label>
                                                         <div className="px-3.5 py-2.5 bg-gray-50 rounded-lg border border-gray-100">
-                                                            <p className="text-gray-900 text-sm">{userData.Designation || 'Not provided'}</p>
+                                                            <p className="text-gray-900 text-sm">{userData.E_ID || 'Not provided'}</p>
                                                         </div>
                                                     </div>
 
@@ -208,6 +208,13 @@ const Profile = () => {
                                                         <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
                                                         <div className="px-3.5 py-2.5 bg-gray-50 rounded-lg border border-gray-100">
                                                             <p className="text-gray-900 text-sm">{userData.email || 'Not provided'}</p>
+                                                        </div>
+                                                    </div>
+
+                                                    <div>
+                                                        <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
+                                                        <div className="px-3.5 py-2.5 bg-gray-50 rounded-lg border border-gray-100">
+                                                            <p className="text-gray-900 text-sm uppercase">{userData.Role || 'Not provided'}</p>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -219,17 +226,26 @@ const Profile = () => {
                                             <div>
                                                 <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4">Company Information</h3>
                                                 <div className="space-y-4">
-                                                    <div>
-                                                        <label className="block text-sm font-medium text-gray-700 mb-1">Company</label>
-                                                        <div className="px-3.5 py-2.5 bg-gray-50 rounded-lg border border-gray-100">
-                                                            <p className="text-gray-900 text-sm">{userData.Company_name || 'Not provided'}</p>
-                                                        </div>
-                                                    </div>
+                                                    
 
                                                     <div>
                                                         <label className="block text-sm font-medium text-gray-700 mb-1">Department</label>
                                                         <div className="px-3.5 py-2.5 bg-gray-50 rounded-lg border border-gray-100">
                                                             <p className="text-gray-900 text-sm">{userData.Department || 'Not provided'}</p>
+                                                        </div>
+                                                    </div>
+
+                                                    <div>
+                                                        <label className="block text-sm font-medium text-gray-700 mb-1">Designation</label>
+                                                        <div className="px-3.5 py-2.5 bg-gray-50 rounded-lg border border-gray-100">
+                                                            <p className="text-gray-900 text-sm">{userData.Designation || 'Not provided'}</p>
+                                                        </div>
+                                                    </div>
+
+                                                    <div>
+                                                        <label className="block text-sm font-medium text-gray-700 mb-1">Company</label>
+                                                        <div className="px-3.5 py-2.5 bg-gray-50 rounded-lg border border-gray-100">
+                                                            <p className="text-gray-900 text-sm">{userData.Company_name || 'Not provided'}</p>
                                                         </div>
                                                     </div>
 

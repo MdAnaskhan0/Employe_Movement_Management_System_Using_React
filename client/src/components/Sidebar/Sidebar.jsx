@@ -81,16 +81,16 @@ const allMenuItems = {
                 path: "/team/team-report",
                 icon: <FaTeamspeak size={18} />
             },
+            teamMassage: {
+                name: 'Team Messages',
+                path: '/user/team-massage',
+                icon: <FiMessageSquare size={18} />
+            },
             teamsList: {
                 name: 'Teams List',
                 path: '/admin/teams',
                 icon: <FiUsers size={18} />
             },
-            teamMassage: {
-                name: 'Team Messages',
-                path: '/user/team-massage',
-                icon: <FiMessageSquare size={18} />
-            }
         }
     },
     // Settings Submenu

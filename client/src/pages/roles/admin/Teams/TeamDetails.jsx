@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { FaUsers, FaUserShield, FaUserPlus, FaUserMinus, FaTrash, FaChevronLeft } from 'react-icons/fa';
+import { FaUsers, FaUserPlus, FaUserMinus, FaTrash, FaChevronLeft } from 'react-icons/fa';
 import LogoutButton from '../../../../components/LogoutButton';
+import { useAuth } from '../../../../auth/AuthContext';
 
 const TeamDetails = () => {
     const [teamData, setTeamData] = useState(null);
@@ -16,6 +17,7 @@ const TeamDetails = () => {
     const [selectedMember, setSelectedMember] = useState(null);
     const [selectedUser, setSelectedUser] = useState(null);
     const baseUrl = import.meta.env.VITE_API_BASE_URL;
+    const { user } = useAuth();
 
     const navigate = useNavigate();
     const { teamID } = useParams();
@@ -36,6 +38,53 @@ const TeamDetails = () => {
         fetchTeamDetails();
     }, [teamID]);
 
+    const handleAddMemberClick = async () => {
+        try {
+            // Fetch all users
+            const allUsersResponse = await axios.get(`${baseUrl}/users`);
+            const allUsers = allUsersResponse.data.data;
+
+            // Filter out users already in the team (leader or members)
+            const unassignedUsers = allUsers.filter(user => {
+                const isLeader = teamData.team_leader.userID === user.userID;
+                const isMember = teamData.team_members.some(member => member.userID === user.userID);
+                return !isLeader && !isMember;
+            });
+
+            setUsersToAdd(unassignedUsers);
+            setShowAddModal(true);
+
+            if (unassignedUsers.length === 0) {
+                toast.info("No available users to add to this team");
+            }
+        } catch (err) {
+            toast.error('Failed to load users');
+            console.error("Error fetching users:", err);
+        }
+    };
+
+    const confirmAddMember = async () => {
+        if (!selectedUser) {
+            toast.warn("Please select a user to add");
+            return;
+        }
+
+        try {
+            await axios.patch(`${baseUrl}/teams/teams/${teamID}/add-member`, {
+                member_id: selectedUser.userID
+            });
+
+            toast.success(`${selectedUser.Name} added successfully`);
+            setShowAddModal(false);
+            setSelectedUser(null);
+
+            const updatedResponse = await axios.get(`${baseUrl}/teams/teams/${teamID}`);
+            setTeamData(updatedResponse.data.data);
+        } catch (err) {
+            toast.error(`Failed to add member: ${err.response?.data?.message || err.message}`);
+        }
+    };
+
     const handleDeleteTeam = async () => {
         if (!window.confirm('Are you sure you want to delete this team? This action cannot be undone.')) return;
 
@@ -50,7 +99,7 @@ const TeamDetails = () => {
 
     const handleRemoveMemberClick = async () => {
         try {
-            const response = await axios.get(`${baseUrl}/teams/${teamID}`);
+            const response = await axios.get(`${baseUrl}/teams/teams/${teamID}`);
             const teamMembers = response.data.data?.team_members;
 
             if (!teamMembers || teamMembers.length === 0) {
@@ -72,7 +121,7 @@ const TeamDetails = () => {
         }
 
         try {
-            await axios.patch(`${baseUrl}/teams/${teamID}/remove-member`, {
+            await axios.patch(`${baseUrl}/teams/teams/${teamID}/remove-member`, {
                 member_id: selectedMember.userID
             });
 
@@ -80,7 +129,7 @@ const TeamDetails = () => {
             setShowRemoveModal(false);
             setSelectedMember(null);
 
-            const updatedResponse = await axios.get(`${baseUrl}/teams/${teamID}`);
+            const updatedResponse = await axios.get(`${baseUrl}/teams/teams/${teamID}`);
             setTeamData(updatedResponse.data.data);
         } catch (err) {
             toast.error(`Failed to remove member: ${err.response?.data?.message || err.message}`);
@@ -173,12 +222,16 @@ const TeamDetails = () => {
                             >
                                 <FaUserMinus className="mr-2" /> Remove Member
                             </button>
-                            <button
-                                onClick={handleDeleteTeam}
-                                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                            >
-                                <FaTrash className="mr-2" /> Delete Team
-                            </button>
+                            {
+                                user.role === 'admin' && (
+                                    <button
+                                        onClick={handleDeleteTeam}
+                                        className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                                    >
+                                        <FaTrash className="mr-2" /> Delete Team
+                                    </button>
+                                )
+                            }
                         </div>
                     </div>
                 )}
