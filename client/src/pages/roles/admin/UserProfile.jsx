@@ -13,6 +13,7 @@ import {
 } from 'react-icons/fa';
 
 const UserProfile = () => {
+  const {user} = useAuth();
   const { userID } = useParams();
   const navigate = useNavigate();
   const baseUrl = import.meta.env.VITE_API_BASE_URL;
@@ -670,12 +671,16 @@ const UserProfile = () => {
                       )}
                     </button>
 
-                    <button
-                      onClick={handleDeleteUser}
-                      className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 flex items-center transition-colors duration-200"
-                    >
-                      <FaTrash className="mr-2" /> Delete Account
-                    </button>
+                    {
+                      user.role === 'admin' && (
+                        <button
+                          onClick={handleDeleteUser}
+                          className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 flex items-center transition-colors duration-200"
+                        >
+                          <FaTrash className="mr-2" /> Delete Account
+                        </button>
+                      )
+                    }
                   </div>
                 </div>
               )}

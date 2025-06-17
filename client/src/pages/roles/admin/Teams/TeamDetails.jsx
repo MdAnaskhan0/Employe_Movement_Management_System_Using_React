@@ -23,7 +23,7 @@ const TeamDetails = () => {
     useEffect(() => {
         const fetchTeamDetails = async () => {
             try {
-                const response = await axios.get(`${baseUrl}/teams/${teamID}`);
+                const response = await axios.get(`${baseUrl}/teams/teams/${teamID}`);
                 setTeamData(response.data.data);
             } catch (err) {
                 setError('Failed to fetch team details');
@@ -40,7 +40,7 @@ const TeamDetails = () => {
         if (!window.confirm('Are you sure you want to delete this team? This action cannot be undone.')) return;
 
         try {
-            await axios.delete(`${baseUrl}/teams/${teamID}`);
+            await axios.delete(`${baseUrl}/teams/teams/${teamID}`);
             toast.success('Team deleted successfully');
             navigate('/dashboard/allteam');
         } catch (err) {

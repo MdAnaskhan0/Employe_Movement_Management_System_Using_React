@@ -33,7 +33,7 @@ const allMenuItems = {
                 icon: <FiUserPlus size={18} />
             },
             usersList: {
-                name: 'Users List',
+                name: 'All Users',
                 path: '/admin/Users',
                 icon: <FiUsers size={18} />
             }

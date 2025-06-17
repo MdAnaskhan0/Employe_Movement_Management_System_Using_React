@@ -14,8 +14,7 @@ const menuItems = [
         items: [
             { name: "Create User", path: "/admin/create-user" },
             { name: "All Users", path: "/admin/Users" },
-            { name: "View Profile", path: "/manager/user-profile" },
-            { name: "Edit Profile", path: "/admin/user-profile" },
+            { name: "User Profile", path: "/admin/user-profile" },
         ]
     },
     {
@@ -35,7 +34,7 @@ const menuItems = [
             { name: "All Teams (Admin)", path: "/admin/teams" },
             { name: "Team Report (Team Leader)", path: "/team/team-report" },
             { name: "Team Information (Team Leader)", path: "/team/manage-team" },
-            { name: "Manage Team", path: "/team/manage-team"},
+            { name: "Manage Team", path: "/team"},
             { name: "User Team Message (User & Team Leader)", path: "/user/team-massage" },
         ]
     },
@@ -62,6 +61,7 @@ const ProfileAccess = () => {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const navigate = useNavigate();
+
 
     useEffect(() => {
         const fetchUserData = async () => {

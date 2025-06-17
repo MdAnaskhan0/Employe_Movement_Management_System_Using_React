@@ -190,7 +190,7 @@ const AllUser = () => {
                 )}
               </div>
             </div>
-            
+
             <div className="flex items-center">
               <label htmlFor="rowsPerPage" className="mr-2 text-sm text-gray-600">Users per page:</label>
               <select
@@ -217,11 +217,11 @@ const AllUser = () => {
                     <th className='px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider'>No.</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Username</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">E-ID</th>
-                    <th className='px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider'>Role</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Name</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Company</th>
+                    <th className='px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider'>Role</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Department</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Designation</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Company</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Email</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Phone</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Actions</th>
@@ -243,13 +243,13 @@ const AllUser = () => {
                           <input name="e_id" value={editData.e_id} onChange={handleEditChange} className="w-full px-2 py-1 border rounded text-sm" />
                         ) : user.E_ID}
                       </td>
-                      <td className='px-4 py-4 text-sm text-gray-900 capitalize'>
-                        {user.Role}
-                      </td>
                       <td className="px-4 py-4 text-sm text-gray-900">
                         {editingId === user.userID ? (
                           <input name="name" value={editData.name} onChange={handleEditChange} className="w-full px-2 py-1 border rounded text-sm" />
                         ) : user.Name}
+                      </td>
+                      <td className='px-4 py-4 text-sm text-gray-900 capitalize'>
+                        {user.Role}
                       </td>
                       <td className="px-4 py-4 text-sm text-gray-500">
                         {editingId === user.userID ? (

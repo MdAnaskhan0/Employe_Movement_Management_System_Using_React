@@ -31,6 +31,44 @@ const TeamMassage = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // useEffect(() => {
+  //   const fetchTeams = async () => {
+  //     try {
+  //       setLoading(true);
+  //       const res = await axios.get(`${baseUrl}/teams/teams`);
+  //       console.log('Teams', res.data.data);
+  //       const allTeams = res.data.data;
+
+  //       let filteredTeams = [];
+  //       if (user.role === 'user') {
+  //         filteredTeams = allTeams.filter(team => team.team_leader_name === user.name);
+  //       } else if (user.role === 'user') {
+  //         filteredTeams = allTeams.filter(team =>
+  //           team.team_members.split(',').map(name => name.trim()).includes(user.name)
+  //         );
+  //       }
+  //       console.log("user name", user.name);
+  //       console.log("user role", user.role);
+  //       setTeams(filteredTeams);
+  //       console.log('Filtered Teams', filteredTeams);
+
+  //       const counts = {};
+  //       filteredTeams.forEach(team => {
+  //         counts[team.team_id] = 0;
+  //       });
+  //       setUnreadCounts(counts);
+
+  //     } catch (error) {
+  //       console.error('Error fetching teams:', error);
+  //       toast.error('Failed to load teams. Please try again.');
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   fetchTeams();
+  // }, [baseUrl, user.name, user.role]);
+
   useEffect(() => {
     const fetchTeams = async () => {
       try {
@@ -38,14 +76,19 @@ const TeamMassage = () => {
         const res = await axios.get(`${baseUrl}/teams/teams`);
         const allTeams = res.data.data;
 
-        let filteredTeams = [];
-        if (user.role === 'user') {
-          filteredTeams = allTeams.filter(team => team.team_leader_name === user.name);
-        } else if (user.role === 'user') {
-          filteredTeams = allTeams.filter(team =>
-            team.team_members.split(',').map(name => name.trim()).includes(user.name)
-          );
-        }
+        // Lowercase + trim for consistent comparison
+        const userName = user.name.trim().toLowerCase();
+
+        const filteredTeams = allTeams.filter(team => {
+          const leaderMatch = team.team_leader_name?.trim().toLowerCase() === userName;
+
+          const memberMatch = team.team_members
+            ?.split(',')
+            .map(name => name.trim().toLowerCase())
+            .includes(userName);
+
+          return leaderMatch || memberMatch;
+        });
 
         setTeams(filteredTeams);
 
@@ -64,7 +107,8 @@ const TeamMassage = () => {
     };
 
     fetchTeams();
-  }, [baseUrl, user.name, user.role]);
+  }, [baseUrl, user.name]);
+
 
   const handleTeamSelect = (team) => {
     setSelectedTeam(team);
