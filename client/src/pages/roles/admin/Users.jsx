@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../../../auth/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import LogoutButton from '../../../components/LogoutButton';
+import axios from 'axios';
 import {
   flexRender,
   getCoreRowModel,
@@ -10,7 +10,9 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from '@tanstack/react-table';
+import { FiSearch, FiChevronLeft, FiChevronRight, FiEye, FiUserPlus, FiRefreshCw } from 'react-icons/fi';
 import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Users = () => {
   const { user } = useAuth();
@@ -19,101 +21,114 @@ const Users = () => {
   const [globalFilter, setGlobalFilter] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setIsLoading(true);
-        const res = await axios.get(`${baseUrl}/users`);
-        setUsers(res.data.data);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        setError('Failed to load user data. Please try again later.');
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  const fetchData = async () => {
+    try {
+      setIsLoading(true);
+      setIsRefreshing(true);
+      const res = await axios.get(`${baseUrl}/users`);
+      setUsers(res.data.data.map((user, index) => ({ ...user, key: index + 1 })));
+      setError(null);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      setError('Failed to load user data. Please try again.');
+      toast.error('Failed to load user data');
+    } finally {
+      setIsLoading(false);
+      setIsRefreshing(false);
+    }
+  };
 
+  useEffect(() => {
     fetchData();
   }, [baseUrl]);
-
- 
 
   const columns = useMemo(
     () => [
       {
-        header: 'User Name',
+        header: 'No.',
+        accessorKey: 'key',
+        cell: info => <span className="text-gray-600 text-sm">{info.getValue()}</span>,
+        size: 60,
+      },
+      {
+        header: 'Username',
         accessorKey: 'username',
-        cell: info => <span className="font-medium">{info.getValue()}</span>,
+        cell: info => <span className="text-gray-800 font-medium">{info.getValue()}</span>,
+        size: 120,
       },
       {
         header: 'Employee ID',
         accessorKey: 'E_ID',
-        cell: info => <span className="text-gray-600">{info.getValue()}</span>,
+        cell: info => <span className="text-gray-600">{info.getValue() || '-'}</span>,
+        size: 100,
       },
       {
         header: 'Name',
         accessorKey: 'Name',
-        cell: info => <span className="font-medium text-gray-800">{info.getValue()}</span>,
+        cell: info => <span className="text-gray-800">{info.getValue()}</span>,
+        size: 150,
       },
       {
-        header: 'Company',
-        accessorKey: 'Company_name',
-        cell: info => <span className="text-gray-600">{info.getValue()}</span>,
+        header: 'Role',
+        accessorKey: 'Role',
+        cell: info => (
+          <span className={`text-xs px-2 py-1 rounded-full ${
+            info.getValue() === 'admin' ? 'bg-purple-50 text-purple-700' :
+            info.getValue() === 'user' ? 'bg-blue-50 text-blue-700' :
+            'bg-gray-50 text-gray-700'
+          }`}>
+            {info.getValue()}
+          </span>
+        ),
+        size: 100,
       },
       {
         header: 'Department',
         accessorKey: 'Department',
-        cell: info => (
-          <span className="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-            {info.getValue()}
-          </span>
-        ),
+        cell: info => <span className="text-gray-600 text-sm">{info.getValue() || '-'}</span>,
+        size: 120,
       },
       {
         header: 'Designation',
         accessorKey: 'Designation',
-        cell: info => <span className="text-gray-600">{info.getValue()}</span>,
+        cell: info => <span className="text-gray-600 text-sm">{info.getValue() || '-'}</span>,
+        size: 120,
+      },
+      {
+        header: 'Company',
+        accessorKey: 'Company_name',
+        cell: info => <span className="text-gray-600 text-sm">{info.getValue() || '-'}</span>,
+        size: 120,
       },
       {
         header: 'Email',
         accessorKey: 'email',
-        cell: info => <span className="text-gray-600 hover:underline">{info.getValue()}</span>,
+        cell: info => (
+          <a 
+            href={`mailto:${info.getValue()}`} 
+            className="text-gray-600 text-sm hover:text-blue-600 hover:underline"
+          >
+            {info.getValue()}
+          </a>
+        ),
+        size: 180,
       },
       {
         header: 'Actions',
         accessorKey: 'userID',
         cell: info => (
           <button
-            onClick={() => {
-              navigate(`/admin/user-profile/${info.getValue()}`);
-            }}
-            className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300 shadow-sm hover:shadow-md flex items-center cursor-pointer"
+            onClick={() => navigate(`/admin/user-profile/${info.getValue()}`)}
+            className="text-xs flex items-center text-blue-600 hover:text-blue-800 transition-colors"
+            aria-label="View user details"
           >
-            <svg
-              className="w-4 h-4 mr-2"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-              />
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-              />
-            </svg>
-            View
+            <FiEye className="mr-1" /> View
           </button>
         ),
+        size: 80,
       },
     ],
     [navigate]
@@ -131,9 +146,9 @@ const Users = () => {
     getPaginationRowModel: getPaginationRowModel(),
   });
 
-  if (isLoading) {
+  if (isLoading && !isRefreshing) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex justify-center items-center min-h-[400px]">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
       </div>
     );
@@ -141,163 +156,234 @@ const Users = () => {
 
   if (error) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4" role="alert">
-          <p className="font-bold">Error</p>
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <h2 className="text-lg font-semibold text-gray-800">User Management</h2>
+            <p className="text-xs text-gray-500">Manage system users and permissions</p>
+          </div>
+          <LogoutButton />
+        </div>
+        <div className="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded">
           <p>{error}</p>
+          <button 
+            onClick={fetchData}
+            className="mt-2 text-sm text-red-700 hover:text-red-900 font-medium"
+          >
+            Retry
+          </button>
         </div>
       </div>
     );
   }
 
   return (
-    <div>
-      <div className='flex items-center justify-end mb-4'>
-        <LogoutButton />
-      </div>
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+    <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+      {/* Header Section */}
+      <div className="p-4 sm:p-6 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-800">All Users</h1>
-            <p className="text-gray-600 mt-2">Manage all system users and their permissions</p>
+            <h2 className="text-xl sm:text-2xl font-semibold text-gray-800">User Management</h2>
+            <p className="text-xs sm:text-sm text-gray-500 mt-1">
+              Manage {users.length} system users and their permissions
+            </p>
           </div>
-          <div className="mt-4 md:mt-0">
+          
+          <div className="flex items-center space-x-2">
+            <LogoutButton className="hidden sm:block" />
           </div>
         </div>
+      </div>
 
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-          <div className="p-6 border-b border-gray-200">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0">
-              <div className="relative w-full md:w-96">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
-                </div>
-                <input
-                  type="text"
-                  placeholder="Search users by name, ID, department..."
-                  className="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                  value={globalFilter}
-                  onChange={e => setGlobalFilter(e.target.value)}
-                />
+      {/* Toolbar Section */}
+      <div className="p-4 sm:p-6 border-b border-gray-200">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div className="w-full sm:w-auto">
+            <div className="relative max-w-xs">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <FiSearch className="h-4 w-4 text-gray-400" />
               </div>
-              <div className="flex items-center space-x-2">
-                <span className="text-sm text-gray-600">Total Users:</span>
-                <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-semibold">
-                  {users.length}
-                </span>
-              </div>
+              <input
+                type="text"
+                placeholder="Search users..."
+                className="block w-full pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                value={globalFilter}
+                onChange={e => setGlobalFilter(e.target.value)}
+                aria-label="Search users"
+              />
             </div>
           </div>
-
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                {table.getHeaderGroups().map(headerGroup => (
-                  <tr key={headerGroup.id}>
-                    {headerGroup.headers.map(header => (
-                      <th
-                        key={header.id}
-                        className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider"
-                      >
-                        {flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                      </th>
-                    ))}
-                  </tr>
-                ))}
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {table.getRowModel().rows.length > 0 ? (
-                  table.getRowModel().rows.map(row => (
-                    <tr key={row.id} className="hover:bg-gray-50 transition-colors duration-150">
-                      {row.getVisibleCells().map(cell => (
-                        <td key={cell.id} className="px-6 py-4 whitespace-nowrap">
-                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                        </td>
-                      ))}
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan={columns.length} className="px-6 py-4 text-center text-gray-500">
-                      No users found
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+          
+          <div className="flex items-center space-x-2 w-full sm:w-auto">
+            <button
+              onClick={fetchData}
+              disabled={isRefreshing}
+              className="flex items-center px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              aria-label="Refresh data"
+            >
+              <FiRefreshCw className={`mr-2 h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+              Refresh
+            </button>
+            
+            <button
+              onClick={() => navigate('/admin/create-user')}
+              className="flex items-center px-3 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              aria-label="Add new user"
+            >
+              <FiUserPlus className="mr-2 h-4 w-4" />
+              Add User
+            </button>
+            
+            <select
+              value={table.getState().pagination.pageSize}
+              onChange={e => table.setPageSize(Number(e.target.value))}
+              className="hidden sm:block text-sm border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              aria-label="Items per page"
+            >
+              {[5, 10, 20, 50, 100, 200, 500, 1000].map(pageSize => (
+                <option key={pageSize} value={pageSize}>
+                  Show {pageSize}
+                </option>
+              ))}
+            </select>
           </div>
+        </div>
+      </div>
 
-          <div className="px-6 py-4 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
-            <div className="flex items-center space-x-2">
-              <span className="text-sm text-gray-600">Rows per page:</span>
+      {/* Mobile Logout Button */}
+      <div className="sm:hidden p-4 flex justify-end">
+        <LogoutButton />
+      </div>
+
+      {/* Table Section */}
+      <div className="overflow-x-auto">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-gray-50">
+            {table.getHeaderGroups().map(headerGroup => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map(header => (
+                  <th
+                    key={header.id}
+                    className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    style={{ width: header.getSize() }}
+                  >
+                    {flexRender(header.column.columnDef.header, header.getContext())}
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {table.getRowModel().rows.length > 0 ? (
+              table.getRowModel().rows.map(row => (
+                <tr key={row.id} className="hover:bg-gray-50 transition-colors">
+                  {row.getVisibleCells().map(cell => (
+                    <td 
+                      key={cell.id} 
+                      className="px-4 py-3 whitespace-nowrap text-sm"
+                    >
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </td>
+                  ))}
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={columns.length} className="px-4 py-8 text-center text-sm text-gray-500">
+                  {globalFilter ? 'No users match your search' : 'No users found'}
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Pagination Section */}
+      <div className="px-4 py-3 sm:px-6 bg-gray-50 border-t border-gray-200">
+        <div className="flex flex-col sm:flex-row items-center justify-between space-y-3 sm:space-y-0">
+          <div className="text-sm text-gray-500">
+            Showing <span className="font-medium">{table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1}</span> to{' '}
+            <span className="font-medium">
+              {Math.min(
+                (table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize,
+                users.length
+              )}
+            </span>{' '}
+            of <span className="font-medium">{users.length}</span> users
+          </div>
+          
+          <div className="flex items-center space-x-2">
+            <div className="flex sm:hidden">
               <select
-                className="border border-gray-300 rounded-lg px-3 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                 value={table.getState().pagination.pageSize}
-                onChange={e => {
-                  table.setPageSize(Number(e.target.value));
-                }}
+                onChange={e => table.setPageSize(Number(e.target.value))}
+                className="text-sm border border-gray-300 rounded-md px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                aria-label="Items per page"
               >
-                {[5, 10, 20, 30, 40, 50].map(pageSize => (
+                {[5, 10, 20, 50].map(pageSize => (
                   <option key={pageSize} value={pageSize}>
-                    {pageSize}
+                    {pageSize} per page
                   </option>
                 ))}
               </select>
             </div>
-
-            <div className="flex items-center space-x-2">
-              <span className="text-sm text-gray-600">
-                Showing {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1} to{' '}
-                {Math.min(
-                  (table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize,
-                  users.length
-                )}{' '}
-                of {users.length} results
-              </span>
-            </div>
-
-            <div className="flex space-x-2">
+            
+            <div className="flex items-center space-x-1">
               <button
-                className={`px-3 py-1 rounded-lg ${!table.getCanPreviousPage() ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'}`}
                 onClick={() => table.setPageIndex(0)}
                 disabled={!table.getCanPreviousPage()}
+                className={`p-2 rounded-md ${!table.getCanPreviousPage() ? 'text-gray-300 cursor-not-allowed' : 'text-gray-600 hover:bg-gray-100'}`}
+                aria-label="First page"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
-                </svg>
+                <span className="sr-only">First page</span>
+                <span className="text-sm">«</span>
               </button>
               <button
-                className={`px-3 py-1 rounded-lg ${!table.getCanPreviousPage() ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'}`}
                 onClick={() => table.previousPage()}
                 disabled={!table.getCanPreviousPage()}
+                className={`p-2 rounded-md ${!table.getCanPreviousPage() ? 'text-gray-300 cursor-not-allowed' : 'text-gray-600 hover:bg-gray-100'}`}
+                aria-label="Previous page"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                </svg>
+                <FiChevronLeft className="h-4 w-4" />
               </button>
+              
+              <div className="flex items-center text-sm text-gray-600 px-2">
+                Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+              </div>
+              
               <button
-                className={`px-3 py-1 rounded-lg ${!table.getCanNextPage() ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'}`}
                 onClick={() => table.nextPage()}
                 disabled={!table.getCanNextPage()}
+                className={`p-2 rounded-md ${!table.getCanNextPage() ? 'text-gray-300 cursor-not-allowed' : 'text-gray-600 hover:bg-gray-100'}`}
+                aria-label="Next page"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
+                <FiChevronRight className="h-4 w-4" />
               </button>
               <button
-                className={`px-3 py-1 rounded-lg ${!table.getCanNextPage() ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'}`}
                 onClick={() => table.setPageIndex(table.getPageCount() - 1)}
                 disabled={!table.getCanNextPage()}
+                className={`p-2 rounded-md ${!table.getCanNextPage() ? 'text-gray-300 cursor-not-allowed' : 'text-gray-600 hover:bg-gray-100'}`}
+                aria-label="Last page"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7m-8 0l-7-7 7-7" />
-                </svg>
+                <span className="sr-only">Last page</span>
+                <span className="text-sm">»</span>
               </button>
+            </div>
+            
+            <div className="hidden sm:flex items-center space-x-1">
+              <span className="text-sm text-gray-500">Go to:</span>
+              <input
+                type="number"
+                min="1"
+                max={table.getPageCount()}
+                defaultValue={table.getState().pagination.pageIndex + 1}
+                onChange={e => {
+                  const page = e.target.value ? Number(e.target.value) - 1 : 0;
+                  table.setPageIndex(page);
+                }}
+                className="w-16 text-sm border border-gray-300 rounded-md px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                aria-label="Page number"
+              />
             </div>
           </div>
         </div>
