@@ -21,21 +21,21 @@ const menuItems = [
         category: "Movement Report",
         icon: <HiOutlineShieldCheck className="mr-2" />,
         items: [
-            { name: "Movement Status (User, Team Leader)", path: "/user/upload-report" },
-            { name: "Movement Report (User, Team Leader)", path: "/user/UserReport" },
-            { name: "All Movement Reports (Admin, Manager)", path: "/admin/movement-reports" },
+            { name: "Movement Status", path: "/user/upload-report" },
+            { name: "Movement Report", path: "/user/UserReport" },
+            { name: "All Movement Reports", path: "/admin/movement-reports" },
         ]
     },
     {
         category: "Team Management",
         icon: <FaUserCog className="mr-2" />,
         items: [
-            { name: "Create Team (Admin)", path: "/admin/teams/create-team" },
-            { name: "All Teams (Admin)", path: "/admin/teams" },
-            { name: "Team Report (Team Leader)", path: "/team/team-report" },
-            { name: "Team Information (Team Leader)", path: "/team/manage-team" },
-            { name: "Manage Team", path: "/team"},
-            { name: "User Team Message (User & Team Leader)", path: "/user/team-massage" },
+            { name: "Create Team", path: "/admin/teams/create-team" },
+            { name: "User Team Report", path: "/team/team-report" },
+            { name: "User Team Info", path: "/team/manage-team" },
+            { name: "User Team Message", path: "/user/team-massage" },
+            { name: "All Teams Info", path: "/admin/teams" },
+            { name: "Team Manage", path: "/team"},
         ]
     },
     {
