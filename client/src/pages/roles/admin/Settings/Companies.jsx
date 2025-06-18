@@ -6,6 +6,7 @@ import { FaEdit, FaPlus, FaSave, FaTimesCircle, FaTrash, FaImage } from 'react-i
 import { FiUpload, FiRefreshCw } from 'react-icons/fi';
 import { BsBuilding } from 'react-icons/bs';
 import { AiOutlineInfoCircle } from 'react-icons/ai';
+import { useAuth } from '../../../../auth/AuthContext';
 
 const Companies = () => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -13,6 +14,7 @@ const Companies = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const baseUrl = import.meta.env.VITE_API_BASE_URL;
+    const { user } = useAuth();
 
     // Form states
     const [companyname, setCompanyname] = useState('');
@@ -356,13 +358,15 @@ const Companies = () => {
                                                 >
                                                     <FaEdit />
                                                 </button>
-                                                <button
-                                                    onClick={() => handleDelete(company.companynameID)}
-                                                    className="text-red-600 hover:text-red-900 cursor-pointer"
-                                                    title="Delete"
-                                                >
-                                                    <FaTrash />
-                                                </button>
+                                                {user.role === 'admin' && (
+                                                    <button
+                                                        onClick={() => handleDelete(company.companynameID)}
+                                                        className="text-red-600 hover:text-red-900 cursor-pointer"
+                                                        title="Delete"
+                                                    >
+                                                        <FaTrash />
+                                                    </button>
+                                                )}
                                             </td>
                                         </tr>
                                     ))}

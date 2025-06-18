@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 import { FaPlus, FaEdit, FaTrash, FaSave, FaTimes } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import LogOutButton from '../../../../components/LogoutButton';
+import { useAuth } from '../../../../auth/AuthContext';
 
 const VisitingStatus = () => {
     const [statuses, setStatuses] = useState([]);
@@ -12,6 +13,7 @@ const VisitingStatus = () => {
     const [editingName, setEditingName] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const { user } = useAuth();
 
     const navigate = useNavigate();
     const baseUrl = import.meta.env.VITE_API_BASE_URL;
@@ -201,17 +203,19 @@ const VisitingStatus = () => {
                                                         >
                                                             <FaEdit />
                                                         </button>
-                                                        <button
-                                                            onClick={() => {
-                                                                if (window.confirm('Are you sure you want to delete this status?')) {
-                                                                    handleDelete(status.visitingstatusID);
-                                                                }
-                                                            }}
-                                                            className="text-red-600 hover:text-red-800 p-2 rounded-full hover:bg-red-50 transition-colors duration-200 cursor-pointer"
-                                                            title="Delete"
-                                                        >
-                                                            <FaTrash />
-                                                        </button>
+                                                        {user.role === 'admin' && (
+                                                            <button
+                                                                onClick={() => {
+                                                                    if (window.confirm('Are you sure you want to delete this status?')) {
+                                                                        handleDelete(status.visitingstatusID);
+                                                                    }
+                                                                }}
+                                                                className="text-red-600 hover:text-red-800 p-2 rounded-full hover:bg-red-50 transition-colors duration-200 cursor-pointer"
+                                                                title="Delete"
+                                                            >
+                                                                <FaTrash />
+                                                            </button>
+                                                        )}
                                                     </div>
                                                 </div>
                                             </>

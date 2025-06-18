@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { FaEdit, FaPlus, FaSave, FaTimes, FaTrash } from 'react-icons/fa';
 import { CgIfDesign } from 'react-icons/cg';
 import LogOutButton from '../../../../components/LogoutButton';
+import { useAuth } from '../../../../auth/AuthContext';
 
 const Designations = () => {
     const [designations, setDesignations] = useState([]);
@@ -14,6 +15,7 @@ const Designations = () => {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
     const baseUrl = import.meta.env.VITE_API_BASE_URL;
+    const { user } = useAuth();
 
     // Fetch designations on load
     useEffect(() => {
@@ -191,13 +193,15 @@ const Designations = () => {
                                                         <FaEdit />
                                                     </button>
                                                 )}
-                                                <button
-                                                    onClick={() => handleDelete(item.designationID)}
-                                                    className="text-red-600 hover:text-red-800 p-1 rounded-full hover:bg-red-50 transition cursor-pointer"
-                                                    title="Delete"
-                                                >
-                                                    <FaTrash />
-                                                </button>
+                                                {user.role === 'admin' && (
+                                                    <button
+                                                        onClick={() => handleDelete(item.designationID)}
+                                                        className="text-red-600 hover:text-red-800 p-1 rounded-full hover:bg-red-50 transition cursor-pointer"
+                                                        title="Delete"
+                                                    >
+                                                        <FaTrash />
+                                                    </button>
+                                                )}
                                             </div>
                                         </td>
                                     </tr>

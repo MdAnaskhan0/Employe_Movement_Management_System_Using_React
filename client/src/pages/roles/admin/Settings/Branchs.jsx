@@ -4,6 +4,7 @@ import { FaPlus, FaSave, FaEdit, FaTrash, FaCodeBranch, FaTimesCircle } from 're
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import LogOutButton from '../../../../components/LogoutButton';
+import { useAuth } from '../../../../auth/AuthContext';
 
 const Branchs = () => {
     const [branches, setBranches] = useState([]);
@@ -13,6 +14,7 @@ const Branchs = () => {
     const navigate = useNavigate();
     const baseUrl = import.meta.env.VITE_API_BASE_URL;
     const API_URL = `${baseUrl}/branchnames`;
+    const { user } = useAuth();
 
     // Fetch all branches
     const fetchBranches = async () => {
@@ -190,13 +192,15 @@ const Branchs = () => {
                                                     >
                                                         <FaEdit className="h-4 w-4" />
                                                     </button>
-                                                    <button
-                                                        onClick={() => handleDelete(branch.branchnameID)}
-                                                        className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50 cursor-pointer"
-                                                        title="Delete"
-                                                    >
-                                                        <FaTrash className="h-4 w-4" />
-                                                    </button>
+                                                    {user.role === 'admin' && (
+                                                        <button
+                                                            onClick={() => handleDelete(branch.branchnameID)}
+                                                            className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50 cursor-pointer"
+                                                            title="Delete"
+                                                        >
+                                                            <FaTrash className="h-4 w-4" />
+                                                        </button>
+                                                    )}
                                                 </div>
                                             </td>
                                         </tr>

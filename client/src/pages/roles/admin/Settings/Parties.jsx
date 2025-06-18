@@ -5,6 +5,7 @@ import { FaPlus, FaSave, FaEdit, FaTrash } from 'react-icons/fa';
 import { FiRefreshCw } from 'react-icons/fi';
 import { MdPeople } from 'react-icons/md';
 import LogoutButton from '../../../../components/LogoutButton';
+import { useAuth } from '../../../../auth/AuthContext';
 
 const Parties = () => {
     const [partyname, setPartyname] = useState('');
@@ -12,6 +13,7 @@ const Parties = () => {
     const [partyList, setPartyList] = useState([]);
     const [editId, setEditId] = useState(null);
     const [loading, setLoading] = useState(false);
+    const { user } = useAuth();
 
     const baseUrl = import.meta.env.VITE_API_BASE_URL;
     const apiUrl = `${baseUrl}/partynames`;
@@ -201,13 +203,16 @@ const Parties = () => {
                                                 >
                                                     <FaEdit />
                                                 </button>
-                                                <button
-                                                    onClick={() => handleDelete(party.partynameID)}
-                                                    className="text-red-600 hover:text-red-900"
-                                                    title="Delete"
-                                                >
-                                                    <FaTrash />
-                                                </button>
+                                                {
+                                                    user.role === 'admin' && (
+                                                        <button
+                                                            onClick={() => handleDelete(party.partynameID)}
+                                                            className="text-red-600 hover:text-red-900"
+                                                            title="Delete"
+                                                        >
+                                                            <FaTrash />
+                                                        </button>
+                                                    )}
                                             </td>
                                         </tr>
                                     ))}

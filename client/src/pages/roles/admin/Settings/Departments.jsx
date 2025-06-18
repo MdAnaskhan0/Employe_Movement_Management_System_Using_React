@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 import { FaPlus, FaEdit, FaTrash, FaUniversity } from 'react-icons/fa';
 import 'react-toastify/dist/ReactToastify.css';
 import LogOutButton from '../../../../components/LogoutButton';
+import { useAuth } from '../../../../auth/AuthContext';
 
 const Departments = () => {
     const [departments, setDepartments] = useState([]);
@@ -11,6 +12,7 @@ const Departments = () => {
     const [editingId, setEditingId] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const baseUrl = import.meta.env.VITE_API_BASE_URL;
+    const { user } = useAuth();
 
     const fetchDepartments = async () => {
         setIsLoading(true);
@@ -170,13 +172,16 @@ const Departments = () => {
                                                 >
                                                     <FaEdit />
                                                 </button>
-                                                <button
-                                                    onClick={() => handleDelete(dept.departmentID)}
-                                                    className="text-red-600 hover:text-red-900"
-                                                    title="Delete"
-                                                >
-                                                    <FaTrash />
-                                                </button>
+                                                {
+                                                    user.role === 'admin' && (
+                                                        <button
+                                                            onClick={() => handleDelete(dept.departmentID)}
+                                                            className="text-red-600 hover:text-red-900"
+                                                            title="Delete"
+                                                        >
+                                                            <FaTrash />
+                                                        </button>
+                                                    )}
                                             </td>
                                         </tr>
                                     ))}
