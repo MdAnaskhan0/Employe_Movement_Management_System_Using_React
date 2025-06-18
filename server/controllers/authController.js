@@ -82,7 +82,6 @@ exports.login = (req, res) => {
 
     const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
 
-    // 📄 Log login activity
     const logSql = 'INSERT INTO user_activity_log (username, role, action, ip_address) VALUES (?, ?, ?, ?)';
     db.query(logSql, [user.username, user.Role, 'login', ip], (logErr) => {
       if (logErr) {
