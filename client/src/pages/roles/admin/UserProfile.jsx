@@ -13,7 +13,7 @@ import {
 } from 'react-icons/fa';
 
 const UserProfile = () => {
-  const {user} = useAuth();
+  const { user } = useAuth();
   const { userID } = useParams();
   const navigate = useNavigate();
   const baseUrl = import.meta.env.VITE_API_BASE_URL;
@@ -463,6 +463,23 @@ const UserProfile = () => {
                       </div>
 
                       <div className="mb-4">
+                        <label className="block text-gray-700 text-sm font-medium mb-2">Role</label>
+                        <select
+                          name="Role"
+                          value={formData.Role || ''}
+                          onChange={handleChange}
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        >
+                          <option value="">Select Role</option>
+                          {role.map((r) => (
+                            <option key={r.roleID} value={r.rolename}>
+                              {r.rolename}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div className="mb-4">
                         <label className="block text-gray-700 text-sm font-medium mb-2">Name</label>
                         <input
                           type="text"
@@ -498,6 +515,32 @@ const UserProfile = () => {
 
                     <div>
                       <div className="mb-4">
+                        <label className="block text-gray-700 text-sm font-medium mb-2">Employee ID</label>
+                        <input
+                          type="text"
+                          name="E_ID"
+                          value={formData.E_ID || ''}
+                          onChange={handleChange}
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                      </div>
+                      <div className="mb-4">
+                        <label className="block text-gray-700 text-sm font-medium mb-2">Company</label>
+                        <select
+                          name="Company_name"
+                          value={formData.Company_name || ''}
+                          onChange={handleChange}
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        >
+                          <option value="">Select Company</option>
+                          {company.map((c) => (
+                            <option key={c.companynameID} value={c.companyname}>
+                              {c.companyname}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="mb-4">
                         <label className="block text-gray-700 text-sm font-medium mb-2">Department</label>
                         <select
                           name="Department"
@@ -531,50 +574,19 @@ const UserProfile = () => {
                         </select>
                       </div>
 
-                      <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-medium mb-2">Company</label>
+                      {/* <div className='mb-4'>
+                        <label className="block text-gray-700 text-sm font-medium mb-2">Account Status</label>
                         <select
-                          name="Company_name"
-                          value={formData.Company_name || ''}
+                          name="userStatus"
+                          value={formData.userStatus || ''}
                           onChange={handleChange}
                           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         >
-                          <option value="">Select Company</option>
-                          {company.map((c) => (
-                            <option key={c.companynameID} value={c.companyname}>
-                              {c.companyname}
-                            </option>
-                          ))}
+                          <option value="">Select Account Status</option>
+                          <option value="active">Active</option>
+                          <option value="deactive">Deactive</option>
                         </select>
-                      </div>
-
-                      <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-medium mb-2">Role</label>
-                        <select
-                          name="Role"
-                          value={formData.Role || ''}
-                          onChange={handleChange}
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        >
-                          <option value="">Select Role</option>
-                          {role.map((r) => (
-                            <option key={r.roleID} value={r.rolename}>
-                              {r.rolename}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-
-                      <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-medium mb-2">Employee ID</label>
-                        <input
-                          type="text"
-                          name="E_ID"
-                          value={formData.E_ID || ''}
-                          onChange={handleChange}
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        />
-                      </div>
+                      </div> */}
                     </div>
                   </div>
                 ) : (
@@ -591,6 +603,7 @@ const UserProfile = () => {
                       {renderInfoItem(<FaBuilding className="text-indigo-500" />, "Company", userData?.Company_name)}
                       {renderInfoItem(<FaUsers className="text-indigo-500" />, "Department", userData?.Department)}
                       {renderInfoItem(<FaUserShield className="text-indigo-500" />, "Designation", userData?.Designation)}
+                      {renderInfoItem(<FaUserShield className="text-indigo-500" />, "Account Status", userData?.userStatus)}
                     </div>
                   </div>
                 )}

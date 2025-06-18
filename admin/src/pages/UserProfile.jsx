@@ -252,35 +252,10 @@ const UserProfile = () => {
     };
 
     const handleLogout = () => {
-        toast.info(
-            <div>
-                <p>Are you sure you want to logout?</p>
-                <div className="flex justify-end space-x-2 mt-2">
-                    <button
-                        onClick={() => toast.dismiss()}
-                        className="px-3 py-1 bg-gray-300 rounded text-sm"
-                    >
-                        Cancel
-                    </button>
-                    <button
-                        onClick={() => {
-                            toast.dismiss();
-                            localStorage.removeItem('adminLoggedIn');
-                            localStorage.removeItem('adminUsername');
-                            navigate('/');
-                            toast.success('You have been logged out');
-                        }}
-                        className="px-3 py-1 bg-blue-500 text-white rounded text-sm"
-                    >
-                        Logout
-                    </button>
-                </div>
-            </div>,
-            {
-                autoClose: false,
-                closeButton: false,
-            }
-        );
+        localStorage.removeItem('adminLoggedIn');
+        localStorage.removeItem('adminUsername');
+        navigate('/');
+        toast.info('You have been logged out');
     };
 
     const handleChangePassword = async () => {

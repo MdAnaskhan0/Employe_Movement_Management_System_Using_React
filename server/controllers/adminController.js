@@ -29,7 +29,7 @@ exports.login = (req, res) => {
         username: result[0].username,
       });
     } else {
-      res.status(401).send({ status: 'error', message: 'Invalid credentials' });
+      res.status(401).send({ status: 'error', message: 'username and password are incorrect' });
     }
   });
 };
