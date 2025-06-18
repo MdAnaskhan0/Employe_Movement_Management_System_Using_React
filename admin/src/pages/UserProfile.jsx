@@ -467,6 +467,23 @@ const UserProfile = () => {
                                                 </div>
 
                                                 <div className="mb-4">
+                                                    <label className="block text-gray-700 text-sm font-medium mb-1">Role</label>
+                                                    <select
+                                                        name="Role"
+                                                        value={formData.Role || ''}
+                                                        onChange={handleChange}
+                                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    >
+                                                        <option value="">Select Role</option>
+                                                        {role.map((r) => (
+                                                            <option key={r.roleID} value={r.rolename}>
+                                                                {r.rolename}
+                                                            </option>
+                                                        ))}
+                                                    </select>
+                                                </div>
+
+                                                <div className="mb-4">
                                                     <label className="block text-gray-700 text-sm font-medium mb-1">Name</label>
                                                     <input
                                                         type="text"
@@ -500,7 +517,20 @@ const UserProfile = () => {
                                                 </div>
                                             </div>
 
+
+
                                             <div>
+                                                <div className="mb-4">
+                                                    <label className="block text-gray-700 text-sm font-medium mb-1">EID</label>
+                                                    <input
+                                                        type="text"
+                                                        name="E_ID"
+                                                        value={formData.E_ID || ''}
+                                                        onChange={handleChange}
+                                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    />
+                                                </div>
+
                                                 <div className="mb-4">
                                                     <label className="block text-gray-700 text-sm font-medium mb-1">Department</label>
                                                     <select
@@ -553,32 +583,19 @@ const UserProfile = () => {
                                                 </div>
 
                                                 <div className="mb-4">
-                                                    <label className="block text-gray-700 text-sm font-medium mb-1">Role</label>
+                                                    <label className="block text-gray-700 text-sm font-medium mb-1">Status</label>
                                                     <select
-                                                        name="Role"
-                                                        value={formData.Role || ''}
+                                                        name="userStatus"
+                                                        value={formData.userStatus || ''}
                                                         onChange={handleChange}
                                                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                                     >
-                                                        <option value="">Select Role</option>
-                                                        {role.map((r) => (
-                                                            <option key={r.roleID} value={r.rolename}>
-                                                                {r.rolename}
-                                                            </option>
-                                                        ))}
+                                                        <option value="active">Active</option>
+                                                        <option value="deactive">Deactive</option>
                                                     </select>
                                                 </div>
 
-                                                <div className="mb-4">
-                                                    <label className="block text-gray-700 text-sm font-medium mb-1">EID</label>
-                                                    <input
-                                                        type="text"
-                                                        name="E_ID"
-                                                        value={formData.E_ID || ''}
-                                                        onChange={handleChange}
-                                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                    />
-                                                </div>
+
                                             </div>
 
                                             <div className="md:col-span-2 flex justify-end space-x-3">
@@ -610,6 +627,7 @@ const UserProfile = () => {
                                                 {renderInfoItem(<FaBuilding />, "Company", userData?.Company_name)}
                                                 {renderInfoItem(<FaUsers />, "Department", userData?.Department)}
                                                 {renderInfoItem(<FaUserShield />, "Designation", userData?.Designation)}
+                                                {renderInfoItem(<FaUserShield />, "Account Status", userData?.userStatus)}
                                             </div>
                                         </div>
                                     )}
