@@ -35,7 +35,10 @@ app.use(cors({
 
     'https://employe-movement-management-system.vercel.app/'
   ],
-  credentials: true
+  credentials: true,
+  // new line added
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 app.use(express.json());
