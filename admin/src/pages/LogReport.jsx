@@ -376,7 +376,9 @@ const LogReport = () => {
                   disabled={isLoading}
                 >
                   <option value="">Select User</option>
-                  {users.map((user) => (
+                  {users.filter(
+                    (user) => user.userStatus === 'active'
+                  ).map((user) => (
                     <option key={user.userID} value={user.userID} className='capitalize'>
                       {user.username}
                     </option>

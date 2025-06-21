@@ -7,7 +7,8 @@ const init = (server) => {
   io = new Server(server, {
     cors: {
       origin: [
-        'https://employe-movement-management-system.vercel.app',
+        'http://192.168.111.140:5173',
+        'http://192.168.111.140:5174',
       ],
       credentials: true,
     },

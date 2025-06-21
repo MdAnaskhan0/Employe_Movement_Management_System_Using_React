@@ -322,7 +322,7 @@ const handlePrint = () => {
               }}
             >
               <option value="">Select a team</option>
-              <option value="all">All teams</option>
+              {/* <option value="all">All teams</option> */}
               {teams.map((team, index) => (
                 <option key={index} value={team.team_name}>
                   {team.team_name} {team.team_number}

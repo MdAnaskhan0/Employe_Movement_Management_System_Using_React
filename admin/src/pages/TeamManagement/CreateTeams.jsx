@@ -214,7 +214,9 @@ const CreateTeams = ({ children }) => {
                                             required
                                         >
                                             <option value="">Select Team Leader</option>
-                                            {getAvailableLeaders().map((leader) => (
+                                            {getAvailableLeaders().filter(
+                                                (leader) => leader.userStatus === 'active'
+                                            ).map((leader) => (
                                                 <option key={leader.userID} value={leader.userID}>
                                                     {leader.Name}
                                                 </option>
@@ -244,7 +246,9 @@ const CreateTeams = ({ children }) => {
                                     <div className="border border-gray-300 rounded-lg overflow-hidden bg-white">
                                         {getFilteredMembers().length > 0 ? (
                                             <div className="max-h-60 overflow-y-auto p-2">
-                                                {getFilteredMembers().map((user) => (
+                                                {getFilteredMembers().filter(
+                                                    (user) => user.userStatus === 'active'
+                                                ).map((user) => (
                                                     <div
                                                         key={user.userID}
                                                         className={`flex items-center justify-between p-3 rounded-lg mb-2 cursor-pointer ${selectedMembers.includes(user.userID)

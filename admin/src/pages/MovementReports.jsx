@@ -32,7 +32,7 @@ const MovementReports = () => {
   const [filtersApplied, setFiltersApplied] = useState(false);
 
   console.log(selectedUser);
-  
+
 
   // Sort state
   const [sortConfig, setSortConfig] = useState({
@@ -45,9 +45,12 @@ const MovementReports = () => {
     try {
       const response = await axios.get(`${baseUrl}/movements/get_all_movement`);
       const usersResponse = await axios.get(`${baseUrl}/users`);
+
+      // check if userStatus === active then setUsers to usersResponse.data.data
       setUsers(usersResponse.data.data);
+
       setMovementReports(response.data);
-      setFilteredData([]); // Initialize with empty array until filters are applied
+      setFilteredData([]);
     } catch (err) {
       console.error(err);
       toast.error('Failed to fetch movement reports');
@@ -244,17 +247,17 @@ const MovementReports = () => {
   };
 
 
-const PrintFile = () => {
-  if (filteredData.length === 0) {
-    toast.warning('No data to print');
-    return;
-  }
+  const PrintFile = () => {
+    if (filteredData.length === 0) {
+      toast.warning('No data to print');
+      return;
+    }
 
-  const userInfo = selectedUser
-    ? users.find(user => user.username.toLowerCase() === selectedUser.toLowerCase())
-    : null;
+    const userInfo = selectedUser
+      ? users.find(user => user.username.toLowerCase() === selectedUser.toLowerCase())
+      : null;
 
-  const formattedRows = currentRows.map(report => `
+    const formattedRows = currentRows.map(report => `
     <tr>
       <td class="py-1">${report.username}</td>
       <td class="py-1">${formatDateTime(report.dateTime)}</td>
@@ -267,12 +270,12 @@ const PrintFile = () => {
     </tr>
   `).join('');
 
-  const printWindow = window.open('', '_blank');
-  printWindow.document.open();
+    const printWindow = window.open('', '_blank');
+    printWindow.document.open();
 
-  const currentDateTime = new Date().toLocaleString();
+    const currentDateTime = new Date().toLocaleString();
 
-  printWindow.document.write(`
+    printWindow.document.write(`
     <html>
       <head>
         <title>Movement Report ${userInfo ? `- ${userInfo.username}` : ''}</title>
@@ -456,8 +459,8 @@ const PrintFile = () => {
     </html>
   `);
 
-  printWindow.document.close();
-};
+    printWindow.document.close();
+  };
 
 
 
@@ -538,11 +541,14 @@ const PrintFile = () => {
                 onChange={(e) => setSelectedUser(e.target.value)}
               >
                 <option value="">Select User</option>
-                {users.map(user => (
-                  <option key={user.username} value={user.username} className='capitalize'>
-                    {user.username}
-                  </option>
-                ))}
+                {users
+                  .filter(user => user.userStatus === 'active') // or user.status === 'active', depending on your data
+                  .map(user => (
+                    <option key={user.username} value={user.username} className='capitalize'>
+                      {user.username}
+                    </option>
+                  ))}
+
               </select>
             </div>
 

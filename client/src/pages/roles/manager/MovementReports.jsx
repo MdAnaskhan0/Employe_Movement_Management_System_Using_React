@@ -226,7 +226,9 @@ const MovementReports = () => {
                                 className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm"
                             >
                                 <option value="">Select a user</option>
-                                {users.map((user) => (
+                                {users.filter(
+                                    (user) => user.userStatus === 'active'
+                                ).map((user) => (
                                     <option className="capitalize" key={user.userID} value={user.userID}>
                                         {user.username}
                                     </option>

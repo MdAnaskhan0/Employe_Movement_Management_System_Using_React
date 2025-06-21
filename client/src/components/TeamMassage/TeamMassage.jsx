@@ -31,44 +31,6 @@ const TeamMassage = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // useEffect(() => {
-  //   const fetchTeams = async () => {
-  //     try {
-  //       setLoading(true);
-  //       const res = await axios.get(`${baseUrl}/teams/teams`);
-  //       console.log('Teams', res.data.data);
-  //       const allTeams = res.data.data;
-
-  //       let filteredTeams = [];
-  //       if (user.role === 'user') {
-  //         filteredTeams = allTeams.filter(team => team.team_leader_name === user.name);
-  //       } else if (user.role === 'user') {
-  //         filteredTeams = allTeams.filter(team =>
-  //           team.team_members.split(',').map(name => name.trim()).includes(user.name)
-  //         );
-  //       }
-  //       console.log("user name", user.name);
-  //       console.log("user role", user.role);
-  //       setTeams(filteredTeams);
-  //       console.log('Filtered Teams', filteredTeams);
-
-  //       const counts = {};
-  //       filteredTeams.forEach(team => {
-  //         counts[team.team_id] = 0;
-  //       });
-  //       setUnreadCounts(counts);
-
-  //     } catch (error) {
-  //       console.error('Error fetching teams:', error);
-  //       toast.error('Failed to load teams. Please try again.');
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   fetchTeams();
-  // }, [baseUrl, user.name, user.role]);
-
   useEffect(() => {
     const fetchTeams = async () => {
       try {
@@ -339,7 +301,7 @@ const TeamMassage = () => {
                 {/* Team Details Panel */}
                 {showTeamDetails && (
                   <div className="bg-blue-50 p-4 border-b border-blue-100">
-                    <div className="flex flex-col md:flex-row gap-4 items-start w-full">
+                    <div className="flex flex-col gap-4 items-start w-full">
                       <div className="bg-white p-3 rounded-lg shadow-xs w-full md:w-auto">
                         <div className="flex items-center mb-2">
                           <FaUserShield className="text-blue-500 mr-2" />
