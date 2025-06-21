@@ -9,6 +9,6 @@ const server = http.createServer(app);
 // Initialize Socket.io
 socketService.init(server);
 
-server.listen(port, '0.0.0.0', () => {
-  console.log(`Server is running on http://0.0.0.0:${port}`);
+server.listen(port, '209.74.67.89', () => {
+  console.log(`Server is running on http://209.74.67.89:${port}`);
 });
