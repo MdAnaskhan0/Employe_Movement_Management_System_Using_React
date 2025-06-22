@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaBars, FaTimes, FaSearch, FaFilter, FaCalendarAlt, FaSort, FaPrint } from 'react-icons/fa';
+import { FaBars, FaTimes, FaSearch, FaFilter, FaCalendarAlt, FaSort, FaPrint, FaFileDownload } from 'react-icons/fa';
 import { MdFirstPage, MdLastPage, MdChevronLeft, MdChevronRight } from 'react-icons/md';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Sidebar from '../components/Sidebar/Sidebar';
 import axios from 'axios';
-import { FaFileDownload } from 'react-icons/fa';
 
 const MovementReports = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -15,41 +14,26 @@ const MovementReports = () => {
   const baseUrl = import.meta.env.VITE_API_BASE_URL;
   const [movementReports, setMovementReports] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
-  // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-
-  // Filter states
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedUser, setSelectedUser] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
-  const [dateRange, setDateRange] = useState({
-    start: '',
-    end: ''
-  });
-
+  const [dateRange, setDateRange] = useState({ start: '', end: '' });
   const [users, setUsers] = useState([]);
   const [filtersApplied, setFiltersApplied] = useState(false);
-
-  console.log(selectedUser);
-
-
-  // Sort state
-  const [sortConfig, setSortConfig] = useState({
-    key: 'dateTime',
-    direction: 'desc'
-  });
+  const [sortConfig, setSortConfig] = useState({ key: 'dateTime', direction: 'desc' });
 
   const fetchMovementReports = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.get(`${baseUrl}/movements/get_all_movement`);
-      const usersResponse = await axios.get(`${baseUrl}/users`);
+      const [movementResponse, usersResponse] = await Promise.all([
+        axios.get(`${baseUrl}/movements/get_all_movement`),
+        axios.get(`${baseUrl}/users`)
+      ]);
 
-      // check if userStatus === active then setUsers to usersResponse.data.data
-      setUsers(usersResponse.data.data);
-
-      setMovementReports(response.data);
+      setUsers(usersResponse.data.data.filter(user => user.userStatus === 'active'));
+      setMovementReports(movementResponse.data);
       setFilteredData([]);
     } catch (err) {
       console.error(err);
@@ -64,53 +48,67 @@ const MovementReports = () => {
   }, []);
 
   const applyFilters = () => {
-    // Don't apply filters if no user is selected
-    if (!selectedUser && !statusFilter && !dateRange.start && !dateRange.end) {
+    if (!selectedUser && statusFilter === 'all' && !dateRange.start && !dateRange.end) {
       setFilteredData([]);
       setFiltersApplied(false);
       return;
     }
 
-    // Apply filters when search button is clicked
     let result = [...movementReports];
 
-    // Apply user filter if selected
     if (selectedUser) {
-      result = result.filter(item => item.username.toLowerCase() === selectedUser.toLowerCase());
+      result = result.filter(item =>
+        item.username.toLowerCase() === selectedUser.toLowerCase()
+      );
     }
 
-    // Apply status filter
     if (statusFilter !== 'all') {
       result = result.filter(item => item.punchTime === statusFilter);
     }
 
-    // Apply date range filter
     if (dateRange.start || dateRange.end) {
       const startDate = dateRange.start ? new Date(dateRange.start) : null;
       const endDate = dateRange.end ? new Date(dateRange.end) : null;
 
       result = result.filter(item => {
         const itemDate = new Date(item.dateTime);
-        const itemDateOnly = new Date(itemDate.getFullYear(), itemDate.getMonth(), itemDate.getDate());
+        const itemDateOnly = new Date(
+          itemDate.getFullYear(),
+          itemDate.getMonth(),
+          itemDate.getDate()
+        );
 
         if (startDate && endDate) {
-          const startDateOnly = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
-          const endDateOnly = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
-
-          // Compare only the date parts (ignoring time)
+          const startDateOnly = new Date(
+            startDate.getFullYear(),
+            startDate.getMonth(),
+            startDate.getDate()
+          );
+          const endDateOnly = new Date(
+            endDate.getFullYear(),
+            endDate.getMonth(),
+            endDate.getDate()
+          );
           return itemDateOnly >= startDateOnly && itemDateOnly <= endDateOnly;
         } else if (startDate) {
-          const startDateOnly = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+          const startDateOnly = new Date(
+            startDate.getFullYear(),
+            startDate.getMonth(),
+            startDate.getDate()
+          );
           return itemDateOnly >= startDateOnly;
         } else if (endDate) {
-          const endDateOnly = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
+          const endDateOnly = new Date(
+            endDate.getFullYear(),
+            endDate.getMonth(),
+            endDate.getDate()
+          );
           return itemDateOnly <= endDateOnly;
         }
         return true;
       });
     }
 
-    // Apply sorting
     if (sortConfig.key) {
       result.sort((a, b) => {
         if (a[sortConfig.key] < b[sortConfig.key]) {
@@ -125,7 +123,7 @@ const MovementReports = () => {
 
     setFilteredData(result);
     setFiltersApplied(true);
-    setCurrentPage(1); // Reset to first page when filters change
+    setCurrentPage(1);
   };
 
   const handleLogout = () => {
@@ -150,12 +148,9 @@ const MovementReports = () => {
 
   const formatTime12Hour = (timeString) => {
     if (!timeString) return 'N/A';
-
-    // Create a date object with today's date and the time from the string
     const [hours, minutes, seconds] = timeString.split(':');
     const date = new Date();
     date.setHours(parseInt(hours, 10), parseInt(minutes, 10), parseInt(seconds || 0, 10));
-
     return date.toLocaleTimeString('en-US', {
       hour: '2-digit',
       minute: '2-digit',
@@ -169,12 +164,9 @@ const MovementReports = () => {
       direction = 'desc';
     }
     setSortConfig({ key, direction });
-    if (filtersApplied) {
-      applyFilters(); // Re-apply filters when sorting changes
-    }
+    if (filtersApplied) applyFilters();
   };
 
-  // Pagination logic
   const indexOfLastRow = currentPage * rowsPerPage;
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
   const currentRows = filteredData.slice(indexOfFirstRow, indexOfLastRow);
@@ -182,27 +174,27 @@ const MovementReports = () => {
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-  const getStatusBadge = (status) => {
+  const getStatusBadge = (punchTime) => {
     const statusClasses = {
-      IN: 'bg-green-100 text-green-800',
-      OUT: 'bg-red-100 text-red-800',
-      PENDING: 'bg-yellow-100 text-yellow-800'
+      'Punch In': 'bg-green-100 text-green-800',
+      'Punch Out': 'bg-red-100 text-red-800',
+      'PENDING': 'bg-yellow-100 text-yellow-800'
     };
+
     return (
-      <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusClasses[status] || 'bg-gray-100 text-gray-800'}`}>
-        {status}
+      <span className={`px-2 py-1 rounded-full text-xs ${statusClasses[punchTime] || 'bg-gray-100 text-gray-800'}`}>
+        {punchTime}
       </span>
     );
   };
 
-  // Function to convert data to CSV and trigger download
+
   const downloadCSV = () => {
     if (filteredData.length === 0) {
       toast.warning('No data to download');
       return;
     }
 
-    // Create CSV headers
     const headers = [
       'User',
       'Date',
@@ -214,7 +206,6 @@ const MovementReports = () => {
       'Purpose'
     ];
 
-    // Create CSV rows
     const rows = filteredData.map(report => [
       report.username,
       formatDateTime(report.dateTime),
@@ -226,13 +217,11 @@ const MovementReports = () => {
       report.purpose || 'Not specified'
     ]);
 
-    // Combine headers and rows
     const csvContent = [
       headers.join(','),
       ...rows.map(row => row.map(item => `"${item}"`).join(','))
     ].join('\n');
 
-    // Create download link
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -246,7 +235,6 @@ const MovementReports = () => {
     toast.success('CSV download started');
   };
 
-
   const PrintFile = () => {
     if (filteredData.length === 0) {
       toast.warning('No data to print');
@@ -258,17 +246,17 @@ const MovementReports = () => {
       : null;
 
     const formattedRows = currentRows.map(report => `
-    <tr>
-      <td class="py-1">${report.username}</td>
-      <td class="py-1">${formatDateTime(report.dateTime)}</td>
-      <td class="py-1">${formatTime12Hour(report.punchingTime)}</td>
-      <td class="py-1">${report.punchTime}</td>
-      <td class="py-1"><span class="status-badge status-${report.visitingStatus}">${report.visitingStatus}</span></td>
-      <td class="py-1">${report.placeName || 'N/A'}</td>
-      <td class="py-1">${report.partyName || 'N/A'}</td>
-      <td class="py-1">${report.purpose || 'Not specified'}</td>
-    </tr>
-  `).join('');
+      <tr>
+        <td class="py-1">${report.username}</td>
+        <td class="py-1">${formatDateTime(report.dateTime)}</td>
+        <td class="py-1">${formatTime12Hour(report.punchingTime)}</td>
+        <td class="py-1">${report.punchTime}</td>
+        <td class="py-1"><span class="status-badge status-${report.visitingStatus}">${report.visitingStatus}</span></td>
+        <td class="py-1">${report.placeName || 'N/A'}</td>
+        <td class="py-1">${report.partyName || 'N/A'}</td>
+        <td class="py-1">${report.purpose || 'Not specified'}</td>
+      </tr>
+    `).join('');
 
     const printWindow = window.open('', '_blank');
     printWindow.document.open();
@@ -276,154 +264,38 @@ const MovementReports = () => {
     const currentDateTime = new Date().toLocaleString();
 
     printWindow.document.write(`
-    <html>
-      <head>
-        <title>Movement Report ${userInfo ? `- ${userInfo.username}` : ''}</title>
-        <style>
-          * {
-            box-sizing: border-box;
-          }
-          body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 10px;
-            color: #333;
-            font-size: 12px;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            position: relative;
-          }
-          .content {
-            flex: 1;
-          }
-          .header {
-            text-align: center;
-            margin-bottom: 10px;
-            padding-bottom: 5px;
-            border-bottom: 1px solid #e0e0e0;
-          }
-          .header h1 {
-            margin: 0 0 5px 0;
-            font-size: 18px;
-            color: #2c3e50;
-          }
-          .report-info {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-            margin-bottom: 10px;
-            padding: 8px;
-            background-color: #f8f9fa;
-            border-radius: 3px;
-            font-size: 11px;
-            margin-left: 30px;
-          }
-          .info-pair {
-            display: flex;
-            justify-content: space-between;
-            gap: 5px;
-          }
-          .info-pair div {
-            flex: 1 1 45%;
-            min-width: 0;
-          }
-          .report-info strong {
-            color: #2c3e50;
-            display: inline-block;
-            width: 80px;
-          }
-          table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 5px;
-            font-size: 11px;
-            margin-left: 30px;
-          }
-          th {
-            background-color: #3498db;
-            color: white;
-            padding: 4px;
-            text-align: left;
-            font-weight: 500;
-            font-size: 11px;
-          }
-          td {
-            padding: 4px;
-            border-bottom: 1px solid #e0e0e0;
-          }
-          tr:nth-child(even) {
-            background-color: #f8f9fa;
-          }
-          .footer {
-            width: 100%;
-            text-align: center;
-            font-size: 10px;
-            color: #7f8c8d;
-            border-top: 1px solid #e0e0e0;
-            padding-top: 6px;
-            margin-top: auto;
-          }
-          @page {
-            size: A4 portrait;
-            margin: 10mm;
-          }
-          @media print {
-            body {
-              padding: 0;
-            }
-            .footer {
-              position: fixed;
-              bottom: 0;
-              left: 0;
-              right: 0;
-              padding-bottom: px;
-              background: white;
-            }
-          }
-          .status-badge {
-            display: inline-block;
-            padding: 1px 4px;
-            border-radius: 8px;
-            font-size: 10px;
-            font-weight: 500;
-          }
-          .status-IN {
-            background-color: #d1fae5;
-            color: #065f46;
-          }
-          .status-OUT {
-            background-color: #fee2e2;
-            color: #b91c1c;
-          }
-          .status-PENDING {
-            background-color: #fef3c7;
-            color: #92400e;
-          }
-        </style>
-      </head>
-      <body>
-        <div class="content">
+      <html>
+        <head>
+          <title>Movement Report ${userInfo ? `- ${userInfo.username}` : ''}</title>
+          <style>
+            body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 10px; }
+            .header { text-align: center; margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px solid #e0e0e0; }
+            .header h1 { margin: 0 0 5px 0; font-size: 18px; color: #2c3e50; }
+            .report-info { margin-bottom: 10px; padding: 8px; background-color: #f8f9fa; border-radius: 3px; }
+            table { width: 100%; border-collapse: collapse; margin-top: 5px; font-size: 11px; }
+            th { background-color: #3498db; color: white; padding: 4px; text-align: left; }
+            td { padding: 4px; border-bottom: 1px solid #e0e0e0; }
+            tr:nth-child(even) { background-color: #f8f9fa; }
+            .footer { text-align: center; font-size: 10px; color: #7f8c8d; }
+            .status-badge { display: inline-block; padding: 1px 4px; border-radius: 8px; font-size: 10px; }
+            .status-IN { background-color: #d1fae5; color: #065f46; }
+            .status-OUT { background-color: #fee2e2; color: #b91c1c; }
+            .status-PENDING { background-color: #fef3c7; color: #92400e; }
+          </style>
+        </head>
+        <body>
           <div class="header">
             <h1>Movement Report of ${userInfo ? userInfo.Name : 'User'}</h1>
           </div>
-
           ${userInfo ? `
           <div class="report-info">
-            <div class="info-pair">
-              <div><strong>Employee:</strong> ${userInfo.Name || 'N/A'}</div>
-              <div><strong>ID:</strong> ${userInfo.E_ID || 'N/A'}</div>
-            </div>
-            <div class="info-pair">
-              <div><strong>Company:</strong> ${userInfo.Company_name || 'N/A'}</div>
-              <div><strong>Department:</strong> ${userInfo.Department || 'N/A'}</div>
-            </div>
-            <div class="info-pair">
-              <div><strong>Designation:</strong> ${userInfo.Designation || 'N/A'}</div>
-            </div>
+            <div><strong>Employee:</strong> ${userInfo.Name || 'N/A'}</div>
+            <div><strong>ID:</strong> ${userInfo.E_ID || 'N/A'}</div>
+            <div><strong>Company:</strong> ${userInfo.Company_name || 'N/A'}</div>
+            <div><strong>Department:</strong> ${userInfo.Department || 'N/A'}</div>
+            <div><strong>Designation:</strong> ${userInfo.Designation || 'N/A'}</div>
           </div>
           ` : ''}
-
           <table>
             <thead>
               <tr>
@@ -441,28 +313,22 @@ const MovementReports = () => {
               ${formattedRows}
             </tbody>
           </table>
-        </div>
-
-        <div class="footer">
-          <p>Generated on: ${currentDateTime}</p>
-        </div>
-
-        <script>
-          window.onload = function() {
-            setTimeout(function() {
-              window.print();
-              window.close();
-            }, 200);
-          };
-        </script>
-      </body>
-    </html>
-  `);
-
+          <div class="footer">
+            <p>Generated on: ${currentDateTime}</p>
+          </div>
+          <script>
+            window.onload = function() {
+              setTimeout(function() {
+                window.print();
+                window.close();
+              }, 200);
+            };
+          </script>
+        </body>
+      </html>
+    `);
     printWindow.document.close();
   };
-
-
 
   const clearFilters = () => {
     setSelectedUser('');
@@ -478,7 +344,6 @@ const MovementReports = () => {
       <ToastContainer position="top-right" autoClose={3000} />
       <Sidebar sidebarOpen={sidebarOpen} handleLogout={handleLogout} />
 
-      {/* Overlay for mobile sidebar */}
       {sidebarOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 z-20 md:hidden"
@@ -487,78 +352,74 @@ const MovementReports = () => {
         ></div>
       )}
 
-      {/* Main content */}
       <div className="flex flex-col flex-1 w-full">
-        {/* Header */}
-        <header className="flex items-center justify-between bg-white shadow p-4">
+        <header className="flex items-center justify-between bg-white shadow-sm p-4 border-b">
           <div className="flex items-center">
-            {/* Mobile menu button */}
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="text-gray-800 focus:outline-none md:hidden mr-4"
+              className="text-gray-600 hover:text-gray-800 focus:outline-none md:hidden mr-4"
               aria-label="Toggle sidebar"
             >
               {sidebarOpen ? (
-                <FaTimes className="h-6 w-6" />
+                <FaTimes className="h-5 w-5" />
               ) : (
-                <FaBars className="h-6 w-6" />
+                <FaBars className="h-5 w-5" />
               )}
             </button>
-
-            <h1 className="text-xl font-semibold text-gray-800"> Movement Reports</h1>
+            <h1 className="text-lg font-semibold text-gray-800">Movement Reports</h1>
           </div>
 
           <div className="flex space-x-2">
             <button
               onClick={downloadCSV}
               disabled={!filtersApplied || filteredData.length === 0}
-              className={`flex items-center px-3 py-2 ${filtersApplied && filteredData.length > 0 ? 'bg-green-800 text-white hover:bg-green-700' : 'bg-gray-300 text-gray-500 cursor-not-allowed'} rounded transition ease-in-out duration-300 hover:-translate-y-1 hover:scale-105`}
+              className={`flex items-center px-3 py-1.5 text-xs rounded-md transition-all ${filtersApplied && filteredData.length > 0
+                ? 'bg-green-600 text-white hover:bg-green-700'
+                : 'bg-gray-200 text-gray-500 cursor-not-allowed'}`}
             >
-              <FaFileDownload className="mr-2" />
-              Download CSV
+              <FaFileDownload className="mr-1.5" />
+              Export CSV
             </button>
 
             <button
               onClick={PrintFile}
-              className='flex items-center px-3 py-2 rounded-md text-sm cursor-pointer bg-emerald-700 hover:bg-emerald-600 text-white'>
-              <FaPrint className="mr-2" />
+              disabled={!filtersApplied || filteredData.length === 0}
+              className={`flex items-center px-3 py-1.5 text-xs rounded-md transition-all ${filtersApplied && filteredData.length > 0
+                ? 'bg-blue-600 text-white hover:bg-blue-700'
+                : 'bg-gray-200 text-gray-500 cursor-not-allowed'}`}
+            >
+              <FaPrint className="mr-1.5" />
               Print
             </button>
           </div>
         </header>
 
-        {/* Filters Section */}
-        <div className="bg-white shadow-sm p-4 border-b">
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-            {/* User Filter */}
+        <div className="bg-white shadow-sm p-3 border-b">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-2">
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <FaSearch className="text-gray-400" />
+              <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
+                <FaSearch className="text-gray-400 text-xs" />
               </div>
               <select
-                className="pl-10 pr-4 py-2 w-full border rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                className="pl-8 pr-3 py-1.5 w-full border rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-xs"
                 value={selectedUser}
                 onChange={(e) => setSelectedUser(e.target.value)}
               >
                 <option value="">Select User</option>
-                {users
-                  .filter(user => user.userStatus === 'active') // or user.status === 'active', depending on your data
-                  .map(user => (
-                    <option key={user.username} value={user.username} className='capitalize'>
-                      {user.username}
-                    </option>
-                  ))}
-
+                {users.map(user => (
+                  <option key={user.username} value={user.username}>
+                    {user.username}
+                  </option>
+                ))}
               </select>
             </div>
 
-            {/* Status Filter */}
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <FaFilter className="text-gray-400" />
+              <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
+                <FaFilter className="text-gray-400 text-xs" />
               </div>
               <select
-                className="pl-10 pr-4 py-2 w-full border rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                className="pl-8 pr-3 py-1.5 w-full border rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-xs"
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
               >
@@ -568,44 +429,40 @@ const MovementReports = () => {
               </select>
             </div>
 
-            {/* Date Range Filters */}
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <FaCalendarAlt className="text-gray-400" />
+              <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
+                <FaCalendarAlt className="text-gray-400 text-xs" />
               </div>
               <input
                 type="date"
-                className="pl-10 pr-4 py-2 w-full border rounded-lg focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Start Date"
+                className="pl-8 pr-3 py-1.5 w-full border rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-xs"
                 value={dateRange.start}
                 onChange={(e) => setDateRange({ ...dateRange, start: e.target.value })}
               />
             </div>
 
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <FaCalendarAlt className="text-gray-400" />
+              <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
+                <FaCalendarAlt className="text-gray-400 text-xs" />
               </div>
               <input
                 type="date"
-                className="pl-10 pr-4 py-2 w-full border rounded-lg focus:ring-blue-500 focus:border-blue-500"
-                placeholder="End Date"
+                className="pl-8 pr-3 py-1.5 w-full border rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-xs"
                 value={dateRange.end}
                 onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })}
               />
             </div>
 
-            {/* Search Button */}
-            <div className="flex space-x-2">
+            <div className="flex space-x-1.5">
               <button
                 onClick={applyFilters}
-                className="w-full px-4 py-2 bg-blue-800 text-white rounded hover:bg-blue-900 transition-colors cursor-pointer"
+                className="w-full px-3 py-1.5 bg-blue-600 text-white text-xs rounded-md hover:bg-blue-700 transition-colors"
               >
-                Search
+                Apply Filters
               </button>
               <button
                 onClick={clearFilters}
-                className="w-full px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors cursor-pointer"
+                className="w-full px-3 py-1.5 bg-gray-200 text-gray-700 text-xs rounded-md hover:bg-gray-300 transition-colors"
               >
                 Clear
               </button>
@@ -613,83 +470,81 @@ const MovementReports = () => {
           </div>
         </div>
 
-        {/* Content */}
-        <main className="flex-grow overflow-auto p-4 bg-gray-50">
+        <main className="flex-grow overflow-auto p-3 bg-gray-50">
           {isLoading ? (
             <div className="flex justify-center items-center h-64">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
             </div>
           ) : !filtersApplied ? (
-            <div className="bg-white rounded-lg shadow p-6 text-center">
-              <p className="text-gray-500">Please select filters and click "Search" to view movement reports</p>
+            <div className="bg-white rounded-md shadow-sm p-4 text-center">
+              <p className="text-gray-500 text-sm">Apply filters to view movement reports</p>
             </div>
           ) : filteredData.length === 0 ? (
-            <div className="bg-white rounded-lg shadow p-6 text-center">
-              <p className="text-gray-500">No movement reports found matching your criteria</p>
+            <div className="bg-white rounded-md shadow-sm p-4 text-center">
+              <p className="text-gray-500 text-sm">No records found for the selected criteria</p>
               <button
                 onClick={clearFilters}
-                className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                className="mt-2 px-3 py-1.5 bg-blue-600 text-white text-xs rounded-md hover:bg-blue-700"
               >
-                Clear Filters
+                Reset Filters
               </button>
             </div>
           ) : (
-            <div className="bg-white rounded-lg shadow overflow-hidden">
-              {/* Table */}
+            <div className="bg-white rounded-md shadow-sm overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
                       <th
                         scope="col"
-                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                        className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                         onClick={() => requestSort('username')}
                       >
                         <div className="flex items-center">
                           User
-                          <FaSort className="ml-1 text-gray-400" />
+                          <FaSort className="ml-1 text-gray-400 text-xs" />
                         </div>
                       </th>
                       <th
                         scope="col"
-                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                        className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                         onClick={() => requestSort('dateTime')}
                       >
                         <div className="flex items-center">
-                          Submitted Date/Time
-                          <FaSort className="ml-1 text-gray-400" />
+                          Date/Time
+                          <FaSort className="ml-1 text-gray-400 text-xs" />
                         </div>
                       </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th scope="col" className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Punch Time
                       </th>
                       <th
                         scope="col"
-                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                        className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                         onClick={() => requestSort('punchTime')}
                       >
                         <div className="flex items-center">
-                          Punch Status
-                          <FaSort className="ml-1 text-gray-400" />
+                          Status
+                          <FaSort className="ml-1 text-gray-400 text-xs" />
                         </div>
                       </th>
                       <th
                         scope="col"
-                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                        className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                         onClick={() => requestSort('visitingStatus')}
                       >
                         <div className="flex items-center">
-                          Visit Status
-                          <FaSort className="ml-1 text-gray-400" />
+                          Visit
+                          <FaSort className="ml-1 text-gray-400 text-xs" />
                         </div>
                       </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th scope="col" className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Place
                       </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th scope="col" className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Party
                       </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th scope="col" className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Purpose
                       </th>
                     </tr>
@@ -697,29 +552,29 @@ const MovementReports = () => {
                   <tbody className="bg-white divide-y divide-gray-200">
                     {currentRows.map((report) => (
                       <tr key={report.movementID} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm font-medium text-gray-900">{report.username}</div>
+                        <td className="px-4 py-2 whitespace-nowrap text-xs text-gray-900">
+                          {report.username}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-500">{formatDateTime(report.dateTime)}</div>
+                        <td className="px-4 py-2 whitespace-nowrap text-xs text-gray-500">
+                          {formatDateTime(report.dateTime)}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-500">{formatTime12Hour(report.punchingTime)}</div>
+                        <td className="px-4 py-2 whitespace-nowrap text-xs text-gray-500">
+                          {formatTime12Hour(report.punchingTime)}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-500">{(report.punchTime)}</div>
+                        <td className="px-4 py-2 whitespace-nowrap">
+                          {getStatusBadge(report.punchTime)}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          {getStatusBadge(report.visitingStatus)}
+                        <td className="px-4 py-2 whitespace-nowrap text-xs text-gray-500">
+                          {(report.visitingStatus)}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-500">{report.placeName || 'N/A'}</div>
+                        <td className="px-4 py-2 whitespace-nowrap text-xs text-gray-500">
+                          {report.placeName || 'N/A'}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-500">{report.partyName || 'N/A'}</div>
+                        <td className="px-4 py-2 whitespace-nowrap text-xs text-gray-500">
+                          {report.partyName || 'N/A'}
                         </td>
-                        <td className="px-6 py-4">
-                          <div className="text-sm text-gray-500">{report.purpose || 'Not specified'}</div>
+                        <td className="px-4 py-2 text-xs text-gray-500">
+                          {report.purpose || 'Not specified'}
                         </td>
                       </tr>
                     ))}
@@ -727,44 +582,43 @@ const MovementReports = () => {
                 </table>
               </div>
 
-              {/* Pagination */}
-              <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+              <div className="bg-white px-3 py-2 flex items-center justify-between border-t border-gray-200">
                 <div className="flex-1 flex justify-between sm:hidden">
                   <button
                     onClick={() => paginate(Math.max(1, currentPage - 1))}
                     disabled={currentPage === 1}
-                    className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                    className="relative inline-flex items-center px-2.5 py-1.5 border border-gray-300 text-xs rounded-md text-gray-700 bg-white hover:bg-gray-50"
                   >
                     Previous
                   </button>
                   <button
                     onClick={() => paginate(Math.min(totalPages, currentPage + 1))}
                     disabled={currentPage === totalPages}
-                    className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                    className="ml-2 relative inline-flex items-center px-2.5 py-1.5 border border-gray-300 text-xs rounded-md text-gray-700 bg-white hover:bg-gray-50"
                   >
                     Next
                   </button>
                 </div>
                 <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
                   <div>
-                    <p className="text-sm text-gray-700">
+                    <p className="text-xs text-gray-700">
                       Showing <span className="font-medium">{indexOfFirstRow + 1}</span> to{' '}
                       <span className="font-medium">{Math.min(indexOfLastRow, filteredData.length)}</span> of{' '}
-                      <span className="font-medium">{filteredData.length}</span> results
+                      <span className="font-medium">{filteredData.length}</span> records
                     </p>
                   </div>
-                  <div className="flex items-center space-x-4">
+                  <div className="flex items-center space-x-2">
                     <div className="flex items-center">
-                      <span className="text-sm text-gray-700 mr-2">Rows per page:</span>
+                      <span className="text-xs text-gray-700 mr-1">Rows:</span>
                       <select
-                        className="border rounded-md px-2 py-1 text-sm"
+                        className="border rounded-md px-1.5 py-1 text-xs"
                         value={rowsPerPage}
                         onChange={(e) => {
                           setRowsPerPage(Number(e.target.value));
                           setCurrentPage(1);
                         }}
                       >
-                        {[5, 10, 25, 50, 100].map((size) => (
+                        {[5, 10, 25, 50, 100, 200, 500, 1000].map((size) => (
                           <option key={size} value={size}>
                             {size}
                           </option>
@@ -775,18 +629,16 @@ const MovementReports = () => {
                       <button
                         onClick={() => paginate(1)}
                         disabled={currentPage === 1}
-                        className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                        className="relative inline-flex items-center px-1.5 py-1 rounded-l-md border border-gray-300 bg-white text-xs text-gray-500 hover:bg-gray-50 disabled:opacity-50"
                       >
-                        <span className="sr-only">First</span>
-                        <MdFirstPage className="h-5 w-5" />
+                        <MdFirstPage className="h-3.5 w-3.5" />
                       </button>
                       <button
                         onClick={() => paginate(Math.max(1, currentPage - 1))}
                         disabled={currentPage === 1}
-                        className="relative inline-flex items-center px-2 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                        className="relative inline-flex items-center px-1.5 py-1 border border-gray-300 bg-white text-xs text-gray-500 hover:bg-gray-50 disabled:opacity-50"
                       >
-                        <span className="sr-only">Previous</span>
-                        <MdChevronLeft className="h-5 w-5" />
+                        <MdChevronLeft className="h-3.5 w-3.5" />
                       </button>
                       {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                         let pageNum;
@@ -803,7 +655,7 @@ const MovementReports = () => {
                           <button
                             key={pageNum}
                             onClick={() => paginate(pageNum)}
-                            className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${currentPage === pageNum
+                            className={`relative inline-flex items-center px-2.5 py-1 border text-xs ${currentPage === pageNum
                               ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
                               : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
                               }`}
@@ -815,18 +667,16 @@ const MovementReports = () => {
                       <button
                         onClick={() => paginate(Math.min(totalPages, currentPage + 1))}
                         disabled={currentPage === totalPages}
-                        className="relative inline-flex items-center px-2 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                        className="relative inline-flex items-center px-1.5 py-1 border border-gray-300 bg-white text-xs text-gray-500 hover:bg-gray-50 disabled:opacity-50"
                       >
-                        <span className="sr-only">Next</span>
-                        <MdChevronRight className="h-5 w-5" />
+                        <MdChevronRight className="h-3.5 w-3.5" />
                       </button>
                       <button
                         onClick={() => paginate(totalPages)}
                         disabled={currentPage === totalPages}
-                        className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                        className="relative inline-flex items-center px-1.5 py-1 rounded-r-md border border-gray-300 bg-white text-xs text-gray-500 hover:bg-gray-50 disabled:opacity-50"
                       >
-                        <span className="sr-only">Last</span>
-                        <MdLastPage className="h-5 w-5" />
+                        <MdLastPage className="h-3.5 w-3.5" />
                       </button>
                     </nav>
                   </div>
