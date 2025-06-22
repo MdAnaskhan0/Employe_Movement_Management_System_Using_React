@@ -309,7 +309,7 @@ const handlePrint = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
+            <label className="text-sm font-medium text-gray-700 mb-1 flex items-center">
               <FiUsers className="mr-2" /> Select Team
             </label>
             <select
@@ -332,7 +332,7 @@ const handlePrint = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
+            <label className="text-sm font-medium text-gray-700 mb-1 flex items-center">
               <FiUser className="mr-2" /> Select Team Member
             </label>
             <select

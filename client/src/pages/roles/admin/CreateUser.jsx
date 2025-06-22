@@ -9,9 +9,11 @@ import {
     FaIdCard,
     FaBuilding,
     FaPhone,
-    FaEnvelope
+    FaEnvelope,
+    FaLock,
+    FaUserCircle
 } from 'react-icons/fa';
-import { MdDepartureBoard } from 'react-icons/md';
+import { MdDepartureBoard, MdCancel, MdCheckCircle } from 'react-icons/md';
 import { SiGoogletasks } from 'react-icons/si';
 
 const CreateUser = () => {
@@ -34,6 +36,8 @@ const CreateUser = () => {
     const [designation, setDesignation] = useState([]);
     const [company, setCompany] = useState([]);
     const [roles, setRoles] = useState([]);
+    const [passwordStrength, setPasswordStrength] = useState(0);
+    const [touchedFields, setTouchedFields] = useState({});
 
     useEffect(() => {
         const fetchDropdownData = async () => {
@@ -64,6 +68,35 @@ const CreateUser = () => {
             ...prev,
             [name]: value
         }));
+
+        // Mark field as touched
+        setTouchedFields(prev => ({
+            ...prev,
+            [name]: true
+        }));
+
+        // Calculate password strength
+        if (name === 'password') {
+            calculatePasswordStrength(value);
+        }
+    };
+
+    const calculatePasswordStrength = (password) => {
+        let strength = 0;
+        if (password.length > 5) strength += 1;
+        if (password.length > 8) strength += 1;
+        if (/[A-Z]/.test(password)) strength += 1;
+        if (/[0-9]/.test(password)) strength += 1;
+        if (/[^A-Za-z0-9]/.test(password)) strength += 1;
+        setPasswordStrength(strength);
+    };
+
+    const handleBlur = (e) => {
+        const { name } = e.target;
+        setTouchedFields(prev => ({
+            ...prev,
+            [name]: true
+        }));
     };
 
     const handleCancel = () => {
@@ -75,25 +108,24 @@ const CreateUser = () => {
         setLoading(true);
 
         try {
-            console.log('Posting to:', `${import.meta.env.VITE_API_BASE_URL}/users`);
             const response = await axios.post(
                 `${import.meta.env.VITE_API_BASE_URL}/users`,
                 formData
             );
 
             if (response.data.status === 'ok') {
-                toast.success('User created successfully!');
+                toast.success('User created successfully!', {
+                    icon: <MdCheckCircle className="text-green-500 text-xl" />
+                });
                 setTimeout(() => {
                     navigate('/admin/users');
-                }, 2000);
+                }, 1500);
             } else {
                 toast.error(`Error: ${response.data.message}`);
             }
         } catch (err) {
             console.error("Create user error", err);
             if (err.response) {
-                console.error("Response data:", err.response.data);
-                console.error("Response status:", err.response.status);
                 toast.error(`Error: ${err.response.data.message || 'Failed to create user'}`);
             } else {
                 toast.error('Network error. Please try again.');
@@ -103,19 +135,41 @@ const CreateUser = () => {
         }
     };
 
+    const getPasswordStrengthColor = () => {
+        if (passwordStrength === 0) return 'bg-gray-200';
+        if (passwordStrength <= 2) return 'bg-red-500';
+        if (passwordStrength === 3) return 'bg-yellow-500';
+        return 'bg-green-500';
+    };
+
+    const getPasswordStrengthText = () => {
+        if (passwordStrength === 0) return '';
+        if (passwordStrength <= 2) return 'Weak';
+        if (passwordStrength === 3) return 'Moderate';
+        return 'Strong';
+    };
+
+    const isFieldValid = (fieldName) => {
+        if (!touchedFields[fieldName]) return true;
+        return !!formData[fieldName];
+    };
+
     return (
-        <div>
-            <div className='flex items-center justify-end mb-4'>
-                <LogOutButton />
+        <div className="min-h-screen bg-white p-4 md:p-6">
+            <div className='flex items-center justify-end mb-6'>
+                <LogOutButton className="bg-gray-100 hover:bg-gray-200" />
             </div>
-            <div className="max-w-4xl mx-auto">
-                <div className="bg-white rounded-lg shadow-md overflow-hidden">
-                    <div className="bg-gray-100 p-4 text-gray-800">
-                        <h1 className="text-2xl font-bold flex items-center">
-                            <FaUserPlus className="mr-2" />
-                            Create New User
-                        </h1>
-                        <p className="text-gray-600">Fill in the details below to register a new user</p>
+            
+            <div className="max-w-5xl mx-auto">
+                <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
+                    <div className="bg-gradient-to-r from-blue-700 to-blue-900 p-5 text-white">
+                        <div className="flex items-center">
+                            <FaUserPlus className="text-2xl mr-3" />
+                            <div>
+                                <h1 className="text-2xl font-bold">Create New User</h1>
+                                <p className="text-blue-100">Fill in all required fields to register a new user</p>
+                            </div>
+                        </div>
                     </div>
 
                     <form onSubmit={handleSubmit} className="p-6">
@@ -123,8 +177,8 @@ const CreateUser = () => {
                             {/* Username Field */}
                             <div className="space-y-2">
                                 <label htmlFor="username" className="block text-sm font-medium text-gray-700 flex items-center">
-                                    <FaUserTie className="mr-2 text-gray-600" />
-                                    Username <span className='text-red-500'>&nbsp;*</span>
+                                    <FaUserCircle className="mr-2 text-blue-600" />
+                                    Username <span className='text-red-500 ml-1'>*</span>
                                 </label>
                                 <input
                                     type="text"
@@ -132,17 +186,21 @@ const CreateUser = () => {
                                     name="username"
                                     value={formData.username}
                                     onChange={handleChange}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-                                    placeholder="Enter username"
+                                    onBlur={handleBlur}
+                                    className={`w-full px-4 py-2.5 border ${isFieldValid('username') ? 'border-gray-300' : 'border-red-400'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors`}
+                                    placeholder="e.g., johndoe"
                                     required
                                 />
+                                {!isFieldValid('username') && (
+                                    <p className="text-red-500 text-xs mt-1">Username is required</p>
+                                )}
                             </div>
 
                             {/* Password Field */}
                             <div className="space-y-2">
                                 <label htmlFor="password" className="block text-sm font-medium text-gray-700 flex items-center">
-                                    <FaUserTie className="mr-2 text-gray-600" />
-                                    Password <span className='text-red-500'>&nbsp;*</span>
+                                    <FaLock className="mr-2 text-blue-600" />
+                                    Password <span className='text-red-500 ml-1'>*</span>
                                 </label>
                                 <input
                                     type="password"
@@ -150,17 +208,31 @@ const CreateUser = () => {
                                     name="password"
                                     value={formData.password}
                                     onChange={handleChange}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-                                    placeholder="Enter password"
+                                    onBlur={handleBlur}
+                                    className={`w-full px-4 py-2.5 border ${isFieldValid('password') ? 'border-gray-300' : 'border-red-400'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors`}
+                                    placeholder="Enter secure password"
                                     required
                                 />
+                                {formData.password && (
+                                    <div className="mt-2">
+                                        <div className="flex justify-between text-xs text-gray-500 mb-1">
+                                            <span>Password Strength: {getPasswordStrengthText()}</span>
+                                        </div>
+                                        <div className="w-full bg-gray-200 rounded-full h-1.5">
+                                            <div 
+                                                className={`h-1.5 rounded-full ${getPasswordStrengthColor()}`} 
+                                                style={{ width: `${passwordStrength * 20}%` }}
+                                            ></div>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
 
                             {/* Employee ID Field */}
                             <div className="space-y-2">
                                 <label htmlFor="eid" className="block text-sm font-medium text-gray-700 flex items-center">
-                                    <FaIdCard className="mr-2 text-gray-600" />
-                                    Employee ID <span className='text-red-500'>&nbsp;*</span>
+                                    <FaIdCard className="mr-2 text-blue-600" />
+                                    Employee ID <span className='text-red-500 ml-1'>*</span>
                                 </label>
                                 <input
                                     type="text"
@@ -168,8 +240,9 @@ const CreateUser = () => {
                                     name="eid"
                                     value={formData.eid}
                                     onChange={handleChange}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-                                    placeholder="Enter employee ID"
+                                    onBlur={handleBlur}
+                                    className={`w-full px-4 py-2.5 border ${isFieldValid('eid') ? 'border-gray-300' : 'border-red-400'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors`}
+                                    placeholder="e.g., EMP12345"
                                     required
                                 />
                             </div>
@@ -177,8 +250,8 @@ const CreateUser = () => {
                             {/* Full Name Field */}
                             <div className="space-y-2">
                                 <label htmlFor="name" className="block text-sm font-medium text-gray-700 flex items-center">
-                                    <FaUserTie className="mr-2 text-gray-600" />
-                                    Full Name <span className='text-red-500'>&nbsp;*</span>
+                                    <FaUserTie className="mr-2 text-blue-600" />
+                                    Full Name <span className='text-red-500 ml-1'>*</span>
                                 </label>
                                 <input
                                     type="text"
@@ -186,8 +259,9 @@ const CreateUser = () => {
                                     name="name"
                                     value={formData.name}
                                     onChange={handleChange}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-                                    placeholder="Enter full name"
+                                    onBlur={handleBlur}
+                                    className={`w-full px-4 py-2.5 border ${isFieldValid('name') ? 'border-gray-300' : 'border-red-400'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors`}
+                                    placeholder="e.g., John Doe"
                                     required
                                 />
                             </div>
@@ -195,15 +269,16 @@ const CreateUser = () => {
                             {/* Department Dropdown */}
                             <div className="space-y-2">
                                 <label htmlFor="department" className="block text-sm font-medium text-gray-700 flex items-center">
-                                    <MdDepartureBoard className="mr-2 text-gray-600" />
-                                    Department <span className='text-red-500'>&nbsp;*</span>
+                                    <MdDepartureBoard className="mr-2 text-blue-600" />
+                                    Department <span className='text-red-500 ml-1'>*</span>
                                 </label>
                                 <select
                                     id="department"
                                     name="department"
                                     value={formData.department}
                                     onChange={handleChange}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                                    onBlur={handleBlur}
+                                    className={`w-full px-4 py-2.5 border ${isFieldValid('department') ? 'border-gray-300' : 'border-red-400'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors appearance-none bg-white`}
                                     required
                                 >
                                     <option value="">Select Department</option>
@@ -218,15 +293,16 @@ const CreateUser = () => {
                             {/* Designation Dropdown */}
                             <div className="space-y-2">
                                 <label htmlFor="designation" className="block text-sm font-medium text-gray-700 flex items-center">
-                                    <FaUserTie className="mr-2 text-gray-600" />
-                                    Designation <span className='text-red-500'>&nbsp;*</span>
+                                    <FaUserTie className="mr-2 text-blue-600" />
+                                    Designation <span className='text-red-500 ml-1'>*</span>
                                 </label>
                                 <select
                                     id="designation"
                                     name="designation"
                                     value={formData.designation}
                                     onChange={handleChange}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                                    onBlur={handleBlur}
+                                    className={`w-full px-4 py-2.5 border ${isFieldValid('designation') ? 'border-gray-300' : 'border-red-400'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors appearance-none bg-white`}
                                     required
                                 >
                                     <option value="">Select Designation</option>
@@ -241,15 +317,16 @@ const CreateUser = () => {
                             {/* Company Dropdown */}
                             <div className="space-y-2">
                                 <label htmlFor="company" className="block text-sm font-medium text-gray-700 flex items-center">
-                                    <FaBuilding className="mr-2 text-gray-600" />
-                                    Company Name <span className='text-red-500'>&nbsp;*</span>
+                                    <FaBuilding className="mr-2 text-blue-600" />
+                                    Company <span className='text-red-500 ml-1'>*</span>
                                 </label>
                                 <select
                                     id="company"
                                     name="company"
                                     value={formData.company}
                                     onChange={handleChange}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                                    onBlur={handleBlur}
+                                    className={`w-full px-4 py-2.5 border ${isFieldValid('company') ? 'border-gray-300' : 'border-red-400'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors appearance-none bg-white`}
                                     required
                                 >
                                     <option value="">Select Company</option>
@@ -264,8 +341,8 @@ const CreateUser = () => {
                             {/* Phone Number Field */}
                             <div className="space-y-2">
                                 <label htmlFor="phone" className="block text-sm font-medium text-gray-700 flex items-center">
-                                    <FaPhone className="mr-2 text-gray-600" />
-                                    Phone Number <span className='text-red-500'>&nbsp;*</span>
+                                    <FaPhone className="mr-2 text-blue-600" />
+                                    Phone Number <span className='text-red-500 ml-1'>*</span>
                                 </label>
                                 <input
                                     type="tel"
@@ -273,8 +350,9 @@ const CreateUser = () => {
                                     name="phone"
                                     value={formData.phone}
                                     onChange={handleChange}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-                                    placeholder="Enter phone number"
+                                    onBlur={handleBlur}
+                                    className={`w-full px-4 py-2.5 border ${isFieldValid('phone') ? 'border-gray-300' : 'border-red-400'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors`}
+                                    placeholder="e.g., +1 234 567 890"
                                     required
                                 />
                             </div>
@@ -282,8 +360,8 @@ const CreateUser = () => {
                             {/* Email Field */}
                             <div className="space-y-2">
                                 <label htmlFor="email" className="block text-sm font-medium text-gray-700 flex items-center">
-                                    <FaEnvelope className="mr-2 text-gray-600" />
-                                    Email Address <span className='text-red-500'>&nbsp;*</span>
+                                    <FaEnvelope className="mr-2 text-blue-600" />
+                                    Email <span className='text-red-500 ml-1'>*</span>
                                 </label>
                                 <input
                                     type="email"
@@ -291,8 +369,9 @@ const CreateUser = () => {
                                     name="email"
                                     value={formData.email}
                                     onChange={handleChange}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-                                    placeholder="Enter email address"
+                                    onBlur={handleBlur}
+                                    className={`w-full px-4 py-2.5 border ${isFieldValid('email') ? 'border-gray-300' : 'border-red-400'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors`}
+                                    placeholder="e.g., john.doe@company.com"
                                     required
                                 />
                             </div>
@@ -300,15 +379,16 @@ const CreateUser = () => {
                             {/* Role Dropdown */}
                             <div className="space-y-2">
                                 <label htmlFor="role" className="block text-sm font-medium text-gray-700 flex items-center">
-                                    <SiGoogletasks className="mr-2 text-gray-600" />
-                                    Role <span className='text-red-500'>&nbsp;*</span>
+                                    <SiGoogletasks className="mr-2 text-blue-600" />
+                                    Role <span className='text-red-500 ml-1'>*</span>
                                 </label>
                                 <select
                                     id="role"
                                     name="role"
                                     value={formData.role}
                                     onChange={handleChange}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                                    onBlur={handleBlur}
+                                    className={`w-full px-4 py-2.5 border ${isFieldValid('role') ? 'border-gray-300' : 'border-red-400'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors appearance-none bg-white`}
                                     required
                                 >
                                     <option value="">Select Role</option>
@@ -321,21 +401,23 @@ const CreateUser = () => {
                             </div>
                         </div>
 
-                        <div className="mt-8 flex justify-end space-x-4">
+                        <div className="mt-8 pt-6 border-t border-gray-200 flex justify-end space-x-4">
                             <button
                                 onClick={handleCancel}
                                 type="button"
-                                className="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition"
+                                className="px-6 py-2.5 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors flex items-center"
                                 disabled={loading}
                             >
+                                <MdCancel className="mr-2" />
                                 Cancel
                             </button>
                             <button
                                 type="submit"
-                                className="px-6 py-2 bg-blue-800 text-white rounded-md hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition disabled:opacity-50"
+                                className="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-800 text-white rounded-lg hover:from-blue-700 hover:to-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors flex items-center disabled:opacity-70"
                                 disabled={loading}
                             >
-                                {loading ? 'Creating...' : 'Create User'}
+                                <FaUserPlus className="mr-2" />
+                                {loading ? 'Creating User...' : 'Create User'}
                             </button>
                         </div>
                     </form>

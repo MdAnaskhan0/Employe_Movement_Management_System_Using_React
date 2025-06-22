@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import { FiSearch, FiX, FiCalendar, FiUser, FiDownload, FiPrinter } from 'react-icons/fi';
+import { FiSearch, FiX, FiCalendar, FiUser, FiDownload, FiPrinter, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ReactPaginate from 'react-paginate';
@@ -48,7 +48,7 @@ const MovementReports = () => {
         } else {
             date = new Date(input);
         }
-        return isValid(date) ? format(date, 'hh:mm aa') : '-';
+        return isValid(date) ? format(date, 'hh:mm a') : '-';
     };
 
     useEffect(() => {
@@ -123,11 +123,16 @@ const MovementReports = () => {
     };
 
     const handleDownloadCSV = () => {
+        if (filteredReports.length === 0) {
+            toast.warning('No data to export');
+            return;
+        }
+        
         const headers = [
             'Username', 'Date', 'Punching Time', 'Punch Status',
             'Status', 'Place', 'Party', 'Purpose', 'Remarks'
         ];
-        const rows = currentReports.map((report) => [
+        const rows = filteredReports.map((report) => [
             report.username || '-',
             formatDateOnly(report.dateTime),
             formatTimeOnly(report.punchingTime),
@@ -142,22 +147,29 @@ const MovementReports = () => {
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement('a');
         link.href = URL.createObjectURL(blob);
-        link.setAttribute('download', 'movement_reports.csv');
+        link.setAttribute('download', `movement_reports_${format(new Date(), 'yyyyMMdd_HHmmss')}.csv`);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+        toast.success('CSV exported successfully');
     };
 
     const handlePrint = () => {
+        if (filteredReports.length === 0) {
+            toast.warning('No data to print');
+            return;
+        }
+
         const selectedUserInfo = users.find(user => String(user.userID) === String(selectedUser));
 
         const userDetails = selectedUserInfo ? `
-            <div style="margin-bottom: 16px; font-size: 12px; display: flex; flex-direction: row; align-items: center; gap: 8px;">
-                <div><strong>Name:</strong> ${selectedUserInfo.username || '-'}<br/></div>
-                <div><strong>Employee ID:</strong> ${selectedUserInfo.E_ID || '-'}<br/></div>
-                <div><strong>Company:</strong> ${selectedUserInfo.Company_name || '-'}<br/></div>
-                <div><strong>Department:</strong> ${selectedUserInfo.Department || '-'}<br/></div>
-                <div><strong>Designation:</strong> ${selectedUserInfo.Designation || '-'}<br/></div>
+            <div style="margin-bottom: 16px; font-size: 12px; display: flex; flex-direction: column; gap: 4px;">
+                <div><strong>Name:</strong> ${selectedUserInfo.username || '-'}</div>
+                <div><strong>Employee ID:</strong> ${selectedUserInfo.E_ID || '-'}</div>
+                <div><strong>Company:</strong> ${selectedUserInfo.Company_name || '-'}</div>
+                <div><strong>Department:</strong> ${selectedUserInfo.Department || '-'}</div>
+                <div><strong>Designation:</strong> ${selectedUserInfo.Designation || '-'}</div>
+                <div><strong>Date Range:</strong> ${fromDate || 'Start'} to ${toDate || 'End'}</div>
             </div>
         ` : '<div style="margin-bottom: 16px; font-size: 12px;">User info not available.</div>';
 
@@ -172,27 +184,50 @@ const MovementReports = () => {
                         @media print {
                             body {
                                 margin: 0;
-                                padding: 0;
-                                font-size: 11px;
+                                padding: 20px;
+                                font-family: Arial, sans-serif;
+                                font-size: 10px;
+                                color: #333;
                             }
                             table {
                                 width: 100%;
                                 border-collapse: collapse;
+                                margin-top: 10px;
                             }
                             th, td {
-                                padding: 2px 4px;
-                                border: 1px solid #ccc;
+                                padding: 8px 12px;
+                                border: 1px solid #ddd;
                                 text-align: left;
-                                font-size: 11px;
                             }
                             th {
-                                background-color: #f0f0f0;
+                                background-color: #f5f5f5;
+                                font-weight: 600;
+                            }
+                            .print-header {
+                                display: flex;
+                                justify-content: space-between;
+                                align-items: center;
+                                margin-bottom: 15px;
+                                border-bottom: 1px solid #eee;
+                                padding-bottom: 10px;
+                            }
+                            .print-title {
+                                font-size: 16px;
+                                font-weight: bold;
+                                color: #333;
+                            }
+                            .print-date {
+                                font-size: 11px;
+                                color: #666;
                             }
                         }
                     </style>
                 </head>
                 <body>
-                    <h2 style="margin-bottom: 8px;">Movement Report</h2>
+                    <div class="print-header">
+                        <div class="print-title">Movement Report</div>
+                        <div class="print-date">Generated on ${format(new Date(), 'MM/dd/yyyy hh:mm a')}</div>
+                    </div>
                     ${userDetails}
                     ${printContent}
                 </body>
@@ -201,156 +236,212 @@ const MovementReports = () => {
 
         printWindow.document.close();
         printWindow.focus();
-        printWindow.print();
-        printWindow.close();
+        setTimeout(() => {
+            printWindow.print();
+            printWindow.close();
+        }, 500);
     };
 
     return (
-        <div className="min-h-screen bg-white py-6">
-            <div className='flex items-center justify-end mb-4'>
+        <div className="min-h-screen bg-gray-50 py-6 px-4 sm:px-6 lg:px-8">
+            <div className='flex items-center justify-between mb-6'>
+                <h1 className="text-2xl font-semibold text-gray-800">Movement Reports</h1>
                 <LogOutButton />
             </div>
-            <div className="container mx-auto p-4 max-w-7xl">
-                <ToastContainer position="top-right" autoClose={3000} />
-                <h1 className="text-2xl font-bold mb-6 text-gray-800">Movement Reports</h1>
+            
+            <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
 
-                <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-                    <div className="grid grid-cols-1 md:grid-cols-12 gap-4 mb-4">
-                        <div className="relative md:col-span-3">
-                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <FiUser className="text-gray-400" />
-                            </div>
+            <div className="bg-white rounded-lg shadow-sm p-6 mb-6 border border-gray-100">
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-4 mb-4">
+                    <div className="relative md:col-span-3">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <FiUser className="text-gray-400 text-sm" />
+                        </div>
+                        <select
+                            value={selectedUser}
+                            onChange={(e) => setSelectedUser(e.target.value)}
+                            className="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-md shadow-sm text-sm focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+                        >
+                            <option value="">Select a user</option>
+                            {users.filter(
+                                (user) => user.userStatus === 'active'
+                            ).map((user) => (
+                                <option className="capitalize" key={user.userID} value={user.userID}>
+                                    {user.username}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div className="relative md:col-span-2">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <FiCalendar className="text-gray-400 text-sm" />
+                        </div>
+                        <input
+                            type="date"
+                            value={fromDate}
+                            onChange={(e) => setFromDate(e.target.value)}
+                            className="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-md shadow-sm text-sm focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+                        />
+                    </div>
+
+                    <div className="relative md:col-span-2">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <FiCalendar className="text-gray-400 text-sm" />
+                        </div>
+                        <input
+                            type="date"
+                            value={toDate}
+                            onChange={(e) => setToDate(e.target.value)}
+                            className="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-md shadow-sm text-sm focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+                            min={fromDate}
+                        />
+                    </div>
+
+                    <div className="flex flex-wrap gap-2 md:col-span-5 justify-end">
+                        <button 
+                            onClick={handleSearch} 
+                            disabled={isLoading}
+                            className="flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-md disabled:opacity-50 min-w-[100px] transition-colors duration-150"
+                        >
+                            {isLoading ? (
+                                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                            ) : (
+                                <FiSearch className="mr-2" />
+                            )}
+                            Search
+                        </button>
+                        <button 
+                            onClick={handleClear}
+                            className="flex items-center px-4 py-2 border border-gray-300 text-sm rounded-md bg-white text-gray-700 hover:bg-gray-50 min-w-[90px] transition-colors duration-150"
+                        >
+                            <FiX className="mr-2" />Clear
+                        </button>
+                        <button 
+                            onClick={handleDownloadCSV}
+                            disabled={filteredReports.length === 0}
+                            className="flex items-center px-4 py-2 border border-gray-300 text-sm rounded-md bg-white text-gray-700 hover:bg-gray-50 min-w-[90px] transition-colors duration-150 disabled:opacity-50"
+                        >
+                            <FiDownload className="mr-2" />CSV
+                        </button>
+                        <button 
+                            onClick={handlePrint}
+                            disabled={filteredReports.length === 0}
+                            className="flex items-center px-4 py-2 border border-gray-300 text-sm rounded-md bg-white text-gray-700 hover:bg-gray-50 min-w-[90px] transition-colors duration-150 disabled:opacity-50"
+                        >
+                            <FiPrinter className="mr-2" />Print
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div className="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-100" ref={printRef}>
+                <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200">
+                        <thead className="bg-gray-50">
+                            <tr>
+                                {['Username', 'Date', 'Punching Time', 'Punch Status', 'Status', 'Place', 'Party', 'Purpose', 'Remarks'].map((head, idx) => (
+                                    <th
+                                        key={idx}
+                                        className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                    >
+                                        {head}
+                                    </th>
+                                ))}
+                            </tr>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-200">
+                            {currentReports.length > 0 ? (
+                                currentReports.map((report, index) => (
+                                    <tr key={index} className="hover:bg-gray-50">
+                                        {[
+                                            report.username || '-',
+                                            formatDateOnly(report.dateTime),
+                                            formatTimeOnly(report.punchingTime),
+                                            report.punchTime || '-',
+                                            report.visitingStatus || '-',
+                                            report.placeName || '-',
+                                            report.partyName || '-',
+                                            report.purpose || '-',
+                                            report.remark || '-'
+                                        ].map((value, cellIdx) => (
+                                            <td 
+                                                key={cellIdx} 
+                                                className="px-4 py-3 whitespace-nowrap text-sm text-gray-500"
+                                            >
+                                                {cellIdx === 3 ? (
+                                                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                                        value === 'Punch In' 
+                                                            ? 'bg-green-100 text-green-800' 
+                                                            : 'bg-blue-100 text-blue-800'
+                                                    }`}>
+                                                        {value}
+                                                    </span>
+                                                ) : (
+                                                    value
+                                                )}
+                                            </td>
+                                        ))}
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan={9} className="px-4 py-8 text-center text-sm text-gray-500">
+                                        {isLoading ? (
+                                            <div className="flex justify-center items-center">
+                                                <svg className="animate-spin h-5 w-5 mr-2 text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                </svg>
+                                                Loading...
+                                            </div>
+                                        ) : 'No records found. Please select a user and click Search.'}
+                                    </td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+
+                {pageCount > 1 && (
+                    <div className="px-4 py-3 border-t flex items-center justify-between bg-gray-50">
+                        <div className="flex items-center">
+                            <span className="text-xs text-gray-700 mr-2">Rows per page:</span>
                             <select
-                                value={selectedUser}
-                                onChange={(e) => setSelectedUser(e.target.value)}
-                                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm"
+                                value={rowsPerPage}
+                                onChange={(e) => {
+                                    setRowsPerPage(Number(e.target.value));
+                                    setCurrentPage(0);
+                                }}
+                                className="border border-gray-200 rounded text-xs py-1 px-2 focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
                             >
-                                <option value="">Select a user</option>
-                                {users.filter(
-                                    (user) => user.userStatus === 'active'
-                                ).map((user) => (
-                                    <option className="capitalize" key={user.userID} value={user.userID}>
-                                        {user.username}
-                                    </option>
+                                {[5, 10, 25, 50].map((size) => (
+                                    <option key={size} value={size}>{size}</option>
                                 ))}
                             </select>
                         </div>
-
-                        <div className="relative md:col-span-2">
-                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <FiCalendar className="text-gray-400" />
-                            </div>
-                            <input
-                                type="date"
-                                value={fromDate}
-                                onChange={(e) => setFromDate(e.target.value)}
-                                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm"
-                            />
-                        </div>
-
-                        <div className="relative md:col-span-2">
-                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <FiCalendar className="text-gray-400" />
-                            </div>
-                            <input
-                                type="date"
-                                value={toDate}
-                                onChange={(e) => setToDate(e.target.value)}
-                                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm"
-                                min={fromDate}
-                            />
-                        </div>
-
-                        <div className="flex flex-wrap gap-2 md:col-span-5">
-                            <button 
-                                onClick={handleSearch} 
-                                disabled={isLoading}
-                                className="flex-1 md:flex-none flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-md disabled:opacity-50 min-w-[120px]"
-                            >
-                                {isLoading ? 'Searching...' : <><FiSearch className="mr-2" />Search</>}
-                            </button>
-                            <button 
-                                onClick={handleClear}
-                                className="flex-1 md:flex-none flex items-center px-4 py-2 border text-sm rounded-md bg-white text-gray-700 hover:bg-gray-50 min-w-[100px]"
-                            >
-                                <FiX className="mr-2" />Clear
-                            </button>
-                            <button 
-                                onClick={handleDownloadCSV}
-                                className="flex-1 md:flex-none flex items-center px-4 py-2 border text-sm rounded-md bg-white text-gray-700 hover:bg-gray-50 min-w-[100px]"
-                            >
-                                <FiDownload className="mr-2" />CSV
-                            </button>
-                            <button 
-                                onClick={handlePrint}
-                                className="flex-1 md:flex-none flex items-center px-4 py-2 border text-sm rounded-md bg-white text-gray-700 hover:bg-gray-50 min-w-[100px]"
-                            >
-                                <FiPrinter className="mr-2" />Print
-                            </button>
-                        </div>
+                        <ReactPaginate
+                            previousLabel={<FiChevronLeft className="h-3 w-3" />}
+                            nextLabel={<FiChevronRight className="h-3 w-3" />}
+                            breakLabel={'...'}
+                            pageCount={pageCount}
+                            marginPagesDisplayed={1}
+                            pageRangeDisplayed={3}
+                            onPageChange={handlePageClick}
+                            containerClassName="flex items-center space-x-1"
+                            pageClassName="flex items-center justify-center w-6 h-6 rounded text-xs"
+                            pageLinkClassName="w-full h-full flex items-center justify-center"
+                            activeClassName="bg-indigo-500 text-white"
+                            previousClassName="flex items-center justify-center w-6 h-6 rounded text-xs border border-gray-200"
+                            nextClassName="flex items-center justify-center w-6 h-6 rounded text-xs border border-gray-200"
+                            disabledClassName="opacity-50 cursor-not-allowed"
+                            forcePage={currentPage}
+                        />
                     </div>
-                </div>
-
-                <div className="bg-white rounded-lg shadow-md overflow-hidden" ref={printRef}>
-                    <div className="overflow-x-auto">
-                        <table className="min-w-full divide-y divide-gray-200">
-                            <thead className="bg-gray-50">
-                                <tr>
-                                    {['Username', 'Date', 'Punching Time', 'Punch Status', 'Status', 'Place', 'Party', 'Purpose', 'Remarks'].map((head, idx) => (
-                                        <th key={idx} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{head}</th>
-                                    ))}
-                                </tr>
-                            </thead>
-                            <tbody className="bg-white divide-y divide-gray-200">
-                                {currentReports.length > 0 ? (
-                                    currentReports.map((report, index) => (
-                                        <tr key={index} className="hover:bg-gray-50">
-                                            <td className="px-6 py-4 text-sm capitalize">{report.username || '-'}</td>
-                                            <td className="px-6 py-4 text-sm">{formatDateOnly(report.dateTime)}</td>
-                                            <td className="px-6 py-4 text-sm">{formatTimeOnly(report.punchingTime)}</td>
-                                            <td className="px-6 py-4 text-sm">
-                                                <span className={`px-2 py-1 rounded-full text-xs font-semibold ${report.punchTime === 'Punch In' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}`}>
-                                                    {report.punchTime || '-'}
-                                                </span>
-                                            </td>
-                                            <td className="px-6 py-4 text-sm">{report.visitingStatus || '-'}</td>
-                                            <td className="px-6 py-4 text-sm">{report.placeName || '-'}</td>
-                                            <td className="px-6 py-4 text-sm">{report.partyName || '-'}</td>
-                                            <td className="px-6 py-4 text-sm">{report.purpose || '-'}</td>
-                                            <td className="px-6 py-4 text-sm">{report.remark || '-'}</td>
-                                        </tr>
-                                    ))
-                                ) : (
-                                    <tr>
-                                        <td colSpan="9" className="px-6 py-4 text-center text-sm text-gray-500">
-                                            {isLoading ? 'Loading...' : 'No records found. Try a different search.'}
-                                        </td>
-                                    </tr>
-                                )}
-                            </tbody>
-                        </table>
-                    </div>
-
-                    {pageCount > 1 && (
-                        <div className="p-4 border-t flex justify-end">
-                            <ReactPaginate
-                                previousLabel={'Previous'}
-                                nextLabel={'Next'}
-                                breakLabel={'...'}
-                                pageCount={pageCount}
-                                marginPagesDisplayed={2}
-                                pageRangeDisplayed={5}
-                                onPageChange={handlePageClick}
-                                containerClassName="flex space-x-1"
-                                pageClassName="px-3 py-1 border rounded-md text-sm"
-                                previousClassName="px-3 py-1 border rounded-md text-sm"
-                                nextClassName="px-3 py-1 border rounded-md text-sm"
-                                activeClassName="bg-indigo-500 text-white"
-                                forcePage={currentPage}
-                            />
-                        </div>
-                    )}
-                </div>
+                )}
             </div>
         </div>
     );

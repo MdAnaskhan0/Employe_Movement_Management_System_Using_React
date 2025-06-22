@@ -2,10 +2,9 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../../../auth/AuthContext';
 import { toast, ToastContainer } from 'react-toastify';
-import { FiDownload, FiSearch, FiCalendar, FiClock } from 'react-icons/fi';
+import { FiDownload, FiSearch, FiCalendar, FiClock, FiEdit, FiSave, FiChevronLeft, FiChevronRight, FiChevronsLeft, FiChevronsRight, FiPrinter } from 'react-icons/fi';
 import 'react-toastify/dist/ReactToastify.css';
 import Select from 'react-select';
-import { FiEdit, FiSave, FiChevronLeft, FiChevronRight, FiChevronsLeft, FiChevronsRight } from 'react-icons/fi';
 import { Skeleton } from '@mui/material';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -19,7 +18,7 @@ const UserReport = () => {
     const [editFormData, setEditFormData] = useState({});
     const [isLoading, setIsLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
-    const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('');
     const [dateFilter, setDateFilter] = useState({
@@ -27,7 +26,6 @@ const UserReport = () => {
         endDate: null
     });
     const baseUrl = import.meta.env.VITE_API_BASE_URL;
-
     const [userInfo, setUserInfo] = useState(null);
 
     useEffect(() => {
@@ -221,42 +219,204 @@ const UserReport = () => {
     const clearDateFilters = () => {
         setDateFilter({ startDate: null, endDate: null });
     };
+    //     const dataToPrint = currentRows;
 
+    //     if (dataToPrint.length === 0) {
+    //         toast.info('No data available to print');
+    //         return;
+    //     }
 
-    if (isLoading) {
-        return (
-            <div className="container mx-auto px-4 py-6">
-                <div className="flex items-center mb-4">
-                    <FiClock size={20} className="mr-2" />
-                    <h2 className="text-xl font-semibold">Movement History</h2>
-                </div>
-                <div className="bg-white rounded-lg shadow overflow-hidden">
-                    <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-50">
-                            <tr>
-                                {[...Array(8)].map((_, i) => (
-                                    <th key={i} scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        <Skeleton variant="text" width={80} height={15} />
-                                    </th>
-                                ))}
-                            </tr>
-                        </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
-                            {[...Array(5)].map((_, i) => (
-                                <tr key={i}>
-                                    {[...Array(8)].map((_, j) => (
-                                        <td key={j} className="px-6 py-4 whitespace-nowrap">
-                                            <Skeleton variant="text" width="80%" height={20} />
-                                        </td>
-                                    ))}
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        );
-    }
+    //     const printWindow = window.open('', '_blank');
+    //     printWindow.document.open();
+
+    //     const currentDateTime = new Date().toLocaleString();
+    //     const formattedRows = dataToPrint.map((mv, index) => {
+    //         const date = new Date(mv.dateTime).toLocaleDateString('en-US', {
+    //             year: 'numeric',
+    //             month: 'short',
+    //             day: 'numeric'
+    //         });
+
+    //         const time = mv.punchingTime
+    //             ? new Date(`1970-01-01T${mv.punchingTime}`).toLocaleTimeString('en-US', {
+    //                 hour: '2-digit',
+    //                 minute: '2-digit',
+    //                 hour12: true
+    //             })
+    //             : 'N/A';
+
+    //         const statusColor = mv.punchTime === 'Punch In' ? '#27ae60' : '#e74c3c';
+
+    //         return `
+    //         <tr ${index > 0 && index % 20 === 0 ? 'class="page-break"' : ''}>
+    //             <td>${date}</td>
+    //             <td>${time}</td>
+    //             <td style="color: ${statusColor}">${mv.punchTime || 'N/A'}</td>
+    //             <td>${mv.visitingStatus || '-'}</td>
+    //             <td>${mv.placeName || '-'}</td>
+    //             <td>${mv.partyName || '-'}</td>
+    //             <td>${mv.purpose || '-'}</td>
+    //             <td>${mv.remark || '-'}</td>
+    //         </tr>
+    //     `;
+    //     }).join('');
+
+    //     const htmlContent = `
+    //     <html>
+    //         <head>
+    //             <title>Movement Report - ${user.name}</title>
+    //             <style>
+    //                 html, body {
+    //                     height: 100%;
+    //                     margin: 0;
+    //                     padding: 0;
+    //                     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    //                     color: #333;
+    //                     line-height: 1.4;
+    //                     font-size: 12px;
+    //                 }
+    //                 .wrapper {
+    //                     display: flex;
+    //                     flex-direction: column;
+    //                     min-height: 100vh;
+    //                     padding: 10px 15px;
+    //                 }
+    //                 .header {
+    //                     text-align: center;
+    //                     margin-bottom: 15px;
+    //                     padding-bottom: 10px;
+    //                     border-bottom: 1px solid #e0e0e0;
+    //                 }
+    //                 .header h1 {
+    //                     margin: 0 0 5px 0;
+    //                     font-size: 18px;
+    //                     color: #2c3e50;
+    //                     font-weight: 600;
+    //                 }
+    //                 .report-info {
+    //                     display: grid;
+    //                     grid-template-columns: repeat(2, 1fr);
+    //                     gap: 8px;
+    //                     margin-bottom: 15px;
+    //                     padding: 10px;
+    //                     background-color: #f8f9fa;
+    //                     border-radius: 4px;
+    //                     font-size: 11px;
+    //                 }
+    //                 .report-info div {
+    //                     display: flex;
+    //                 }
+    //                 .report-info strong {
+    //                     color: #2c3e50;
+    //                     min-width: 90px;
+    //                     display: inline-block;
+    //                 }
+    //                 table {
+    //                     width: 100%;
+    //                     border-collapse: collapse;
+    //                     margin-top: 10px;
+    //                     font-size: 11px;
+    //                 }
+    //                 th {
+    //                     background-color: #3498db;
+    //                     color: white;
+    //                     padding: 8px 6px;
+    //                     text-align: left;
+    //                     font-weight: 500;
+    //                 }
+    //                 td {
+    //                     padding: 6px;
+    //                     border-bottom: 1px solid #e0e0e0;
+    //                 }
+    //                 tr:nth-child(even) {
+    //                     background-color: #f8f9fa;
+    //                 }
+    //                 .footer {
+    //                     text-align: center;
+    //                     font-size: 10px;
+    //                     color: #7f8c8d;
+    //                     border-top: 1px solid #e0e0e0;
+    //                     padding: 10px 0;
+    //                     margin-top: 15px;
+    //                 }
+    //                 .page-break {
+    //                     page-break-after: always;
+    //                 }
+    //                 @page {
+    //                     size: A4 portrait;
+    //                     margin: 10mm;
+    //                 }
+    //                 @media print {
+    //                     body {
+    //                         padding-bottom: 60px;
+    //                     }
+    //                     .footer {
+    //                         position: fixed;
+    //                         bottom: 0;
+    //                         left: 0;
+    //                         right: 0;
+    //                         background: white;
+    //                     }
+    //                     .no-print {
+    //                         display: none;
+    //                     }
+    //                 }
+    //             </style>
+    //         </head>
+    //         <body>
+    //             <div class="wrapper">
+    //                 <div class="header">
+    //                     <h1>Employee Movement Report</h1>
+    //                 </div>
+
+    //                 <div class="report-info">
+    //                     <div><strong>Employee ID:</strong> ${userInfo?.E_ID || 'N/A'}</div>
+    //                     <div><strong>Name:</strong> ${userInfo?.Name || 'N/A'}</div>
+    //                     <div><strong>Company:</strong> ${userInfo?.Company_name || 'N/A'}</div>
+    //                     <div><strong>Department:</strong> ${userInfo?.Department || 'N/A'}</div>
+    //                     <div><strong>Designation:</strong> ${userInfo?.Designation || 'N/A'}</div>
+    //                     <div><strong>Period:</strong> ${dateFilter.startDate ? new Date(dateFilter.startDate).toLocaleDateString() : 'All'} - ${dateFilter.endDate ? new Date(dateFilter.endDate).toLocaleDateString() : 'All'}</div>
+    //                 </div>
+
+    //                 <table>
+    //                     <thead>
+    //                         <tr>
+    //                             <th>Date</th>
+    //                             <th>Time</th>
+    //                             <th>Status</th>
+    //                             <th>Visit Status</th>
+    //                             <th>Location</th>
+    //                             <th>Contact</th>
+    //                             <th>Purpose</th>
+    //                             <th>Remarks</th>
+    //                         </tr>
+    //                     </thead>
+    //                     <tbody>
+    //                         ${formattedRows}
+    //                     </tbody>
+    //                 </table>
+
+    //                 <div class="footer">
+    //                     <p>Generated on ${currentDateTime}</p>
+    //                     <p class="no-print">This is a computer generated report</p>
+    //                 </div>
+    //             </div>
+
+    //             <script>
+    //                 window.onload = function() {
+    //                     setTimeout(function() {
+    //                         window.print();
+    //                         window.close();
+    //                     }, 200);
+    //                 };
+    //             </script>
+    //         </body>
+    //     </html>
+    // `;
+
+    //     printWindow.document.write(htmlContent);
+    //     printWindow.document.close();
+    // };
 
     const PrintFile = () => {
         const dataToPrint = currentRows;
@@ -288,7 +448,7 @@ const UserReport = () => {
             const statusColor = mv.punchTime === 'Punch In' ? '#27ae60' : '#e74c3c';
 
             return `
-            <tr ${index > 0 && index % 20 === 0 ? 'class="page-break"' : ''}>
+            <tr>
                 <td>${date}</td>
                 <td>${time}</td>
                 <td style="color: ${statusColor}">${mv.punchTime || 'N/A'}</td>
@@ -307,19 +467,15 @@ const UserReport = () => {
                 <title>Movement Report - ${user.name}</title>
                 <style>
                     html, body {
-                        height: 100%;
                         margin: 0;
                         padding: 0;
                         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
                         color: #333;
                         line-height: 1.4;
-                        font-size: 13px;
+                        font-size: 12px;
                     }
                     .wrapper {
-                        display: flex;
-                        flex-direction: column;
-                        min-height: 100vh;
-                        padding: 5px 10px;
+                        padding: 10mm;
                     }
                     .header {
                         text-align: center;
@@ -329,42 +485,34 @@ const UserReport = () => {
                     }
                     .header h1 {
                         margin: 0 0 5px 0;
-                        font-size: 20px;
+                        font-size: 18px;
                         color: #2c3e50;
                         font-weight: 600;
                     }
                     .report-info {
-                        display: flex;
-                        flex-direction: column;
+                        display: grid;
+                        grid-template-columns: repeat(2, 1fr);
                         gap: 8px;
                         margin-bottom: 15px;
                         padding: 10px;
                         background-color: #f8f9fa;
-                        border-radius: 3px;
-                        margin-left: 30px;
+                        border-radius: 4px;
+                        font-size: 11px;
                     }
-                    .info-pair {
+                    .report-info div {
                         display: flex;
-                        justify-content: space-between;
-                        flex-wrap: wrap;
-                        gap: 15px;
-                    }
-                    .info-pair div {
-                        flex: 1 1 45%;
-                        min-width: 0;
                     }
                     .report-info strong {
                         color: #2c3e50;
+                        min-width: 90px;
                         display: inline-block;
-                        width: 90px;
                     }
                     table {
                         width: 100%;
                         border-collapse: collapse;
-                        margin-top: 15px;
-                        font-size: 12px;
-                        margin-left: 30px;
-                        flex-shrink: 0;
+                        margin-top: 10px;
+                        font-size: 11px;
+                        page-break-inside: auto;
                     }
                     th {
                         background-color: #3498db;
@@ -380,40 +528,32 @@ const UserReport = () => {
                     tr:nth-child(even) {
                         background-color: #f8f9fa;
                     }
-                    .spacer {
-                        flex-grow: 1;
-                    }
                     .footer {
-    text-align: center;
-    font-size: 11px;
-    color: #7f8c8d;
-    border-top: 1px solid #e0e0e0;
-    padding: 10px 0;
-}
-                    .page-break {
-                        page-break-after: always;
+                        text-align: center;
+                        font-size: 10px;
+                        color: #7f8c8d;
+                        border-top: 1px solid #e0e0e0;
+                        padding: 10px 0;
+                        margin-top: 15px;
                     }
                     @page {
                         size: A4 portrait;
-                        margin: 5mm;
+                        margin: 10mm;
                     }
                     @media print {
-    body {
-        padding-bottom: 60px; /* space for footer */
-    }
-
-    .footer {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background: white;
-    }
-
-    .no-print {
-        display: none;
-    }
-}
+                        body {
+                            padding: 0;
+                            margin: 0;
+                        }
+                        .footer {
+                            position: fixed;
+                            bottom: 0;
+                            width: 100%;
+                        }
+                        .no-print {
+                            display: none;
+                        }
+                    }
                 </style>
             </head>
             <body>
@@ -423,18 +563,12 @@ const UserReport = () => {
                     </div>
 
                     <div class="report-info">
-                        <div class="info-pair">
-                            <div><strong>Employee ID:</strong> ${userInfo.E_ID || 'N/A'}</div>
-                            <div><strong>Name:</strong> ${userInfo.Name || 'N/A'}</div>
-                        </div>
-                        <div class="info-pair">
-                            <div><strong>Company:</strong> ${userInfo.Company_name || 'N/A'}</div>
-                            <div><strong>Department:</strong> ${userInfo.Department || 'N/A'}</div>
-                        </div>
-                        <div class="info-pair">
-                            <div><strong>Designation:</strong> ${userInfo.Designation || 'N/A'}</div>
-                            <div></div>
-                        </div>
+                        <div><strong>Employee ID:</strong> ${userInfo?.E_ID || 'N/A'}</div>
+                        <div><strong>Name:</strong> ${userInfo?.Name || 'N/A'}</div>
+                        <div><strong>Company:</strong> ${userInfo?.Company_name || 'N/A'}</div>
+                        <div><strong>Department:</strong> ${userInfo?.Department || 'N/A'}</div>
+                        <div><strong>Designation:</strong> ${userInfo?.Designation || 'N/A'}</div>
+                        <div><strong>Period:</strong> ${dateFilter.startDate ? new Date(dateFilter.startDate).toLocaleDateString() : 'All'} - ${dateFilter.endDate ? new Date(dateFilter.endDate).toLocaleDateString() : 'All'}</div>
                     </div>
 
                     <table>
@@ -454,8 +588,6 @@ const UserReport = () => {
                             ${formattedRows}
                         </tbody>
                     </table>
-
-                    <div class="spacer"></div>
 
                     <div class="footer">
                         <p>Generated on ${currentDateTime}</p>
@@ -479,167 +611,208 @@ const UserReport = () => {
         printWindow.document.close();
     };
 
+    if (isLoading) {
+        return (
+            <div className="container mx-auto px-4 py-6">
+                <div className="flex items-center mb-4">
+                    <FiClock size={18} className="mr-2 text-blue-600" />
+                    <h2 className="text-lg font-semibold text-gray-800">Movement History</h2>
+                </div>
+                <div className="bg-white rounded-lg shadow overflow-hidden">
+                    <table className="min-w-full divide-y divide-gray-200">
+                        <thead className="bg-gray-50">
+                            <tr>
+                                {[...Array(8)].map((_, i) => (
+                                    <th key={i} scope="col" className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <Skeleton variant="text" width={80} height={15} />
+                                    </th>
+                                ))}
+                            </tr>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-200">
+                            {[...Array(5)].map((_, i) => (
+                                <tr key={i}>
+                                    {[...Array(8)].map((_, j) => (
+                                        <td key={j} className="px-4 py-3 whitespace-nowrap">
+                                            <Skeleton variant="text" width="80%" height={20} />
+                                        </td>
+                                    ))}
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <>
-            <div className="flex justify-end px-4">
-                <LogoutButton />
+            <div className="flex justify-end px-4 py-2">
+                <LogoutButton className="text-sm" />
             </div>
 
-            <div className="container mx-auto px-4 py-6 min-h-screen">
+            <div className="container mx-auto px-4 py-4 min-h-screen">
                 <ToastContainer position="top-right" autoClose={3000} />
                 <div className="flex items-center mb-4">
-                    <FiClock size={20} className="mr-2" />
-                    <h2 className="text-xl font-semibold">Movement History</h2>
+                    <FiClock size={18} className="mr-2 text-blue-600" />
+                    <h2 className="text-lg font-semibold text-gray-800">Movement History</h2>
                 </div>
 
                 {movementData.length === 0 ? (
-                    <div className="bg-white rounded-lg shadow p-8 text-center">
+                    <div className="bg-white rounded-lg shadow p-6 text-center text-sm text-gray-600">
                         No movement data available for this user.
                     </div>
                 ) : (
                     <>
-                        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-                            <div className="relative flex-1">
-                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <FiSearch className="text-gray-400" />
+                        <div className="bg-white rounded-lg shadow p-4 mb-4">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                                <div className="relative">
+                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <FiSearch className="text-gray-400 text-sm" />
+                                    </div>
+                                    <input
+                                        type="text"
+                                        className="block w-full pl-9 pr-3 py-2 text-xs border border-gray-200 rounded-md leading-5 bg-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                                        placeholder="Search by place, party, purpose..."
+                                        value={searchTerm}
+                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                    />
                                 </div>
-                                <input
-                                    type="text"
-                                    className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                    placeholder="Search by place, party, purpose..."
-                                    value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
-                                />
-                            </div>
 
-                            <select
-                                value={statusFilter}
-                                onChange={(e) => setStatusFilter(e.target.value)}
-                                className="px-2 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                            >
-                                <option value="">Punch Status</option>
-                                <option value="Punch In">Punch In</option>
-                                <option value="Punch Out">Punch Out</option>
-                            </select>
-
-                            <div className="flex flex-col md:flex-row items-start md:items-center space-x-2">
-                                <FiCalendar className="text-gray-400" />
-                                <span className="text-sm text-gray-500">From:</span>
-                                <DatePicker
-                                    selected={dateFilter.startDate}
-                                    onChange={(date) => setDateFilter({ ...dateFilter, startDate: date })}
-                                    selectsStart
-                                    startDate={dateFilter.startDate}
-                                    endDate={dateFilter.endDate}
-                                    placeholderText="Start date"
-                                    dateFormat="dd MMM yyyy"
-                                    isClearable
-                                    className="px-2 py-1.5 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                />
-                                <span className="text-sm text-gray-500">To:</span>
-                                <DatePicker
-                                    selected={dateFilter.endDate}
-                                    onChange={(date) => setDateFilter({ ...dateFilter, endDate: date })}
-                                    selectsEnd
-                                    startDate={dateFilter.startDate}
-                                    endDate={dateFilter.endDate}
-                                    minDate={dateFilter.startDate}
-                                    placeholderText="End date"
-                                    dateFormat="dd MMM yyyy"
-                                    isClearable
-                                    className="px-2 py-1.5 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                />
-                                {(dateFilter.startDate || dateFilter.endDate) && (
-                                    <button
-                                        onClick={clearDateFilters}
-                                        className="px-3 py-1.5 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                                <div className="flex flex-col md:flex-row gap-2">
+                                    <select
+                                        value={statusFilter}
+                                        onChange={(e) => setStatusFilter(e.target.value)}
+                                        className="px-2 py-2 text-xs border border-gray-200 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                                     >
-                                        Clear
+                                        <option value="">All Status</option>
+                                        <option value="Punch In">Punch In</option>
+                                        <option value="Punch Out">Punch Out</option>
+                                    </select>
+
+                                    <div className="flex items-center gap-2">
+                                        <DatePicker
+                                            selected={dateFilter.startDate}
+                                            onChange={(date) => setDateFilter({ ...dateFilter, startDate: date })}
+                                            selectsStart
+                                            startDate={dateFilter.startDate}
+                                            endDate={dateFilter.endDate}
+                                            placeholderText="Start date"
+                                            dateFormat="dd MMM yyyy"
+                                            isClearable
+                                            className="px-2 py-1.5 text-xs w-full border border-gray-200 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                                        />
+                                        <span className="text-xs text-gray-500">to</span>
+                                        <DatePicker
+                                            selected={dateFilter.endDate}
+                                            onChange={(date) => setDateFilter({ ...dateFilter, endDate: date })}
+                                            selectsEnd
+                                            startDate={dateFilter.startDate}
+                                            endDate={dateFilter.endDate}
+                                            minDate={dateFilter.startDate}
+                                            placeholderText="End date"
+                                            dateFormat="dd MMM yyyy"
+                                            isClearable
+                                            className="px-2 py-1.5 text-xs w-full border border-gray-200 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                                        />
+                                        {(dateFilter.startDate || dateFilter.endDate) && (
+                                            <button
+                                                onClick={clearDateFilters}
+                                                className="px-2 py-1.5 text-xs bg-gray-100 text-gray-600 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                                            >
+                                                Clear
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
+
+                                <div className="flex justify-end gap-2">
+                                    <button
+                                        onClick={downloadCSV}
+                                        disabled={filteredData.length === 0}
+                                        className={`flex items-center px-3 py-2 text-xs rounded-md focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-blue-500 ${filteredData.length === 0
+                                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                            : 'bg-blue-600 text-white hover:bg-blue-700'
+                                            }`}
+                                    >
+                                        <FiDownload className="mr-1" size={14} />
+                                        CSV
                                     </button>
-                                )}
-                            </div>
 
-                            <div className='flex items-center space-x-2'>
-                                <button
-                                    onClick={downloadCSV}
-                                    disabled={filteredData.length === 0}
-                                    className={`flex items-center px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 text-sm ${filteredData.length === 0
-                                        ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                                        : 'bg-indigo-600 text-white hover:bg-indigo-700'
-                                        }`}
-                                >
-                                    <FiDownload className="mr-2" />
-                                    Download CSV
-                                </button>
-
-                                <button
-                                    onClick={PrintFile}
-                                    className='flex items-center px-4 py-2 rounded-md text-sm cursor-pointer bg-emerald-700 hover:bg-emerald-600 text-white'>
-                                    <FiDownload className="mr-2" />
-                                    Print
-                                </button>
+                                    <button
+                                        onClick={PrintFile}
+                                        disabled={filteredData.length === 0}
+                                        className={`flex items-center px-3 py-2 text-xs rounded-md focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-blue-500 ${filteredData.length === 0
+                                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                            : 'bg-gray-600 text-white hover:bg-gray-700'
+                                            }`}
+                                    >
+                                        <FiPrinter className="mr-1" size={14} />
+                                        Print
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
                         {filteredData.length === 0 ? (
-                            <div className="bg-white rounded-lg shadow p-8 text-center">
+                            <div className="bg-white rounded-lg shadow p-6 text-center text-sm text-gray-600">
                                 No movement data found matching your criteria.
                             </div>
                         ) : (
                             <>
-                                <div className="bg-white rounded-lg shadow overflow-hidden mb-6">
+                                <div className="bg-white rounded-lg shadow overflow-hidden mb-4">
                                     <div className="overflow-x-auto">
-                                        <table className="min-w-full divide-y divide-gray-200">
+                                        <table className="min-w-full divide-y divide-gray-200 text-xs">
                                             <thead className="bg-gray-50">
                                                 <tr>
-                                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    <th scope="col" className="px-4 py-2 text-left font-medium text-gray-500 uppercase tracking-wider">
                                                         Date
                                                     </th>
-                                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                        Punch Time
+                                                    <th scope="col" className="px-4 py-2 text-left font-medium text-gray-500 uppercase tracking-wider">
+                                                        Time
                                                     </th>
-                                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                        Punch Status
+                                                    <th scope="col" className="px-4 py-2 text-left font-medium text-gray-500 uppercase tracking-wider">
+                                                        Status
                                                     </th>
-                                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    <th scope="col" className="px-4 py-2 text-left font-medium text-gray-500 uppercase tracking-wider">
                                                         Visit Status
                                                     </th>
-                                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    <th scope="col" className="px-4 py-2 text-left font-medium text-gray-500 uppercase tracking-wider">
                                                         Place
                                                     </th>
-                                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    <th scope="col" className="px-4 py-2 text-left font-medium text-gray-500 uppercase tracking-wider">
                                                         Party
                                                     </th>
-                                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    <th scope="col" className="px-4 py-2 text-left font-medium text-gray-500 uppercase tracking-wider">
                                                         Purpose
                                                     </th>
-                                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    <th scope="col" className="px-4 py-2 text-left font-medium text-gray-500 uppercase tracking-wider">
                                                         Remarks
                                                     </th>
-                                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    <th scope="col" className="px-4 py-2 text-left font-medium text-gray-500 uppercase tracking-wider">
                                                         Actions
                                                     </th>
                                                 </tr>
                                             </thead>
                                             <tbody className="bg-white divide-y divide-gray-200">
                                                 {currentRows.map((mv) => (
-                                                    <tr key={mv.movementID}>
-                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                    <tr key={mv.movementID} className="hover:bg-gray-50">
+                                                        <td className="px-4 py-2 whitespace-nowrap text-gray-600">
                                                             {new Date(mv.dateTime).toLocaleDateString('en-US', {
                                                                 year: 'numeric',
                                                                 month: 'short',
                                                                 day: 'numeric'
                                                             })}
                                                         </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                        <td className="px-4 py-2 whitespace-nowrap text-gray-600">
                                                             {editRowId === mv.movementID ? (
                                                                 <input
                                                                     type="time"
                                                                     name="punchingTime"
                                                                     value={editFormData.punchingTime}
                                                                     onChange={handleInputChange}
-                                                                    className="border border-gray-300 rounded px-2 py-1 text-sm"
+                                                                    className="border border-gray-200 rounded px-2 py-1 text-xs w-full focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                                                                 />
                                                             ) : (
                                                                 mv.punchingTime
@@ -651,88 +824,90 @@ const UserReport = () => {
                                                                     : 'N/A'
                                                             )}
                                                         </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                        <td className="px-4 py-2 whitespace-nowrap">
                                                             {editRowId === mv.movementID ? (
                                                                 <select
                                                                     name="punchTime"
                                                                     value={editFormData.punchTime}
                                                                     onChange={handleInputChange}
-                                                                    className="border border-gray-300 rounded px-2 py-1 text-sm"
+                                                                    className="border border-gray-200 rounded px-2 py-1 text-xs w-full focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                                                                 >
                                                                     <option value="">Select</option>
                                                                     <option value="Punch In">Punch In</option>
                                                                     <option value="Punch Out">Punch Out</option>
                                                                 </select>
                                                             ) : (
-                                                                mv.punchTime || 'N/A'
+                                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${mv.punchTime === 'Punch In' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                                                                    {mv.punchTime || 'N/A'}
+                                                                </span>
                                                             )}
                                                         </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                        <td className="px-4 py-2 whitespace-nowrap text-gray-600">
                                                             {editRowId === mv.movementID ? (
                                                                 <input
                                                                     name="visitingStatus"
                                                                     type="text"
                                                                     value={editFormData.visitingStatus}
                                                                     onChange={handleInputChange}
-                                                                    className="border border-gray-300 rounded px-2 py-1 text-sm"
+                                                                    className="border border-gray-200 rounded px-2 py-1 text-xs w-full focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                                                                 />
                                                             ) : (
                                                                 mv.visitingStatus
                                                             )}
                                                         </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                        <td className="px-4 py-2 whitespace-nowrap text-gray-600">
                                                             {editRowId === mv.movementID ? (
                                                                 <input
                                                                     name="placeName"
                                                                     type="text"
                                                                     value={editFormData.placeName}
                                                                     onChange={handleInputChange}
-                                                                    className="border border-gray-300 rounded px-2 py-1 text-sm"
+                                                                    className="border border-gray-200 rounded px-2 py-1 text-xs w-full focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                                                                 />
                                                             ) : (
                                                                 mv.placeName
                                                             )}
                                                         </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                        <td className="px-4 py-2 whitespace-nowrap text-gray-600">
                                                             {editRowId === mv.movementID ? (
                                                                 <input
                                                                     name="partyName"
                                                                     type="text"
                                                                     value={editFormData.partyName}
                                                                     onChange={handleInputChange}
-                                                                    className="border border-gray-300 rounded px-2 py-1 text-sm"
+                                                                    className="border border-gray-200 rounded px-2 py-1 text-xs w-full focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                                                                 />
                                                             ) : (
                                                                 mv.partyName
                                                             )}
                                                         </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                        <td className="px-4 py-2 whitespace-nowrap text-gray-600">
                                                             {editRowId === mv.movementID ? (
                                                                 <input
                                                                     type="text"
                                                                     name="purpose"
                                                                     value={editFormData.purpose}
                                                                     onChange={handleInputChange}
-                                                                    className="border border-gray-300 rounded px-2 py-1 text-sm"
+                                                                    className="border border-gray-200 rounded px-2 py-1 text-xs w-full focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                                                                 />
                                                             ) : (
                                                                 mv.purpose || '-'
                                                             )}
                                                         </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                        <td className="px-4 py-2 whitespace-nowrap text-gray-600">
                                                             {editRowId === mv.movementID ? (
                                                                 <input
                                                                     type="text"
                                                                     name="remark"
                                                                     value={editFormData.remark}
                                                                     onChange={handleInputChange}
-                                                                    className="border border-gray-300 rounded px-2 py-1 text-sm"
+                                                                    className="border border-gray-200 rounded px-2 py-1 text-xs w-full focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                                                                 />
                                                             ) : (
-                                                                mv.remark ? mv.remark.slice(0, 25) : '-'
+                                                                mv.remark ? mv.remark.slice(0, 25) + (mv.remark.length > 25 ? '...' : '') : '-'
                                                             )}
                                                         </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                        <td className="px-4 py-2 whitespace-nowrap text-gray-600">
                                                             {(() => {
                                                                 if (!mv.dateTime) return null;
 
@@ -747,7 +922,7 @@ const UserReport = () => {
                                                                                 onClick={handleSaveClick}
                                                                                 className="px-2 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-xs flex items-center"
                                                                             >
-                                                                                <FiSave className="mr-1" size={12} /> Save
+                                                                                <FiSave className="mr-1" size={10} /> Save
                                                                             </button>
                                                                             <button
                                                                                 onClick={handleCancelClick}
@@ -761,11 +936,11 @@ const UserReport = () => {
                                                                             onClick={() => handleEditClick(mv)}
                                                                             className="px-2 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-xs flex items-center"
                                                                         >
-                                                                            <FiEdit className="mr-1" size={12} /> Edit
+                                                                            <FiEdit className="mr-1" size={10} /> Edit
                                                                         </button>
                                                                     );
                                                                 } else {
-                                                                    return <span className="text-gray-500 font-semibold">Done</span>;
+                                                                    return <span className="text-gray-500 text-xs">Completed</span>;
                                                                 }
                                                             })()}
                                                         </td>
@@ -776,35 +951,36 @@ const UserReport = () => {
                                     </div>
                                 </div>
 
-                                <div className="flex flex-col md:flex-row items-center justify-between px-4 py-3 bg-white rounded-lg shadow">
-                                    <div className="w-full md:w-auto mb-4 md:mb-0">
-                                        <Select
-                                            options={pageSizeOptions}
-                                            onChange={(e) => setRowsPerPage(e.value)}
-                                            value={pageSizeOptions.find(opt => opt.value === rowsPerPage)}
-                                            placeholder="Rows per page"
-                                            className="w-32"
-                                            classNamePrefix="select"
-                                            menuPlacement="auto"
-                                        />
+                                <div className="flex flex-col md:flex-row items-center justify-between px-4 py-3 bg-white rounded-lg shadow text-xs">
+                                    <div className="mb-2 md:mb-0">
+                                        <span className="text-gray-600">Rows per page: </span>
+                                        <select
+                                            value={rowsPerPage}
+                                            onChange={(e) => setRowsPerPage(Number(e.target.value))}
+                                            className="border border-gray-200 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                                        >
+                                            {[5, 10, 20, 50, 100, 200, 500, 1000].map(size => (
+                                                <option key={size} value={size}>{size}</option>
+                                            ))}
+                                        </select>
                                     </div>
-                                    <div className="text-sm text-gray-700 mb-4 md:mb-0">
+                                    <div className="text-gray-600 mb-2 md:mb-0">
                                         Showing {indexOfFirstRow + 1} to {Math.min(indexOfLastRow, filteredData.length)} of {filteredData.length} entries
                                     </div>
                                     <div className="flex items-center space-x-1">
                                         <button
                                             onClick={() => paginate(1)}
                                             disabled={currentPage === 1}
-                                            className={`px-2 py-1 rounded-md ${currentPage === 1 ? 'text-gray-400 cursor-not-allowed' : 'text-gray-700 hover:bg-gray-100'}`}
+                                            className={`p-1 rounded ${currentPage === 1 ? 'text-gray-300 cursor-not-allowed' : 'text-gray-600 hover:bg-gray-100'}`}
                                         >
-                                            <FiChevronsLeft size={16} />
+                                            <FiChevronsLeft size={14} />
                                         </button>
                                         <button
                                             onClick={() => paginate(currentPage - 1)}
                                             disabled={currentPage === 1}
-                                            className={`px-2 py-1 rounded-md ${currentPage === 1 ? 'text-gray-400 cursor-not-allowed' : 'text-gray-700 hover:bg-gray-100'}`}
+                                            className={`p-1 rounded ${currentPage === 1 ? 'text-gray-300 cursor-not-allowed' : 'text-gray-600 hover:bg-gray-100'}`}
                                         >
-                                            <FiChevronLeft size={16} />
+                                            <FiChevronLeft size={14} />
                                         </button>
 
                                         {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
@@ -823,7 +999,7 @@ const UserReport = () => {
                                                 <button
                                                     key={pageNum}
                                                     onClick={() => paginate(pageNum)}
-                                                    className={`px-3 py-1 rounded-md ${currentPage === pageNum ? 'bg-indigo-600 text-white' : 'text-gray-700 hover:bg-gray-100'}`}
+                                                    className={`w-6 h-6 rounded ${currentPage === pageNum ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-100'}`}
                                                 >
                                                     {pageNum}
                                                 </button>
@@ -833,16 +1009,16 @@ const UserReport = () => {
                                         <button
                                             onClick={() => paginate(currentPage + 1)}
                                             disabled={currentPage === totalPages}
-                                            className={`px-2 py-1 rounded-md ${currentPage === totalPages ? 'text-gray-400 cursor-not-allowed' : 'text-gray-700 hover:bg-gray-100'}`}
+                                            className={`p-1 rounded ${currentPage === totalPages ? 'text-gray-300 cursor-not-allowed' : 'text-gray-600 hover:bg-gray-100'}`}
                                         >
-                                            <FiChevronRight size={16} />
+                                            <FiChevronRight size={14} />
                                         </button>
                                         <button
                                             onClick={() => paginate(totalPages)}
                                             disabled={currentPage === totalPages}
-                                            className={`px-2 py-1 rounded-md ${currentPage === totalPages ? 'text-gray-400 cursor-not-allowed' : 'text-gray-700 hover:bg-gray-100'}`}
+                                            className={`p-1 rounded ${currentPage === totalPages ? 'text-gray-300 cursor-not-allowed' : 'text-gray-600 hover:bg-gray-100'}`}
                                         >
-                                            <FiChevronsRight size={16} />
+                                            <FiChevronsRight size={14} />
                                         </button>
                                     </div>
                                 </div>
