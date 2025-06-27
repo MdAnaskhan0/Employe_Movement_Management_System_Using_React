@@ -33,6 +33,7 @@ app.use(cors({
     'http://192.168.111.140:5173',
     'http://192.168.111.140:5174',
     'https://github.com/MdAnaskhan0/Movement.git',
+    'https://movement-med.vercel.app/'
   ],
   credentials: true
 }));
